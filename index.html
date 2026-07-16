@@ -59,10 +59,15 @@
   }
   .brand-mark { display: flex; align-items: center; gap: 8px; }
   .hanko {
+    position: relative;
     width: 30px; height: 30px; border-radius: 6px; background: var(--shu); color: #fff;
     display: flex; align-items: center; justify-content: center; flex-shrink: 0;
     font-family: 'Noto Serif JP', serif; font-size: 16px; font-weight: 700;
     box-shadow: inset 0 0 0 1px rgba(255,255,255,0.25);
+  }
+  .doppi-hat {
+    position: absolute; top: -9px; right: -7px; width: 18px; height: 18px;
+    transform: rotate(-22deg); filter: drop-shadow(0 1px 1px rgba(0,0,0,0.3));
   }
   .brand-name { font-family: 'Noto Serif JP', serif; font-weight: 900; font-size: 15px; letter-spacing: 0.01em; }
   .top-bar-actions { display: flex; align-items: center; gap: 8px; }
@@ -201,6 +206,101 @@
   }
   .loading-msg, .empty-msg { text-align: center; padding: 40px 20px; color: #8a8070; font-size: 14px; }
 
+  /* ---------- HOME: PROMO BANNER ---------- */
+  .promo-banner {
+    margin-bottom: 12px; border-radius: 16px; padding: 16px;
+    background: linear-gradient(135deg, var(--doppi, #1f2d4d), #2a3f66);
+    color: #fff; position: relative; overflow: hidden; display: flex; align-items: center; gap: 12px;
+    cursor: pointer;
+  }
+  .promo-banner::after { content: "🌸"; position: absolute; font-size: 70px; opacity: 0.15; right: -14px; top: -18px; }
+  .promo-icon { width: 40px; height: 40px; border-radius: 12px; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+  .promo-tag { display: inline-block; font-size: 9px; font-weight: 800; letter-spacing: 0.08em; background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 100px; margin-bottom: 4px; }
+  .promo-title { font-weight: 900; font-size: 13.5px; }
+  .promo-sub { font-size: 11px; opacity: 0.85; margin-top: 2px; }
+
+  /* ---------- HOME: LEVEL TABS ---------- */
+  .level-row { display: flex; gap: 8px; padding-bottom: 16px; overflow-x: auto; }
+  .level-pill {
+    flex-shrink: 0; padding: 9px 20px; border-radius: 100px; font-weight: 800; font-size: 14px;
+    background: var(--paper); border: 1px solid var(--line); color: #a89e91; cursor: pointer;
+  }
+  .level-pill.active { background: linear-gradient(135deg, var(--sakura), #d1637a); color: #fff; border: none; box-shadow: 0 4px 12px -4px rgba(232,135,156,0.6); }
+
+  /* ---------- HOME: DAY CARDS ---------- */
+  .day-label { font-size: 12px; color: #8a8070; font-weight: 700; margin-bottom: 10px; }
+  .day-row { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+  .day-card {
+    flex: 1; min-width: 90px; background: var(--paper); border: 1px solid var(--line); border-radius: 14px;
+    padding: 14px 8px; text-align: center; cursor: pointer;
+  }
+  .day-card.done { background: linear-gradient(160deg, #fff, var(--sakura-soft)); border-color: var(--sakura); }
+  .day-card.locked { opacity: 0.55; cursor: default; }
+  .day-card .dc-title { font-weight: 800; font-size: 13px; margin-bottom: 6px; }
+  .day-card .dc-check { color: var(--ok); font-size: 15px; }
+  .day-card .dc-lock { color: #c9c1b6; font-size: 14px; }
+
+  /* ---------- HOME: CATEGORY LIST ---------- */
+  .cat-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; }
+  .cat-card { background: var(--paper); border: 1px solid var(--line); border-radius: 16px; padding: 14px 16px; display: flex; align-items: center; gap: 12px; cursor: pointer; }
+  .cat-card.disabled { opacity: 0.5; cursor: default; }
+  .cat-icon { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+  .cat-icon.kanji { background: var(--ai-blue-soft); }
+  .cat-icon.grammar { background: var(--sakura-soft); }
+  .cat-icon.reading { background: rgba(47,122,79,0.12); }
+  .cat-icon.listening { background: rgba(156,122,53,0.12); }
+  .cat-info { flex: 1; min-width: 0; }
+  .cat-title { font-weight: 800; font-size: 14.5px; }
+  .cat-sub { font-size: 11.5px; color: #8a8070; margin-top: 2px; }
+  .cat-progress { font-size: 11px; color: var(--ai-blue); font-weight: 700; flex-shrink: 0; }
+  .cat-chevron { color: #c9c1b6; flex-shrink: 0; }
+
+  .journey-cta {
+    padding: 16px; border-radius: 16px; background: linear-gradient(135deg, var(--doppi, #1f2d4d), var(--ai-blue));
+    color: #fff; display: flex; align-items: center; gap: 12px; cursor: pointer;
+  }
+  .journey-cta .jc-emoji { font-size: 28px; }
+  .journey-cta .jc-title { font-weight: 800; font-size: 14px; }
+  .journey-cta .jc-sub { font-size: 11.5px; opacity: 0.85; margin-top: 2px; }
+
+  /* ---------- JOURNEY MAP SCREEN ---------- */
+  .journey-header {
+    background: linear-gradient(180deg, var(--doppi, #1f2d4d) 0%, #2a3f66 100%);
+    padding: 20px 16px 26px; color: #fff; position: relative; overflow: hidden;
+    margin: -10px -16px 0; border-radius: 0 0 20px 20px;
+  }
+  .journey-header::after { content: "🌸"; position: absolute; font-size: 60px; opacity: 0.15; top: -10px; right: 6px; }
+  .journey-back { font-size: 13px; opacity: 0.85; margin-bottom: 10px; cursor: pointer; }
+  .journey-title { font-family: 'Noto Serif JP', serif; font-size: 19px; font-weight: 900; }
+  .journey-sub { font-size: 11.5px; opacity: 0.8; margin-top: 4px; }
+  .journey-progress-track { height: 6px; background: rgba(255,255,255,0.15); border-radius: 3px; margin-top: 14px; overflow: hidden; }
+  .journey-progress-fill { height: 100%; background: var(--sakura); border-radius: 3px; transition: width .4s ease; }
+
+  .map-scroll { position: relative; padding: 40px 8px 50px; }
+  .rail-line {
+    position: absolute; left: 50%; top: 20px; bottom: 20px; width: 4px;
+    background: repeating-linear-gradient(180deg, var(--line) 0px, var(--line) 10px, transparent 10px, transparent 18px);
+    transform: translateX(-50%); z-index: 0;
+  }
+  .station { position: relative; z-index: 1; display: flex; align-items: center; gap: 14px; margin-bottom: 40px; }
+  .station.right { flex-direction: row-reverse; text-align: right; }
+  .station-node {
+    flex-shrink: 0; width: 54px; height: 54px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; font-size: 20px;
+    border: 3px solid var(--washi); cursor: pointer;
+  }
+  .station-node.start { background: var(--kin, #9c7a35); color: #fff; cursor: default; }
+  .station-node.done { background: linear-gradient(135deg, var(--sakura), #d1637a); color: #fff; box-shadow: 0 6px 16px -6px rgba(232,135,156,0.7); }
+  .station-node.current { background: var(--ai-blue); color: #fff; box-shadow: 0 0 0 5px var(--ai-blue-soft); }
+  .station-node.locked { background: var(--paper); color: #c9c1b6; border-color: var(--line); cursor: default; }
+  .station-info { flex: 1; min-width: 0; }
+  .station-name-jp { font-family: 'Noto Serif JP', serif; font-weight: 900; font-size: 14px; }
+  .station-name-uz { font-size: 11px; color: #8a8070; margin-top: 1px; }
+  .station-badge { display: inline-block; margin-top: 5px; font-size: 10px; font-weight: 800; padding: 2px 9px; border-radius: 100px; }
+  .station-badge.done { background: var(--sakura-soft); color: #d1637a; }
+  .station-badge.current { background: var(--ai-blue-soft); color: var(--ai-blue); }
+  .station-badge.locked { background: #efe9e0; color: #a89e91; }
+
   /* ---------- FLIP KANJI CARD ---------- */
   .flip-stage { perspective: 1400px; margin-bottom: 14px; }
   .flip-card { position: relative; height: 220px; cursor: pointer; }
@@ -333,7 +433,16 @@
 
 <div class="top-bar">
   <div class="brand-mark">
-    <div class="hanko">学</div>
+    <div class="hanko">
+      学
+      <svg class="doppi-hat" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+        <rect x="2" y="2" width="36" height="36" rx="7" fill="#15151c"/>
+        <path d="M20 6 Q25 14 20 20 Q15 14 20 6 Z" fill="#f5f2ec"/>
+        <path d="M20 34 Q25 26 20 20 Q15 26 20 34 Z" fill="#f5f2ec"/>
+        <path d="M6 20 Q14 25 20 20 Q14 15 6 20 Z" fill="#f5f2ec"/>
+        <path d="M34 20 Q26 25 20 20 Q26 15 34 20 Z" fill="#f5f2ec"/>
+      </svg>
+    </div>
     <div class="brand-name">Nippon.uz</div>
   </div>
   <div class="top-bar-actions">
@@ -358,18 +467,35 @@
 </header>
 
 <main>
-  <!-- LESSON LIST SCREEN -->
+  <!-- LESSON LIST SCREEN (yangi: promo + level + day + category) -->
   <div id="lessonListScreen">
-    <div class="news-ticker" id="newsTicker">
-      <div class="news-ticker-inner">
-        <div class="news-tag" id="newsTag">Dars</div>
-        <div class="news-text" id="newsText">Yuklanmoqda...</div>
+    <div class="promo-banner" id="promoBanner">
+      <div class="promo-icon">📣</div>
+      <div>
+        <div class="promo-tag" id="promoTag">YANGILIK</div>
+        <div class="promo-title" id="promoTitle">Yuklanmoqda...</div>
+        <div class="promo-sub" id="promoSub"></div>
       </div>
     </div>
-    <div class="news-dots" id="newsDots" style="justify-content:center; margin-bottom:14px;"></div>
 
-    <div class="lesson-list" id="lessonList">
-      <div class="loading-msg">Darslar yuklanmoqda...</div>
+    <div class="level-row" id="levelRow"></div>
+
+    <div id="levelContent">
+      <div class="loading-msg">Yuklanmoqda...</div>
+    </div>
+  </div>
+
+  <!-- JOURNEY MAP SCREEN -->
+  <div id="journeyScreen" class="hidden">
+    <div class="journey-header">
+      <div class="journey-back" id="journeyBackBtn">← Bosh sahifa</div>
+      <div class="journey-title">東京への旅 — Tokio sari safar</div>
+      <div class="journey-sub">Registondan boshlab, har bir darsda bir bekatga yaqinlashasiz</div>
+      <div class="journey-progress-track"><div class="journey-progress-fill" id="journeyProgressFill" style="width:0%"></div></div>
+    </div>
+    <div class="map-scroll" id="mapScroll">
+      <div class="rail-line"></div>
+      <div class="loading-msg">Yuklanmoqda...</div>
     </div>
   </div>
 
@@ -518,8 +644,10 @@ let flipped = false;
 
 /* ================== DOM REFS ================== */
 const lessonListScreen = document.getElementById('lessonListScreen');
+const journeyScreen = document.getElementById('journeyScreen');
 const quizScreen = document.getElementById('quizScreen');
-const lessonList = document.getElementById('lessonList');
+const levelRow = document.getElementById('levelRow');
+const levelContent = document.getElementById('levelContent');
 const backBtn = document.getElementById('backBtn');
 const headerEyebrow = document.getElementById('headerEyebrow');
 const headerTitle = document.getElementById('headerTitle');
@@ -542,45 +670,167 @@ const quizArea = document.getElementById('quizArea');
 const doneScreen = document.getElementById('doneScreen');
 const flipCard = document.getElementById('flipCard');
 
-/* ================== LESSON LIST ================== */
+/* ================== STATE: LESSONS + COMPLETIONS ================== */
+let allLessons = [];
+let completedLessonIds = new Set();
+let selectedLevel = 'N3';
+const LEVELS = ['N5', 'N4', 'N3', 'N2', 'N1'];
+const CATEGORY_META = {
+  kanji: { label: 'Kanji', icon: '漢', cls: 'kanji' },
+  grammar: { label: 'Grammatika', icon: '✎', cls: 'grammar' },
+  reading: { label: "O'qish", icon: '📖', cls: 'reading' },
+  listening: { label: 'Tinglash', icon: '🎧', cls: 'listening' },
+};
+
+/* ================== LOAD LESSONS + COMPLETIONS ================== */
 async function loadLessonList() {
+  levelContent.innerHTML = '<div class="loading-msg">Yuklanmoqda...</div>';
+
   const { data, error } = await supabaseClient
     .from('lessons')
     .select('*')
-    .order('lesson_number', { ascending: true });
+    .order('sort_order', { ascending: true });
 
   if (error) {
-    lessonList.innerHTML = `<div class="empty-msg">Xatolik: ${error.message}</div>`;
+    levelContent.innerHTML = `<div class="empty-msg">Xatolik: ${error.message}</div>`;
     return;
   }
+  allLessons = data || [];
 
-  if (!data || data.length === 0) {
-    lessonList.innerHTML = `<div class="empty-msg">Hozircha darslar yo'q</div>`;
-    return;
+  completedLessonIds = new Set();
+  if (currentUser) {
+    const { data: completions } = await supabaseClient
+      .from('lesson_completions')
+      .select('lesson_id')
+      .eq('user_id', currentUser.id);
+    (completions || []).forEach(c => completedLessonIds.add(c.lesson_id));
   }
 
-  lessonList.innerHTML = '';
-  data.forEach(lesson => {
-    const card = document.createElement('div');
-    card.className = 'lesson-card';
-    card.innerHTML = `
-      <div class="ln-tab">
-        <div class="ln-num">${lesson.lesson_number}</div>
-        <div class="ln-ka">課</div>
-      </div>
-      <div class="ln-body">
-        <div class="ln-title">${lesson.title}</div>
-        <div class="ln-range">漢字 ${lesson.kanji_range || '—'}</div>
-      </div>
-      <div class="ln-side">→</div>
-    `;
-    card.addEventListener('click', () => openLesson(lesson));
-    lessonList.appendChild(card);
+  renderLevelTabs();
+  renderLevelContent();
+  renderPromoBanner();
+}
+
+function renderLevelTabs() {
+  levelRow.innerHTML = '';
+  LEVELS.forEach(lvl => {
+    const btn = document.createElement('div');
+    btn.className = 'level-pill' + (lvl === selectedLevel ? ' active' : '');
+    btn.textContent = lvl;
+    btn.addEventListener('click', () => { selectedLevel = lvl; renderLevelTabs(); renderLevelContent(); });
+    levelRow.appendChild(btn);
   });
+}
+
+function renderPromoBanner() {
+  document.getElementById('promoTitle').textContent = 'Sensei AI yordamchisi yaxshilandi';
+  document.getElementById('promoSub').textContent = 'Endi har bir kanji bo\'yicha chuqurroq javob beradi';
+}
+
+function renderLevelContent() {
+  const levelLessons = allLessons.filter(l => l.jlpt_level === selectedLevel);
+
+  if (levelLessons.length === 0) {
+    levelContent.innerHTML = `<div class="empty-msg">${selectedLevel} darajasida hozircha darslar yo'q. Tez orada qo'shiladi 🌱</div>`;
+    return;
+  }
+
+  // Kunlarga guruhlash
+  const days = {};
+  levelLessons.forEach(l => {
+    const d = l.day_number || 1;
+    if (!days[d]) days[d] = [];
+    days[d].push(l);
+  });
+  const dayNumbers = Object.keys(days).map(Number).sort((a,b) => a-b);
+
+  let html = '';
+
+  dayNumbers.forEach((dayNum, dayIdx) => {
+    const dayLessons = days[dayNum];
+    const prevDayDone = dayIdx === 0 || days[dayNumbers[dayIdx-1]].every(l => completedLessonIds.has(l.id));
+
+    html += `<div class="day-label">${dayNum}-KUN</div><div class="day-row">`;
+    dayLessons.forEach((l, idx) => {
+      const isDone = completedLessonIds.has(l.id);
+      const prevInDay = idx === 0 ? true : completedLessonIds.has(dayLessons[idx-1].id);
+      const isLocked = !prevDayDone || !prevInDay;
+      const stateCls = isDone ? 'done' : (isLocked ? 'locked' : '');
+      html += `
+        <div class="day-card ${stateCls}" data-lesson-id="${l.id}">
+          <div class="dc-title">${l.lesson_number}-dars</div>
+          ${isDone ? '<div class="dc-check">✓</div>' : (isLocked ? '<div class="dc-lock">🔒</div>' : '')}
+        </div>`;
+    });
+    html += `</div>`;
+  });
+
+  // Kategoriya kartalari
+  const categories = ['kanji', 'grammar', 'reading', 'listening'];
+  html += `<div class="cat-list">`;
+  categories.forEach(cat => {
+    const catLessons = levelLessons.filter(l => l.category === cat);
+    const meta = CATEGORY_META[cat];
+    if (catLessons.length === 0) {
+      html += `
+        <div class="cat-card disabled">
+          <div class="cat-icon ${meta.cls}">${meta.icon}</div>
+          <div class="cat-info">
+            <div class="cat-title">${meta.label}</div>
+            <div class="cat-sub">Tez orada</div>
+          </div>
+        </div>`;
+    } else {
+      const doneCount = catLessons.filter(l => completedLessonIds.has(l.id)).length;
+      const lessonNums = catLessons.map(l => l.lesson_number + '-dars').join(' · ');
+      html += `
+        <div class="cat-card" data-first-lesson="${catLessons[0].id}">
+          <div class="cat-icon ${meta.cls}">${meta.icon}</div>
+          <div class="cat-info">
+            <div class="cat-title">${meta.label}</div>
+            <div class="cat-sub">${lessonNums}</div>
+          </div>
+          <div class="cat-progress">${doneCount}/${catLessons.length}</div>
+          <div class="cat-chevron">›</div>
+        </div>`;
+    }
+  });
+  html += `</div>`;
+
+  html += `
+    <div class="journey-cta" id="journeyCta">
+      <div class="jc-emoji">🚄</div>
+      <div>
+        <div class="jc-title">Tokio safaringizni ko'ring</div>
+        <div class="jc-sub">Registondan Tokiogacha — bekatlarni kuzating</div>
+      </div>
+    </div>`;
+
+  levelContent.innerHTML = html;
+
+  // Event listenerlar
+  levelContent.querySelectorAll('.day-card').forEach(card => {
+    card.addEventListener('click', () => {
+      if (card.classList.contains('locked')) return;
+      const lessonId = parseInt(card.dataset.lessonId);
+      const lesson = allLessons.find(l => l.id === lessonId);
+      if (lesson) openLesson(lesson);
+    });
+  });
+  levelContent.querySelectorAll('.cat-card:not(.disabled)').forEach(card => {
+    card.addEventListener('click', () => {
+      const lessonId = parseInt(card.dataset.firstLesson);
+      const lesson = allLessons.find(l => l.id === lessonId);
+      if (lesson) openLesson(lesson);
+    });
+  });
+  const jcta = document.getElementById('journeyCta');
+  if (jcta) jcta.addEventListener('click', showJourneyScreen);
 }
 
 function showLessonListScreen() {
   quizScreen.classList.add('hidden');
+  journeyScreen.classList.add('hidden');
   lessonListScreen.classList.remove('hidden');
   backBtn.classList.add('hidden');
   progressWrap.classList.add('hidden');
@@ -590,14 +840,93 @@ function showLessonListScreen() {
   headerEyebrow.textContent = 'みんなの日本語 中級';
   headerTitle.textContent = "Darslar ro'yxati";
   currentLesson = null;
+  loadLessonList();
 }
 
 backBtn.addEventListener('click', showLessonListScreen);
+
+/* ================== JOURNEY MAP SCREEN ================== */
+function showJourneyScreen() {
+  lessonListScreen.classList.add('hidden');
+  journeyScreen.classList.remove('hidden');
+  renderJourneyMap();
+}
+document.getElementById('journeyBackBtn').addEventListener('click', () => {
+  journeyScreen.classList.add('hidden');
+  lessonListScreen.classList.remove('hidden');
+});
+
+function renderJourneyMap() {
+  const kanjiLessons = allLessons
+    .filter(l => l.category === 'kanji')
+    .sort((a,b) => a.sort_order - b.sort_order);
+
+  const mapScroll = document.getElementById('mapScroll');
+  const doneCount = kanjiLessons.filter(l => completedLessonIds.has(l.id)).length;
+  const pct = kanjiLessons.length ? Math.round((doneCount / kanjiLessons.length) * 100) : 0;
+  document.getElementById('journeyProgressFill').style.width = pct + '%';
+
+  let html = '<div class="rail-line"></div>';
+
+  html += `
+    <div class="station">
+      <div class="station-node start">🏛️</div>
+      <div class="station-info">
+        <div class="station-name-jp">サマルカンド</div>
+        <div class="station-name-uz">Registon — boshlanish nuqtasi</div>
+        <span class="station-badge done">Safar boshlandi</span>
+      </div>
+    </div>`;
+
+  kanjiLessons.forEach((l, idx) => {
+    const isDone = completedLessonIds.has(l.id);
+    const prevDone = idx === 0 ? true : completedLessonIds.has(kanjiLessons[idx-1].id);
+    const isCurrent = !isDone && prevDone;
+    const isLocked = !isDone && !prevDone;
+    const side = idx % 2 === 0 ? 'right' : '';
+    const nodeCls = isDone ? 'done' : (isCurrent ? 'current' : 'locked');
+    const badgeCls = isDone ? 'done' : (isCurrent ? 'current' : 'locked');
+    const badgeText = isDone ? '✓ Tugallandi' : (isCurrent ? '● Joriy bekat' : 'Qulflangan');
+    const nodeContent = isLocked ? '🔒' : l.lesson_number;
+
+    html += `
+      <div class="station ${side}">
+        <div class="station-node ${nodeCls}" data-lesson-id="${l.id}" data-locked="${isLocked}">${nodeContent}</div>
+        <div class="station-info">
+          <div class="station-name-jp">${l.lesson_number}課</div>
+          <div class="station-name-uz">${l.title}</div>
+          <span class="station-badge ${badgeCls}">${badgeText}</span>
+        </div>
+      </div>`;
+  });
+
+  html += `
+    <div class="station">
+      <div class="station-node locked">🗼</div>
+      <div class="station-info">
+        <div class="station-name-jp">渋谷 / 東京</div>
+        <div class="station-name-uz">Shibuya / Tokio markazi — MARRA</div>
+        <span class="station-badge locked">Yakuniy bekat</span>
+      </div>
+    </div>`;
+
+  mapScroll.innerHTML = html;
+
+  mapScroll.querySelectorAll('.station-node[data-lesson-id]').forEach(node => {
+    if (node.dataset.locked === 'true') return;
+    node.addEventListener('click', () => {
+      const lessonId = parseInt(node.dataset.lessonId);
+      const lesson = allLessons.find(l => l.id === lessonId);
+      if (lesson) openLesson(lesson);
+    });
+  });
+}
 
 /* ================== OPEN LESSON: fetch kanji + combos + questions ================== */
 async function openLesson(lesson) {
   currentLesson = lesson;
   lessonListScreen.classList.add('hidden');
+  journeyScreen.classList.add('hidden');
   quizScreen.classList.remove('hidden');
   backBtn.classList.remove('hidden');
   progressWrap.classList.remove('hidden');
@@ -808,6 +1137,26 @@ function showDone() {
     div.innerHTML = `<span class="mi-kanji">${q.word}</span><span>${q.correct}</span>`;
     missedList.appendChild(div);
   });
+
+  saveLessonCompletion();
+}
+
+async function saveLessonCompletion() {
+  if (!currentUser || !currentLesson) return;
+  try {
+    await supabaseClient
+      .from('lesson_completions')
+      .upsert({
+        user_id: currentUser.id,
+        lesson_id: currentLesson.id,
+        correct_count: goodCount,
+        wrong_count: badCount,
+        completed_at: new Date().toISOString()
+      }, { onConflict: 'user_id,lesson_id' });
+    completedLessonIds.add(currentLesson.id);
+  } catch (err) {
+    console.error('Progress saqlashda xatolik:', err);
+  }
 }
 
 document.getElementById('reviewMissedBtn').addEventListener('click', () => {
@@ -1068,6 +1417,7 @@ authSubmitBtn.addEventListener('click', async () => {
       currentUser = data.user;
       updateAuthUI();
       closeAuthPanel();
+      if (!lessonListScreen.classList.contains('hidden')) loadLessonList();
     }
   } catch (err) {
     showAuthError(translateAuthError(err.message));
@@ -1089,6 +1439,7 @@ logoutBtn.addEventListener('click', async () => {
   currentUser = null;
   updateAuthUI();
   closeAuthPanel();
+  if (!lessonListScreen.classList.contains('hidden')) loadLessonList();
 });
 
 function updateAuthUI() {
@@ -1113,45 +1464,12 @@ async function initAuth() {
   });
 }
 
-/* ================== NEWS TICKER ================== */
-const newsItems = [
-  { tag: 'lesson', tagLabel: 'Dars', text: '1-dars va 2-dars tayyor — hoziroq kanji o\'rganishni boshlang!' },
-  { tag: 'grammar', tagLabel: 'Grammatika', text: '〜てください — "iltimos qiling" ma\'nosini beruvchi eng ko\'p ishlatiladigan qolip.' },
-  { tag: 'video', tagLabel: 'Video', text: 'Telegram kanalimizda yangi qisqa dars videosi — Sensei bilan tanishing.' },
-];
-let newsIdx = 0;
-let newsTimer = null;
-
-function renderNewsItem(idx) {
-  const item = newsItems[idx];
-  const tagEl = document.getElementById('newsTag');
-  const textEl = document.getElementById('newsText');
-  tagEl.textContent = item.tagLabel;
-  tagEl.className = 'news-tag ' + item.tag;
-  textEl.textContent = item.text;
-
-  const dotsWrap = document.getElementById('newsDots');
-  dotsWrap.innerHTML = '';
-  newsItems.forEach((_, i) => {
-    const dot = document.createElement('div');
-    dot.className = 'news-dot' + (i === idx ? ' active' : '');
-    dotsWrap.appendChild(dot);
-  });
-}
-
-function startNewsTicker() {
-  renderNewsItem(newsIdx);
-  if (newsTimer) clearInterval(newsTimer);
-  newsTimer = setInterval(() => {
-    newsIdx = (newsIdx + 1) % newsItems.length;
-    renderNewsItem(newsIdx);
-  }, 4500);
-}
-
 /* ================== INIT ================== */
-loadLessonList();
-initAuth();
-startNewsTicker();
+async function initApp() {
+  await initAuth();
+  await loadLessonList();
+}
+initApp();
 </script>
 
 </body>
