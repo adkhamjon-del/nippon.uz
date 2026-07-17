@@ -1353,8 +1353,8 @@ flipCard.addEventListener('click', () => {
 });
 
 /* ================== QUESTION RENDER ================== */
-function renderQuestion() {
-  if (pos >= order.length) { showDone(); return; }
+async function renderQuestion() {
+  if (pos >= order.length) { await showDone(); return; }
   answered = false;
 
   const q = questions[order[pos]];
@@ -1435,7 +1435,7 @@ document.getElementById('explainBtn').addEventListener('click', () => {
   askAI(`Menga "${q.word}" (${q.furigana}) haqida, xususan ${q.kanji} kanjisi haqida chuqurroq tushuntirib bering. Nega bu ma'noni anglatadi, qanday eslab qolsam bo'ladi?`);
 });
 
-function showDone() {
+async function showDone() {
   quizArea.classList.add('hidden');
   doneScreen.classList.remove('hidden');
   progressFill.style.width = '100%';
@@ -1462,7 +1462,15 @@ function showDone() {
     missedList.appendChild(div);
   });
 
-  saveLessonCompletion();
+  // Orqaga qaytishni saqlash tugagunicha bloklaymiz — race condition oldini olish uchun
+  backBtn.style.pointerEvents = 'none';
+  backBtn.style.opacity = '0.4';
+  try {
+    await saveLessonCompletion();
+  } finally {
+    backBtn.style.pointerEvents = '';
+    backBtn.style.opacity = '';
+  }
 }
 
 async function saveLessonCompletion() {
