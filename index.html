@@ -270,18 +270,41 @@
   }
   .loading-msg, .empty-msg { text-align: center; padding: 40px 20px; color: #8a8070; font-size: 14px; }
 
-  /* ---------- HOME: PROMO BANNER ---------- */
+  /* ---------- HOME: PROMO BANNER (6 mavzu bilan) ---------- */
   .promo-banner {
-    margin-bottom: 12px; border-radius: 16px; padding: 16px;
+    margin-bottom: 10px; border-radius: 16px; padding: 16px;
     background: linear-gradient(135deg, var(--doppi, #1f2d4d), #2a3f66);
     color: #fff; position: relative; overflow: hidden; display: flex; align-items: center; gap: 12px;
-    cursor: pointer;
+    cursor: pointer; transition: background .5s ease;
   }
-  .promo-banner::after { content: "🌸"; position: absolute; font-size: 70px; opacity: 0.15; right: -14px; top: -18px; }
+  .promo-banner::after {
+    content: attr(data-emoji); position: absolute; font-size: 70px; opacity: 0.18; right: -14px; top: -18px;
+    transition: content .3s ease;
+  }
   .promo-icon { width: 40px; height: 40px; border-radius: 12px; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
   .promo-tag { display: inline-block; font-size: 9px; font-weight: 800; letter-spacing: 0.08em; background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 100px; margin-bottom: 4px; }
   .promo-title { font-weight: 900; font-size: 13.5px; }
   .promo-sub { font-size: 11px; opacity: 0.85; margin-top: 2px; }
+
+  /* 6 ta mavzu foni */
+  .promo-banner.theme-sakura { background: linear-gradient(135deg, #7a2f42, #b8677f); }
+  .promo-banner.theme-flag { background: linear-gradient(135deg, #1c1a17, #3a3530); }
+  .promo-banner.theme-flag::before {
+    content: ""; position: absolute; right: 18px; top: 50%; transform: translateY(-50%);
+    width: 34px; height: 34px; border-radius: 50%; background: var(--shu, #c0483a); opacity: 0.5;
+  }
+  .promo-banner.theme-street { background: linear-gradient(135deg, #2b1f4a, #6a3a7a); }
+  .promo-banner.theme-hachiko { background: linear-gradient(135deg, #6b4a1f, #a8792f); }
+  .promo-banner.theme-registon { background: linear-gradient(135deg, #124a52, #1f7d86); }
+  .promo-banner.theme-doppi {
+    background-color: var(--doppi, #1f2d4d);
+    background-image: repeating-linear-gradient(-45deg, transparent 0px, transparent 5px,
+      rgba(255,255,255,0.08) 5px, rgba(255,255,255,0.08) 6px, transparent 6px, transparent 13px);
+  }
+
+  .promo-dots { display: flex; gap: 5px; justify-content: center; margin-bottom: 14px; }
+  .promo-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--line); transition: background .2s ease, transform .2s ease; }
+  .promo-dot.active { background: var(--ai-blue); transform: scale(1.3); }
 
   /* ---------- HOME: LEVEL TABS ---------- */
   .level-row { display: flex; gap: 8px; padding-bottom: 16px; overflow-x: auto; }
@@ -587,6 +610,7 @@
         <div class="promo-sub" id="promoSub"></div>
       </div>
     </div>
+    <div class="promo-dots" id="promoDots"></div>
 
     <div class="level-row" id="levelRow"></div>
 
@@ -847,9 +871,69 @@ function renderLevelTabs() {
   });
 }
 
-function renderPromoBanner() {
-  document.getElementById('promoTitle').textContent = 'Sensei AI yordamchisi yaxshilandi';
-  document.getElementById('promoSub').textContent = 'Endi har bir kanji bo\'yicha chuqurroq javob beradi';
+const THEME_EMOJI = {
+  sakura: '🌸',
+  flag: '⭕',
+  street: '🏮',
+  hachiko: '🐕',
+  registon: '🕌',
+  doppi: '🧵',
+};
+
+let announcementsList = [];
+let announcementIdx = 0;
+let announcementTimer = null;
+
+async function renderPromoBanner() {
+  const { data, error } = await supabaseClient
+    .from('announcements')
+    .select('*')
+    .eq('is_active', true)
+    .order('sort_order', { ascending: true });
+
+  if (error || !data || data.length === 0) {
+    document.getElementById('promoTitle').textContent = 'Xush kelibsiz!';
+    document.getElementById('promoSub').textContent = "Yapon tilini o'rganishni boshlang";
+    return;
+  }
+
+  announcementsList = data;
+  announcementIdx = 0;
+  renderAnnouncementItem(0);
+  renderPromoDots();
+
+  if (announcementTimer) clearInterval(announcementTimer);
+  if (announcementsList.length > 1) {
+    announcementTimer = setInterval(() => {
+      announcementIdx = (announcementIdx + 1) % announcementsList.length;
+      renderAnnouncementItem(announcementIdx);
+      renderPromoDots();
+    }, 6000);
+  }
+}
+
+function renderAnnouncementItem(idx) {
+  const item = announcementsList[idx];
+  const banner = document.getElementById('promoBanner');
+  const theme = item.theme || 'sakura';
+
+  banner.className = 'promo-banner theme-' + theme;
+  banner.setAttribute('data-emoji', THEME_EMOJI[theme] || '🌸');
+
+  document.getElementById('promoTag').textContent = item.tag || 'YANGILIK';
+  document.getElementById('promoTitle').textContent = item.title;
+  document.getElementById('promoSub').textContent = item.subtitle || '';
+}
+
+function renderPromoDots() {
+  const dotsWrap = document.getElementById('promoDots');
+  dotsWrap.innerHTML = '';
+  if (announcementsList.length <= 1) return;
+  announcementsList.forEach((_, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'promo-dot' + (i === announcementIdx ? ' active' : '');
+    dotsWrap.appendChild(dot);
+  });
 }
 
 function renderLevelContent() {
