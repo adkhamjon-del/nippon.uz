@@ -191,6 +191,15 @@
   .auth-switch { text-align: center; font-size: 12px; color: #8a8070; margin-top: 16px; }
   .auth-switch a { color: var(--ai-blue); font-weight: 700; cursor: pointer; text-decoration: none; }
   .auth-close { position: absolute; top: 14px; right: 16px; background: none; border: none; font-size: 18px; color: #a39a89; cursor: pointer; }
+  .auth-panel.mandatory .auth-close { display: none; }
+  .auth-panel.mandatory { background: var(--washi); }
+  .auth-panel.mandatory .auth-sheet {
+    box-shadow: none;
+  }
+  .auth-gate-hero { text-align: center; margin-bottom: 18px; }
+  .auth-gate-hero .hanko { margin: 0 auto 10px; }
+  .auth-gate-hero .agh-title { font-family: 'Noto Serif JP', serif; font-weight: 900; font-size: 20px; }
+  .auth-gate-hero .agh-sub { font-size: 12px; color: #8a8070; margin-top: 4px; }
   .auth-user-info { text-align: center; }
   .auth-user-info .ui-name { font-weight: 800; font-size: 16px; margin-bottom: 4px; }
   .auth-user-info .ui-email { font-size: 12px; color: #8a8070; margin-bottom: 4px; }
@@ -668,6 +677,21 @@
 <div class="auth-panel" id="authPanel">
   <div class="auth-sheet">
     <button class="auth-close" id="authClose">✕</button>
+
+    <div class="auth-gate-hero" id="authGateHero" style="display:none;">
+      <div class="hanko">
+        学
+        <svg class="doppi-hat" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2" y="2" width="36" height="36" rx="7" fill="#15151c"/>
+          <path d="M20 6 Q25 14 20 20 Q15 14 20 6 Z" fill="#f5f2ec"/>
+          <path d="M20 34 Q25 26 20 20 Q15 26 20 34 Z" fill="#f5f2ec"/>
+          <path d="M6 20 Q14 25 20 20 Q14 15 6 20 Z" fill="#f5f2ec"/>
+          <path d="M34 20 Q26 25 20 20 Q26 15 34 20 Z" fill="#f5f2ec"/>
+        </svg>
+      </div>
+      <div class="agh-title">Nippon.uz</div>
+      <div class="agh-sub">Registondan Tokiogacha — yapon tilini birga o'rganamiz</div>
+    </div>
 
     <!-- LOGIN/REGISTER FORM -->
     <div id="authFormView">
@@ -1563,7 +1587,28 @@ function openAuthPanel() {
     setAuthMode('login');
   }
 }
-function closeAuthPanel() { authPanel.classList.remove('open'); }
+function closeAuthPanel() {
+  if (authPanel.classList.contains('mandatory')) return; // majburiy holatda yopilmaydi
+  authPanel.classList.remove('open');
+}
+
+function showAuthGate() {
+  document.querySelector('main').classList.add('hidden');
+  hamburgerBtn.classList.add('hidden');
+  document.getElementById('authGateHero').style.display = 'block';
+  authPanel.classList.add('mandatory');
+  authPanel.classList.add('open');
+  authFormView.classList.remove('hidden');
+  authUserView.classList.add('hidden');
+  setAuthMode('login');
+}
+function hideAuthGate() {
+  document.querySelector('main').classList.remove('hidden');
+  hamburgerBtn.classList.remove('hidden');
+  document.getElementById('authGateHero').style.display = 'none';
+  authPanel.classList.remove('mandatory');
+  authPanel.classList.remove('open');
+}
 
 authBtn.addEventListener('click', openAuthPanel);
 authClose.addEventListener('click', closeAuthPanel);
@@ -1595,9 +1640,9 @@ authSubmitBtn.addEventListener('click', async () => {
       if (error) throw error;
       currentUser = data.user;
       updateAuthUI();
-      closeAuthPanel();
-      loadCoins();
-      if (!lessonListScreen.classList.contains('hidden')) loadLessonList();
+      hideAuthGate();
+      await loadCoins();
+      await loadLessonList();
     }
   } catch (err) {
     showAuthError(translateAuthError(err.message));
@@ -1618,10 +1663,10 @@ logoutBtn.addEventListener('click', async () => {
   await supabaseClient.auth.signOut();
   currentUser = null;
   updateAuthUI();
-  closeAuthPanel();
   currentCoins = 0;
   updateCoinBadge();
-  if (!lessonListScreen.classList.contains('hidden')) loadLessonList();
+  showLessonListScreen();
+  showAuthGate();
 });
 
 function updateAuthUI() {
@@ -1710,6 +1755,10 @@ async function initAuth() {
 /* ================== INIT ================== */
 async function initApp() {
   await initAuth();
+  if (!currentUser) {
+    showAuthGate();
+    return;
+  }
   await loadCoins();
   await loadLessonList();
 }
