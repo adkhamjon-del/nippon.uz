@@ -353,19 +353,29 @@
   }
   .level-pill.active { background: linear-gradient(135deg, var(--sakura), #d1637a); color: #fff; border: none; box-shadow: 0 4px 12px -4px rgba(232,135,156,0.6); }
 
-  /* ---------- HOME: DAY CARDS ---------- */
-  .day-label { font-size: 12px; color: #8a8070; font-weight: 700; margin-bottom: 10px; }
-  .day-row { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-  .day-card {
-    flex: 1; min-width: 90px; background: var(--paper); border: 1px solid var(--line); border-radius: 14px;
-    padding: 14px 8px; text-align: center; cursor: pointer;
+  /* ---------- HOME: DAY PATH (gorizontal yo'l) ---------- */
+  .path-wrap { margin-bottom: 20px; }
+  .path-label { font-size: 12px; color: #8a8070; font-weight: 700; margin-bottom: 20px; }
+  .path-scroll {
+    display: flex; align-items: flex-start; gap: 0; overflow-x: auto; overflow-y: visible; padding: 20px 2px 14px;
+    -webkit-overflow-scrolling: touch;
   }
-  .day-card.done { background: linear-gradient(160deg, #fff, var(--sakura-soft)); border-color: var(--sakura); }
-  .day-card.locked { opacity: 0.55; cursor: default; }
-  .day-card.sub-locked { border-color: var(--kin, #9c7a35); background: linear-gradient(160deg, #fff, rgba(156,122,53,0.08)); }
-  .day-card .dc-title { font-weight: 800; font-size: 13px; margin-bottom: 6px; }
-  .day-card .dc-check { color: var(--ok); font-size: 15px; }
-  .day-card .dc-lock { color: #c9c1b6; font-size: 14px; }
+  .path-scroll::-webkit-scrollbar { height: 4px; }
+  .path-scroll::-webkit-scrollbar-thumb { background: var(--line); border-radius: 2px; }
+  .path-node-wrap { display: flex; align-items: center; flex-shrink: 0; }
+  .path-node {
+    width: 54px; height: 54px; border-radius: 50%; flex-shrink: 0; cursor: pointer;
+    background: var(--paper); border: 2px solid var(--line);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 13px; position: relative;
+  }
+  .path-node .pn-day { font-size: 8px; color: #a89e91; text-transform: uppercase; letter-spacing: 0.03em; position: absolute; top: -16px; white-space: nowrap; }
+  .path-node.done { background: linear-gradient(160deg, #fff, var(--sakura-soft)); border-color: var(--sakura); color: var(--sakura-deep, #d1637a); }
+  .path-node.current { border-color: var(--ai-blue); box-shadow: 0 0 0 4px var(--ai-blue-soft); color: var(--ai-blue); }
+  .path-node.locked { opacity: 0.5; cursor: default; }
+  .path-node.sub-locked { border-color: var(--kin, #9c7a35); background: rgba(156,122,53,0.06); }
+  .path-connector { width: 22px; height: 2px; background: var(--line); flex-shrink: 0; margin-top: 27px; }
+  .path-connector.done { background: var(--sakura); }
 
   /* ---------- HOME: CATEGORY LIST ---------- */
   .cat-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; }
@@ -1020,7 +1030,7 @@ function renderLevelContent() {
     return;
   }
 
-  // Kunlarga guruhlash
+  // Kunlarga guruhlash (tartib uchun), lekin ko'rinishda gorizontal yagona qator bo'ladi
   const days = {};
   levelLessons.forEach(l => {
     const d = l.day_number || 1;
@@ -1029,38 +1039,50 @@ function renderLevelContent() {
   });
   const dayNumbers = Object.keys(days).map(Number).sort((a,b) => a-b);
 
-  let html = '';
-
-  dayNumbers.forEach((dayNum, dayIdx) => {
-    const dayLessons = days[dayNum];
-    const prevDayDone = dayIdx === 0 || days[dayNumbers[dayIdx-1]].every(l => completedLessonIds.has(l.id));
-
-    html += `<div class="day-label">${dayNum}-KUN</div><div class="day-row">`;
-    dayLessons.forEach((l, idx) => {
-      const isDone = completedLessonIds.has(l.id);
-      const prevInDay = idx === 0 ? true : completedLessonIds.has(dayLessons[idx-1].id);
-      const isProgressLocked = !prevDayDone || !prevInDay;
-      const isSubLocked = !isDone && !canAccessLesson(l);
-
-      let stateCls, iconHtml;
-      if (isDone) {
-        stateCls = 'done'; iconHtml = '<div class="dc-check">✓</div>';
-      } else if (isSubLocked) {
-        stateCls = 'sub-locked'; iconHtml = '<div class="dc-lock">💎</div>';
-      } else if (isProgressLocked) {
-        stateCls = 'locked'; iconHtml = '<div class="dc-lock">🔒</div>';
-      } else {
-        stateCls = ''; iconHtml = '';
-      }
-
-      html += `
-        <div class="day-card ${stateCls}" data-lesson-id="${l.id}">
-          <div class="dc-title">${getDisplayNum(l)}-dars</div>
-          ${iconHtml}
-        </div>`;
-    });
-    html += `</div>`;
+  // Barcha darslarni kun tartibida yagona ro'yxatga tekislaymiz
+  const flatLessons = [];
+  dayNumbers.forEach(dayNum => {
+    days[dayNum].forEach((l, idx) => flatLessons.push({ lesson: l, dayNum, idxInDay: idx }));
   });
+
+  let html = `<div class="path-wrap"><div class="path-label">O'quv yo'li</div><div class="path-scroll">`;
+
+  flatLessons.forEach((item, i) => {
+    const { lesson: l, dayNum, idxInDay } = item;
+    const dayLessons = days[dayNum];
+    const dayIdx = dayNumbers.indexOf(dayNum);
+    const prevDayDone = dayIdx === 0 || days[dayNumbers[dayIdx-1]].every(x => completedLessonIds.has(x.id));
+    const isDone = completedLessonIds.has(l.id);
+    const prevInDay = idxInDay === 0 ? true : completedLessonIds.has(dayLessons[idxInDay-1].id);
+    const isProgressLocked = !prevDayDone || !prevInDay;
+    const isSubLocked = !isDone && !canAccessLesson(l);
+
+    let stateCls, nodeContent;
+    if (isDone) {
+      stateCls = 'done'; nodeContent = '✓';
+    } else if (isSubLocked) {
+      stateCls = 'sub-locked'; nodeContent = '💎';
+    } else if (isProgressLocked) {
+      stateCls = 'locked'; nodeContent = '🔒';
+    } else {
+      stateCls = 'current'; nodeContent = getDisplayNum(l);
+    }
+
+    if (i > 0) {
+      const prevDone = completedLessonIds.has(flatLessons[i-1].lesson.id);
+      html += `<div class="path-connector ${prevDone ? 'done' : ''}"></div>`;
+    }
+
+    html += `
+      <div class="path-node-wrap">
+        <div class="path-node ${stateCls}" data-lesson-id="${l.id}">
+          <div class="pn-day">${dayNum}-kun</div>
+          ${nodeContent}
+        </div>
+      </div>`;
+  });
+
+  html += `</div></div>`;
 
   // Kategoriya kartalari
   const categories = ['kanji', 'grammar', 'reading', 'listening'];
@@ -1107,7 +1129,7 @@ function renderLevelContent() {
   levelContent.innerHTML = html;
 
   // Event listenerlar
-  levelContent.querySelectorAll('.day-card').forEach(card => {
+  levelContent.querySelectorAll('.path-node').forEach(card => {
     card.addEventListener('click', () => {
       if (card.classList.contains('locked')) return;
       const lessonId = parseInt(card.dataset.lessonId);
