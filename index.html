@@ -614,6 +614,9 @@
       <div class="sm-item" id="smProfile">
         <span class="sm-icon">👤</span> Profil
       </div>
+      <div class="sm-item hidden" id="smCommunity">
+        <span class="sm-icon">💎</span> Mentorlik community
+      </div>
       <div class="sm-item" id="smSettings">
         <span class="sm-icon">⚙️</span> Sozlamalar
       </div>
@@ -1478,19 +1481,35 @@ async function saveLessonCompletion() {
   try {
     const wasAlreadyDone = completedLessonIds.has(currentLesson.id);
 
-    const { error } = await supabaseClient
-      .from('lesson_completions')
-      .upsert({
-        user_id: currentUser.id,
-        lesson_id: currentLesson.id,
-        correct_count: goodCount,
-        wrong_count: badCount,
-        completed_at: new Date().toISOString()
-      }, { onConflict: 'user_id,lesson_id' });
+    // Sessiya tokeni eskirgan bo'lishi mumkin — avval yangilashga urinamiz
+    try { await supabaseClient.auth.refreshSession(); } catch (e) { /* e'tiborsiz qoldiramiz */ }
 
-    if (error) {
-      console.error('Progress saqlashda XATO:', error);
-      alert('DIAGNOSTIKA: Progress saqlanmadi!\n\nXato: ' + error.message + '\n\nKod: ' + (error.code || 'nomaʼlum') + '\n\nBatafsil: ' + (error.details || 'yoʻq'));
+    const payload = {
+      user_id: currentUser.id,
+      lesson_id: currentLesson.id,
+      correct_count: goodCount,
+      wrong_count: badCount,
+      completed_at: new Date().toISOString()
+    };
+
+    let lastError = null;
+    let succeeded = false;
+
+    // 3 martagacha qayta urinamiz (tarmoq/tokendagi vaqtinchalik uzilishlar uchun)
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      const { error } = await supabaseClient
+        .from('lesson_completions')
+        .upsert(payload, { onConflict: 'user_id,lesson_id' });
+
+      if (!error) { succeeded = true; break; }
+      lastError = error;
+      console.warn(`Progress saqlash ${attempt}-urinish muvaffaqiyatsiz:`, error);
+      if (attempt < 3) await new Promise(r => setTimeout(r, 900 * attempt));
+    }
+
+    if (!succeeded) {
+      console.error('Progress saqlashda XATO (3 urinishdan keyin):', lastError);
+      alert('Progress saqlanmadi (3 marta urinildi).\n\nXato: ' + (lastError?.message || 'nomaʼlum') + '\n\nIltimos internetni tekshirib, qaytadan urinib ko\'ring.');
       return; // Coin BERMAYMIZ, chunki yozuv saqlanmadi
     }
 
@@ -1502,7 +1521,7 @@ async function saveLessonCompletion() {
     }
   } catch (err) {
     console.error('Progress saqlashda xatolik:', err);
-    alert('DIAGNOSTIKA: Kutilmagan xato!\n\n' + err.message);
+    alert('Kutilmagan xato yuz berdi.\n\n' + err.message + '\n\nIltimos qaytadan urinib ko\'ring.');
   }
 }
 
@@ -1996,18 +2015,26 @@ sideMenuOverlay.addEventListener('click', (e) => { if (e.target === sideMenuOver
 function updateSideMenuInfo() {
   const smNameEl = document.getElementById('smName');
   const smCoinsEl = document.getElementById('smCoins');
+  const smCommunity = document.getElementById('smCommunity');
   if (currentUser) {
     smNameEl.textContent = currentUser.user_metadata?.full_name || currentUser.email.split('@')[0];
     smCoinsEl.textContent = '🪙 ' + currentCoins + ' coin';
     smLogout.classList.remove('hidden');
     smLogin.classList.add('hidden');
+    smCommunity.classList.toggle('hidden', currentTier !== 'pro');
   } else {
     smNameEl.textContent = 'Mehmon';
     smCoinsEl.textContent = "Kirib, coin yig'ishni boshlang";
     smLogout.classList.add('hidden');
     smLogin.classList.remove('hidden');
+    smCommunity.classList.add('hidden');
   }
 }
+
+document.getElementById('smCommunity').addEventListener('click', () => {
+  closeSideMenu();
+  window.open('https://t.me/+uxiq7NHz-ohmNmM9', '_blank');
+});
 
 smLogout.addEventListener('click', () => {
   closeSideMenu();
