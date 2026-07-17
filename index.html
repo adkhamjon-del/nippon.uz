@@ -1478,7 +1478,7 @@ async function saveLessonCompletion() {
   try {
     const wasAlreadyDone = completedLessonIds.has(currentLesson.id);
 
-    await supabaseClient
+    const { error } = await supabaseClient
       .from('lesson_completions')
       .upsert({
         user_id: currentUser.id,
@@ -1487,6 +1487,13 @@ async function saveLessonCompletion() {
         wrong_count: badCount,
         completed_at: new Date().toISOString()
       }, { onConflict: 'user_id,lesson_id' });
+
+    if (error) {
+      console.error('Progress saqlashda XATO:', error);
+      alert('DIAGNOSTIKA: Progress saqlanmadi!\n\nXato: ' + error.message + '\n\nKod: ' + (error.code || 'nomaʼlum') + '\n\nBatafsil: ' + (error.details || 'yoʻq'));
+      return; // Coin BERMAYMIZ, chunki yozuv saqlanmadi
+    }
+
     completedLessonIds.add(currentLesson.id);
 
     // Faqat BIRINCHI marta tugatilganda coin beriladi
@@ -1495,6 +1502,7 @@ async function saveLessonCompletion() {
     }
   } catch (err) {
     console.error('Progress saqlashda xatolik:', err);
+    alert('DIAGNOSTIKA: Kutilmagan xato!\n\n' + err.message);
   }
 }
 
