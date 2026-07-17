@@ -94,6 +94,34 @@
   }
   .coin-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
+  /* ---------- PAYWALL ---------- */
+  .paywall-overlay {
+    position: fixed; inset: 0; background: rgba(28,26,23,0.5); z-index: 150;
+    display: flex; align-items: center; justify-content: center; padding: 20px;
+    opacity: 0; pointer-events: none; transition: opacity .2s ease;
+  }
+  .paywall-overlay.open { opacity: 1; pointer-events: auto; }
+  .paywall-sheet {
+    background: var(--paper); width: 100%; max-width: 380px; border-radius: 20px;
+    padding: 26px 24px; position: relative; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    transform: scale(0.95); transition: transform .2s cubic-bezier(.32,.72,0,1);
+  }
+  .paywall-overlay.open .paywall-sheet { transform: scale(1); }
+  .paywall-close { position: absolute; top: 14px; right: 16px; background: none; border: none; font-size: 18px; color: #a39a89; cursor: pointer; }
+  .paywall-emoji { font-size: 40px; text-align: center; margin-bottom: 8px; }
+  .paywall-tier-name { font-family: 'Noto Serif JP', serif; font-weight: 900; font-size: 19px; text-align: center; }
+  .paywall-price { text-align: center; font-size: 22px; font-weight: 900; color: var(--kin, #9c7a35); margin: 6px 0 4px; }
+  .paywall-desc { text-align: center; font-size: 12.5px; color: #8a8070; margin-bottom: 18px; }
+  .paywall-code-box {
+    background: var(--washi); border: 1px dashed var(--line); border-radius: 12px;
+    padding: 12px; text-align: center; margin-bottom: 16px;
+  }
+  .paywall-code-label { font-size: 10px; color: #8a8070; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+  .paywall-code { font-family: 'Noto Serif JP', serif; font-size: 20px; font-weight: 900; color: var(--ai-blue); letter-spacing: 0.05em; }
+  .paywall-steps { font-size: 12.5px; color: var(--sumi); line-height: 1.6; margin-bottom: 16px; }
+  .paywall-steps li { margin-bottom: 4px; }
+  .paywall-note { font-size: 11px; color: #8a8070; text-align: center; }
+
   /* ---------- HAMBURGER + SIDE MENU ---------- */
   .hamburger-btn {
     background: none; border: none; font-size: 20px; cursor: pointer; color: var(--sumi);
@@ -323,6 +351,7 @@
   }
   .day-card.done { background: linear-gradient(160deg, #fff, var(--sakura-soft)); border-color: var(--sakura); }
   .day-card.locked { opacity: 0.55; cursor: default; }
+  .day-card.sub-locked { border-color: var(--kin, #9c7a35); background: linear-gradient(160deg, #fff, rgba(156,122,53,0.08)); }
   .day-card .dc-title { font-weight: 800; font-size: 13px; margin-bottom: 6px; }
   .day-card .dc-check { color: var(--ok); font-size: 15px; }
   .day-card .dc-lock { color: #c9c1b6; font-size: 14px; }
@@ -756,6 +785,30 @@
   </div>
 </div>
 
+<div class="paywall-overlay" id="paywallOverlay">
+  <div class="paywall-sheet">
+    <button class="paywall-close" id="paywallClose">✕</button>
+    <div class="paywall-emoji">💎</div>
+    <div class="paywall-tier-name" id="paywallTierName">Premium obuna</div>
+    <div class="paywall-price" id="paywallPrice">250 000 so'm / oy</div>
+    <div class="paywall-desc" id="paywallDesc">N5 dan N1 gacha barcha darslar</div>
+    <div class="paywall-code-box">
+      <div class="paywall-code-label">Sizning shaxsiy kodingiz</div>
+      <div class="paywall-code" id="paywallCode">NP-000000</div>
+    </div>
+    <div class="paywall-code-box">
+      <div class="paywall-code-label">To'lov karta raqami</div>
+      <div class="paywall-code" style="font-size:16px; letter-spacing:0.02em;">4073 4200 7330 0620</div>
+    </div>
+    <ol class="paywall-steps">
+      <li>Yuqoridagi karta raqamiga tarif summasini o'tkazing</li>
+      <li>To'lov izohiga shaxsiy kodingizni yozing</li>
+      <li>Biz tekshirib, hisobingizni faollashtiramiz (odatda bir necha soat ichida)</li>
+    </ol>
+    <div class="paywall-note">Savol bo'lsa, ☰ menyudan "Yordam" bo'limiga murojaat qiling</div>
+  </div>
+</div>
+
 <div class="chat-panel" id="chatPanel">
   <div class="chat-sheet">
     <div class="chat-header">
@@ -963,12 +1016,24 @@ function renderLevelContent() {
     dayLessons.forEach((l, idx) => {
       const isDone = completedLessonIds.has(l.id);
       const prevInDay = idx === 0 ? true : completedLessonIds.has(dayLessons[idx-1].id);
-      const isLocked = !prevDayDone || !prevInDay;
-      const stateCls = isDone ? 'done' : (isLocked ? 'locked' : '');
+      const isProgressLocked = !prevDayDone || !prevInDay;
+      const isSubLocked = !isDone && !canAccessLesson(l);
+
+      let stateCls, iconHtml;
+      if (isDone) {
+        stateCls = 'done'; iconHtml = '<div class="dc-check">✓</div>';
+      } else if (isSubLocked) {
+        stateCls = 'sub-locked'; iconHtml = '<div class="dc-lock">💎</div>';
+      } else if (isProgressLocked) {
+        stateCls = 'locked'; iconHtml = '<div class="dc-lock">🔒</div>';
+      } else {
+        stateCls = ''; iconHtml = '';
+      }
+
       html += `
         <div class="day-card ${stateCls}" data-lesson-id="${l.id}">
           <div class="dc-title">${l.lesson_number}-dars</div>
-          ${isDone ? '<div class="dc-check">✓</div>' : (isLocked ? '<div class="dc-lock">🔒</div>' : '')}
+          ${iconHtml}
         </div>`;
     });
     html += `</div>`;
@@ -992,11 +1057,12 @@ function renderLevelContent() {
     } else {
       const doneCount = catLessons.filter(l => completedLessonIds.has(l.id)).length;
       const lessonNums = catLessons.map(l => l.lesson_number + '-dars').join(' · ');
+      const anyLocked = catLessons.some(l => !canAccessLesson(l));
       html += `
         <div class="cat-card" data-first-lesson="${catLessons[0].id}">
           <div class="cat-icon ${meta.cls}">${meta.icon}</div>
           <div class="cat-info">
-            <div class="cat-title">${meta.label}</div>
+            <div class="cat-title">${meta.label} ${anyLocked ? '💎' : ''}</div>
             <div class="cat-sub">${lessonNums}</div>
           </div>
           <div class="cat-progress">${doneCount}/${catLessons.length}</div>
@@ -1133,6 +1199,10 @@ function renderJourneyMap() {
 
 /* ================== OPEN LESSON: fetch kanji + combos + questions ================== */
 async function openLesson(lesson) {
+  if (!canAccessLesson(lesson)) {
+    showPaywall(lesson);
+    return;
+  }
   currentLesson = lesson;
   lessonListScreen.classList.add('hidden');
   journeyScreen.classList.add('hidden');
@@ -1404,19 +1474,22 @@ async function awardCoins(amount) {
 }
 
 let currentCoins = 0;
+let currentTier = 'free';
 
 async function loadCoins() {
-  if (!currentUser) { currentCoins = 0; updateCoinBadge(); return; }
+  if (!currentUser) { currentCoins = 0; currentTier = 'free'; updateCoinBadge(); return; }
   try {
     const { data, error } = await supabaseClient
       .from('profiles')
-      .select('coins')
+      .select('coins, subscription_tier')
       .eq('id', currentUser.id)
       .single();
     if (error) throw error;
     currentCoins = data?.coins || 0;
+    currentTier = data?.subscription_tier || 'free';
   } catch (err) {
     currentCoins = 0;
+    currentTier = 'free';
   }
   updateCoinBadge();
 }
@@ -1436,6 +1509,65 @@ function updateCoinBadge() {
     smCoinsEl.textContent = '🪙 ' + currentCoins + ' coin';
   }
 }
+
+/* ================== OBUNA CHEKLOVI ================== */
+function getPaymentCode() {
+  if (!currentUser) return '';
+  return 'NP-' + currentUser.id.slice(0, 6).toUpperCase();
+}
+
+function isLessonFree(lesson) {
+  if (lesson.jlpt_level !== 'N5') return false;
+  const sameCat = allLessons
+    .filter(l => l.jlpt_level === 'N5' && l.category === lesson.category)
+    .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+  const idx = sameCat.findIndex(l => l.id === lesson.id);
+  return idx >= 0 && idx < 3;
+}
+
+function tierMeets(requiredTier) {
+  if (requiredTier === 'standard') return currentTier === 'standard' || currentTier === 'pro';
+  if (requiredTier === 'pro') return currentTier === 'pro';
+  return true;
+}
+
+function canAccessLesson(lesson) {
+  if (isLessonFree(lesson)) return true;
+  if (lesson.jlpt_level === 'N5' || lesson.jlpt_level === 'N4') return tierMeets('standard');
+  return tierMeets('pro'); // N3, N2, N1
+}
+
+function requiredTierLabel(lesson) {
+  if (lesson.jlpt_level === 'N5' || lesson.jlpt_level === 'N4') return 'standard';
+  return 'pro';
+}
+
+function showPaywall(lesson) {
+  const tier = requiredTierLabel(lesson);
+  const overlay = document.getElementById('paywallOverlay');
+  const priceEl = document.getElementById('paywallPrice');
+  const nameEl = document.getElementById('paywallTierName');
+  const descEl = document.getElementById('paywallDesc');
+
+  if (tier === 'pro') {
+    nameEl.textContent = 'Premium obuna';
+    priceEl.textContent = '250 000 so\'m / oy';
+    descEl.textContent = 'N5 dan N1 gacha barcha darslar + mentorlik community';
+  } else {
+    nameEl.textContent = "Oddiy obuna";
+    priceEl.textContent = '150 000 so\'m / oy';
+    descEl.textContent = 'N5 va N4 darajalaridagi barcha darslar';
+  }
+  document.getElementById('paywallCode').textContent = getPaymentCode();
+  overlay.classList.add('open');
+}
+function closePaywall() {
+  document.getElementById('paywallOverlay').classList.remove('open');
+}
+document.getElementById('paywallClose').addEventListener('click', closePaywall);
+document.getElementById('paywallOverlay').addEventListener('click', (e) => {
+  if (e.target.id === 'paywallOverlay') closePaywall();
+});
 
 function showCoinToast(amount) {
   const toast = document.createElement('div');
