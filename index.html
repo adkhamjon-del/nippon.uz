@@ -109,9 +109,20 @@
   .paywall-overlay.open .paywall-sheet { transform: scale(1); }
   .paywall-close { position: absolute; top: 14px; right: 16px; background: none; border: none; font-size: 18px; color: #a39a89; cursor: pointer; }
   .paywall-emoji { font-size: 40px; text-align: center; margin-bottom: 8px; }
-  .paywall-tier-name { font-family: 'Noto Serif JP', serif; font-weight: 900; font-size: 19px; text-align: center; }
-  .paywall-price { text-align: center; font-size: 22px; font-weight: 900; color: var(--kin, #9c7a35); margin: 6px 0 4px; }
-  .paywall-desc { text-align: center; font-size: 12.5px; color: #8a8070; margin-bottom: 18px; }
+  .paywall-heading { font-family: 'Noto Serif JP', serif; font-weight: 900; font-size: 18px; text-align: center; margin-bottom: 16px; }
+
+  .tier-options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; }
+  .tier-card {
+    border: 1.5px solid var(--line); border-radius: 14px; padding: 14px 16px; text-align: left;
+  }
+  .tier-card.tier-pro { border-color: var(--kin, #9c7a35); background: rgba(156,122,53,0.06); }
+  .tier-card.tier-standard { border-color: var(--ai-blue); background: var(--ai-blue-soft); }
+  .tier-card-top { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 4px; }
+  .tier-card-name { font-weight: 900; font-size: 14.5px; }
+  .tier-card.tier-pro .tier-card-name { color: var(--kin, #9c7a35); }
+  .tier-card.tier-standard .tier-card-name { color: var(--ai-blue); }
+  .tier-card-price { font-weight: 900; font-size: 15px; }
+  .tier-card-desc { font-size: 11.5px; color: #8a8070; }
   .paywall-code-box {
     background: var(--washi); border: 1px dashed var(--line); border-radius: 12px;
     padding: 12px; text-align: center; margin-bottom: 16px;
@@ -789,9 +800,12 @@
   <div class="paywall-sheet">
     <button class="paywall-close" id="paywallClose">✕</button>
     <div class="paywall-emoji">💎</div>
-    <div class="paywall-tier-name" id="paywallTierName">Premium obuna</div>
-    <div class="paywall-price" id="paywallPrice">250 000 so'm / oy</div>
-    <div class="paywall-desc" id="paywallDesc">N5 dan N1 gacha barcha darslar</div>
+    <div class="paywall-heading" id="paywallHeading">Obuna kerak</div>
+
+    <div class="tier-options" id="tierOptions">
+      <!-- JS orqali to'ldiriladi -->
+    </div>
+
     <div class="paywall-code-box">
       <div class="paywall-code-label">Sizning shaxsiy kodingiz</div>
       <div class="paywall-code" id="paywallCode">NP-000000</div>
@@ -801,7 +815,7 @@
       <div class="paywall-code" style="font-size:16px; letter-spacing:0.02em;">4073 4200 7330 0620</div>
     </div>
     <ol class="paywall-steps">
-      <li>Yuqoridagi karta raqamiga tarif summasini o'tkazing</li>
+      <li>Tanlagan tarifingiz summasini yuqoridagi kartaga o'tkazing</li>
       <li>To'lov izohiga shaxsiy kodingizni yozing</li>
       <li>Biz tekshirib, hisobingizni faollashtiramiz (odatda bir necha soat ichida)</li>
     </ol>
@@ -1545,19 +1559,37 @@ function requiredTierLabel(lesson) {
 function showPaywall(lesson) {
   const tier = requiredTierLabel(lesson);
   const overlay = document.getElementById('paywallOverlay');
-  const priceEl = document.getElementById('paywallPrice');
-  const nameEl = document.getElementById('paywallTierName');
-  const descEl = document.getElementById('paywallDesc');
+  const headingEl = document.getElementById('paywallHeading');
+  const optionsEl = document.getElementById('tierOptions');
+
+  const standardCard = `
+    <div class="tier-card tier-standard">
+      <div class="tier-card-top">
+        <div class="tier-card-name">Oddiy obuna</div>
+        <div class="tier-card-price">150 000 so'm</div>
+      </div>
+      <div class="tier-card-desc">N5 va N4 darajalaridagi barcha darslar</div>
+    </div>`;
+
+  const proCard = `
+    <div class="tier-card tier-pro">
+      <div class="tier-card-top">
+        <div class="tier-card-name">💎 Premium obuna</div>
+        <div class="tier-card-price">250 000 so'm</div>
+      </div>
+      <div class="tier-card-desc">N5 dan N1 gacha barcha darslar + mentorlik community</div>
+    </div>`;
 
   if (tier === 'pro') {
-    nameEl.textContent = 'Premium obuna';
-    priceEl.textContent = '250 000 so\'m / oy';
-    descEl.textContent = 'N5 dan N1 gacha barcha darslar + mentorlik community';
+    // N3-N1: faqat Premium mavjud (Oddiy bu yerga kirmaydi)
+    headingEl.textContent = 'Bu daraja faqat Premium obunada';
+    optionsEl.innerHTML = proCard;
   } else {
-    nameEl.textContent = "Oddiy obuna";
-    priceEl.textContent = '150 000 so\'m / oy';
-    descEl.textContent = 'N5 va N4 darajalaridagi barcha darslar';
+    // N5-N4: ikkalasi ham tanlov sifatida
+    headingEl.textContent = "Tarifni tanlang";
+    optionsEl.innerHTML = standardCard + proCard;
   }
+
   document.getElementById('paywallCode').textContent = getPaymentCode();
   overlay.classList.add('open');
 }
