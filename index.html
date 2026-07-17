@@ -77,6 +77,18 @@
     display: inline-flex; align-items: center; gap: 5px;
   }
   .icon-btn.logged-in { background: var(--sakura); color: #fff; border-color: var(--sakura); }
+  .icon-btn.premium {
+    background: linear-gradient(135deg, #b8860b, #e8c15a, #b8860b);
+    color: #2a1f0a; border-color: #b8860b;
+    box-shadow: 0 0 0 1px rgba(184,134,11,0.3), 0 2px 8px rgba(184,134,11,0.35);
+    font-weight: 900;
+  }
+
+  .premium-badge-pill {
+    display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 900;
+    background: linear-gradient(135deg, #b8860b, #e8c15a, #b8860b); color: #2a1f0a;
+    padding: 3px 9px; border-radius: 100px; letter-spacing: 0.03em; margin-top: 4px;
+  }
 
   .coin-badge {
     background: linear-gradient(135deg, var(--kin, #9c7a35), #b8923f);
@@ -607,6 +619,7 @@
       <div>
         <div class="sm-name" id="smName">Mehmon</div>
         <div class="sm-coins" id="smCoins">🪙 0 coin</div>
+        <div class="premium-badge-pill hidden" id="smPremiumBadge">💎 PREMIUM</div>
       </div>
       <button class="side-menu-close" id="sideMenuClose">✕</button>
     </div>
@@ -1572,6 +1585,7 @@ async function loadCoins() {
     currentTier = 'free';
   }
   updateCoinBadge();
+  updateAuthUI();
 }
 
 function updateCoinBadge() {
@@ -1985,11 +1999,14 @@ logoutBtn.addEventListener('click', async () => {
 
 function updateAuthUI() {
   if (currentUser) {
-    authBtn.textContent = '👤 ' + (currentUser.user_metadata?.full_name || currentUser.email.split('@')[0]);
+    const isPremium = currentTier === 'pro';
+    authBtn.textContent = (isPremium ? '💎 ' : '👤 ') + (currentUser.user_metadata?.full_name || currentUser.email.split('@')[0]);
     authBtn.classList.add('logged-in');
+    authBtn.classList.toggle('premium', isPremium);
   } else {
     authBtn.textContent = '👤 Kirish';
     authBtn.classList.remove('logged-in');
+    authBtn.classList.remove('premium');
   }
   updateSideMenuInfo();
 }
@@ -2016,18 +2033,21 @@ function updateSideMenuInfo() {
   const smNameEl = document.getElementById('smName');
   const smCoinsEl = document.getElementById('smCoins');
   const smCommunity = document.getElementById('smCommunity');
+  const smPremiumBadge = document.getElementById('smPremiumBadge');
   if (currentUser) {
     smNameEl.textContent = currentUser.user_metadata?.full_name || currentUser.email.split('@')[0];
     smCoinsEl.textContent = '🪙 ' + currentCoins + ' coin';
     smLogout.classList.remove('hidden');
     smLogin.classList.add('hidden');
     smCommunity.classList.toggle('hidden', currentTier !== 'pro');
+    smPremiumBadge.classList.toggle('hidden', currentTier !== 'pro');
   } else {
     smNameEl.textContent = 'Mehmon';
     smCoinsEl.textContent = "Kirib, coin yig'ishni boshlang";
     smLogout.classList.add('hidden');
     smLogin.classList.remove('hidden');
     smCommunity.classList.add('hidden');
+    smPremiumBadge.classList.add('hidden');
   }
 }
 
