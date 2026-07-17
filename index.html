@@ -888,6 +888,15 @@ const flipCard = document.getElementById('flipCard');
 
 /* ================== STATE: LESSONS + COMPLETIONS ================== */
 let allLessons = [];
+
+// Har bir darajada dars raqami 1'dan qayta boshlanishi uchun
+function getDisplayNum(lesson) {
+  const sameLevel = allLessons
+    .filter(l => l.jlpt_level === lesson.jlpt_level)
+    .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+  const idx = sameLevel.findIndex(l => l.id === lesson.id);
+  return idx >= 0 ? idx + 1 : lesson.lesson_number;
+}
 let completedLessonIds = new Set();
 let selectedLevel = 'N3';
 const LEVELS = ['N5', 'N4', 'N3', 'N2', 'N1'];
@@ -1046,7 +1055,7 @@ function renderLevelContent() {
 
       html += `
         <div class="day-card ${stateCls}" data-lesson-id="${l.id}">
-          <div class="dc-title">${l.lesson_number}-dars</div>
+          <div class="dc-title">${getDisplayNum(l)}-dars</div>
           ${iconHtml}
         </div>`;
     });
@@ -1070,7 +1079,7 @@ function renderLevelContent() {
         </div>`;
     } else {
       const doneCount = catLessons.filter(l => completedLessonIds.has(l.id)).length;
-      const lessonNums = catLessons.map(l => l.lesson_number + '-dars').join(' · ');
+      const lessonNums = catLessons.map(l => getDisplayNum(l) + '-dars').join(' · ');
       const anyLocked = catLessons.some(l => !canAccessLesson(l));
       html += `
         <div class="cat-card" data-first-lesson="${catLessons[0].id}">
@@ -1176,13 +1185,13 @@ function renderJourneyMap() {
     const nodeCls = isDone ? 'done' : (isCurrent ? 'current' : 'locked');
     const badgeCls = isDone ? 'done' : (isCurrent ? 'current' : 'locked');
     const badgeText = isDone ? '✓ Tugallandi' : (isCurrent ? '● Joriy bekat' : 'Qulflangan');
-    const nodeContent = isLocked ? '🔒' : l.lesson_number;
+    const nodeContent = isLocked ? '🔒' : getDisplayNum(l);
 
     html += `
       <div class="station ${side}">
         <div class="station-node ${nodeCls}" data-lesson-id="${l.id}" data-locked="${isLocked}">${nodeContent}</div>
         <div class="station-info">
-          <div class="station-name-jp">${l.lesson_number}課</div>
+          <div class="station-name-jp">${l.jlpt_level} ${getDisplayNum(l)}課</div>
           <div class="station-name-uz">${l.title}</div>
           <span class="station-badge ${badgeCls}">${badgeText}</span>
         </div>
@@ -1225,7 +1234,7 @@ async function openLesson(lesson) {
   progressWrap.classList.remove('hidden');
   scoreRow.classList.remove('hidden');
   chatFab.classList.add('show');
-  headerEyebrow.textContent = `${lesson.jlpt_level || ''} レベル · ${lesson.lesson_number}課`;
+  headerEyebrow.textContent = `${lesson.jlpt_level || ''} レベル · ${getDisplayNum(lesson)}課`;
   headerTitle.textContent = lesson.title;
 
   quizArea.innerHTML_backup = null;
@@ -1409,14 +1418,14 @@ function showDone() {
   doneScreen.classList.remove('hidden');
   progressFill.style.width = '100%';
   progressText.textContent = order.length + ' / ' + order.length;
-  document.getElementById('doneTitle').textContent = `${currentLesson.lesson_number}課 test tugadi!`;
+  document.getElementById('doneTitle').textContent = `${getDisplayNum(currentLesson)}課 test tugadi!`;
 
   document.getElementById('finalGood').textContent = goodCount;
   document.getElementById('finalBad').textContent = badCount;
 
   const pct = Math.round(goodCount / order.length * 100);
   document.getElementById('doneSummary').textContent =
-    pct >= 80 ? `Ajoyib natija! ${currentLesson.lesson_number}課 ni yaxshi o'zlashtirdingiz 🎉` :
+    pct >= 80 ? `Ajoyib natija! ${getDisplayNum(currentLesson)}課 ni yaxshi o'zlashtirdingiz 🎉` :
     pct >= 50 ? "Yaxshi, lekin ba'zi joylarni takrorlash kerak 💪" :
     "Xavotir olmang, takrorlash orqali mustahkamlaymiz 📖";
 
@@ -1651,11 +1660,11 @@ function buildChatSuggestions(kanjiRows) {
 }
 
 function updateChatHeaderContext(lesson) {
-  chatContext.textContent = `${lesson.lesson_number}課 — ${lesson.title}`;
+  chatContext.textContent = `${getDisplayNum(lesson)}課 — ${lesson.title}`;
 }
 
 function updateChatQuestionContext(q) {
-  chatContext.textContent = `Hozirgi savol: ${q.word} — bu birikma haqida yoki ${currentLesson.lesson_number}課dagi istalgan kanji haqida so'rashingiz mumkin`;
+  chatContext.textContent = `Hozirgi savol: ${q.word} — bu birikma haqida yoki ${getDisplayNum(currentLesson)}課dagi istalgan kanji haqida so'rashingiz mumkin`;
 }
 
 function openChat() {
@@ -1739,7 +1748,7 @@ async function askAI(userText) {
     `${k.character} (ON: ${(k.on_readings||[]).join(',')||'-'}, KUN: ${(k.kun_readings||[]).join(',')||'-'}) = ${k.meaning_uz}`
   ).join('; ');
 
-  const lessonLabel = currentLesson ? `${currentLesson.lesson_number}課 (${currentLesson.title})` : 'kurs';
+  const lessonLabel = currentLesson ? `${currentLesson.jlpt_level} ${getDisplayNum(currentLesson)}課 (${currentLesson.title})` : 'kurs';
 
   const systemContext = `Sen "Sensei AI" - yapon tili o'quv platformasi uchun AI yordamchisan. Foydalanuvchi hozir Minna no Nihongo Chukyu kitobining ${lessonLabel} kanjilarini o'rganmoqda. Bu darsdagi kanjilar: ${kanjiList}. Javoblaringni FAQAT O'ZBEK TILIDA ber, qisqa va tushunarli qil, kerak bo'lsa misol jumlalar bilan tushuntir. Do'stona, o'qituvchidek gapir. Javobing 4-5 jumladan oshmasin, agar chuqurroq tushuntirish so'ralmasa.`;
 
