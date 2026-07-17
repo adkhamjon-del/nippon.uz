@@ -627,7 +627,7 @@
 <div class="doppi-strip"></div>
 
 <header>
-  <div class="eyebrow" id="headerEyebrow">みんなの日本語 中級</div>
+  <div class="eyebrow" id="headerEyebrow">日本語レッスン</div>
   <h1 id="headerTitle">Darslar ro'yxati</h1>
   <div class="progress-wrap hidden" id="progressWrap">
     <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
@@ -1126,7 +1126,7 @@ function showLessonListScreen() {
   scoreRow.classList.add('hidden');
   chatFab.classList.remove('show');
   closeChat();
-  headerEyebrow.textContent = 'みんなの日本語 中級';
+  headerEyebrow.textContent = '日本語レッスン';
   headerTitle.textContent = "Darslar ro'yxati";
   currentLesson = null;
   loadLessonList();
@@ -1225,7 +1225,7 @@ async function openLesson(lesson) {
   progressWrap.classList.remove('hidden');
   scoreRow.classList.remove('hidden');
   chatFab.classList.add('show');
-  headerEyebrow.textContent = `みんなの日本語 中級 · ${lesson.lesson_number}課`;
+  headerEyebrow.textContent = `${lesson.jlpt_level || ''} レベル · ${lesson.lesson_number}課`;
   headerTitle.textContent = lesson.title;
 
   quizArea.innerHTML_backup = null;
