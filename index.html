@@ -93,6 +93,45 @@
     pointer-events: none;
   }
   .coin-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ---------- HAMBURGER + SIDE MENU ---------- */
+  .hamburger-btn {
+    background: none; border: none; font-size: 20px; cursor: pointer; color: var(--sumi);
+    padding: 4px 6px; line-height: 1;
+  }
+  .side-menu-overlay {
+    position: fixed; inset: 0; background: rgba(28,26,23,0.4); z-index: 90;
+    opacity: 0; pointer-events: none; transition: opacity .2s ease;
+  }
+  .side-menu-overlay.open { opacity: 1; pointer-events: auto; }
+  .side-menu {
+    position: fixed; top: 0; left: 0; bottom: 0; width: 78%; max-width: 300px;
+    background: var(--washi); box-shadow: 4px 0 24px rgba(0,0,0,0.15);
+    transform: translateX(-100%); transition: transform .25s cubic-bezier(.32,.72,0,1);
+    display: flex; flex-direction: column;
+  }
+  .side-menu-overlay.open .side-menu { transform: translateX(0); }
+  .side-menu-header {
+    padding: 20px 16px; display: flex; align-items: center; gap: 12px;
+    border-bottom: 1px solid var(--line); position: relative;
+  }
+  .sm-name { font-weight: 800; font-size: 15px; }
+  .sm-coins { font-size: 12px; color: var(--kin, #9c7a35); font-weight: 700; margin-top: 2px; }
+  .side-menu-close {
+    position: absolute; top: 14px; right: 14px; background: none; border: none;
+    font-size: 16px; color: #a89e91; cursor: pointer;
+  }
+  .side-menu-body { padding: 10px 8px; display: flex; flex-direction: column; }
+  .sm-item {
+    padding: 13px 12px; border-radius: 10px; font-size: 14px; font-weight: 600;
+    display: flex; align-items: center; gap: 12px; cursor: pointer; color: var(--sumi);
+  }
+  .sm-item:active { background: var(--ai-blue-soft); }
+  .sm-icon { font-size: 16px; width: 20px; text-align: center; }
+  .sm-divider { height: 1px; background: var(--line); margin: 8px 4px; }
+  .sm-logout { color: var(--bad); }
+  .sm-login { color: var(--ai-blue); }
+  .sm-login.hidden, .sm-logout.hidden { display: none; }
   .icon-btn.hidden { display: none; }
 
   header {
@@ -449,6 +488,7 @@
 
 <div class="top-bar">
   <div class="brand-mark">
+    <button class="hamburger-btn" id="hamburgerBtn">☰</button>
     <div class="hanko">
       学
       <svg class="doppi-hat" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
@@ -465,6 +505,50 @@
     <button class="icon-btn hidden" id="backBtn">← Darslar</button>
     <div class="coin-badge hidden" id="coinBadge">🪙 0</div>
     <button class="icon-btn" id="authBtn">👤 Kirish</button>
+  </div>
+</div>
+
+<!-- SIDE MENU -->
+<div class="side-menu-overlay" id="sideMenuOverlay">
+  <div class="side-menu" id="sideMenu">
+    <div class="side-menu-header">
+      <div class="hanko">
+        学
+        <svg class="doppi-hat" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2" y="2" width="36" height="36" rx="7" fill="#15151c"/>
+          <path d="M20 6 Q25 14 20 20 Q15 14 20 6 Z" fill="#f5f2ec"/>
+          <path d="M20 34 Q25 26 20 20 Q15 26 20 34 Z" fill="#f5f2ec"/>
+          <path d="M6 20 Q14 25 20 20 Q14 15 6 20 Z" fill="#f5f2ec"/>
+          <path d="M34 20 Q26 25 20 20 Q26 15 34 20 Z" fill="#f5f2ec"/>
+        </svg>
+      </div>
+      <div>
+        <div class="sm-name" id="smName">Mehmon</div>
+        <div class="sm-coins" id="smCoins">🪙 0 coin</div>
+      </div>
+      <button class="side-menu-close" id="sideMenuClose">✕</button>
+    </div>
+    <div class="side-menu-body">
+      <div class="sm-item" id="smProfile">
+        <span class="sm-icon">👤</span> Profil
+      </div>
+      <div class="sm-item" id="smSettings">
+        <span class="sm-icon">⚙️</span> Sozlamalar
+      </div>
+      <div class="sm-item" id="smHelp">
+        <span class="sm-icon">❓</span> Yordam
+      </div>
+      <div class="sm-item" id="smAbout">
+        <span class="sm-icon">ℹ️</span> Ilova haqida
+      </div>
+      <div class="sm-divider"></div>
+      <div class="sm-item sm-logout" id="smLogout">
+        <span class="sm-icon">🚪</span> Chiqish
+      </div>
+      <div class="sm-item sm-login" id="smLogin">
+        <span class="sm-icon">👤</span> Kirish / Ro'yxatdan o'tish
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1231,12 +1315,17 @@ async function loadCoins() {
 
 function updateCoinBadge() {
   const badge = document.getElementById('coinBadge');
-  if (!badge) return;
-  if (currentUser) {
-    badge.classList.remove('hidden');
-    badge.textContent = '🪙 ' + currentCoins;
-  } else {
-    badge.classList.add('hidden');
+  if (badge) {
+    if (currentUser) {
+      badge.classList.remove('hidden');
+      badge.textContent = '🪙 ' + currentCoins;
+    } else {
+      badge.classList.add('hidden');
+    }
+  }
+  const smCoinsEl = document.getElementById('smCoins');
+  if (smCoinsEl && currentUser) {
+    smCoinsEl.textContent = '🪙 ' + currentCoins + ' coin';
   }
 }
 
@@ -1543,7 +1632,68 @@ function updateAuthUI() {
     authBtn.textContent = '👤 Kirish';
     authBtn.classList.remove('logged-in');
   }
+  updateSideMenuInfo();
 }
+
+/* ================== SIDE MENU ================== */
+const hamburgerBtn = document.getElementById('hamburgerBtn');
+const sideMenuOverlay = document.getElementById('sideMenuOverlay');
+const sideMenuClose = document.getElementById('sideMenuClose');
+const smLogout = document.getElementById('smLogout');
+const smLogin = document.getElementById('smLogin');
+
+function openSideMenu() {
+  sideMenuOverlay.classList.add('open');
+  updateSideMenuInfo();
+}
+function closeSideMenu() {
+  sideMenuOverlay.classList.remove('open');
+}
+hamburgerBtn.addEventListener('click', openSideMenu);
+sideMenuClose.addEventListener('click', closeSideMenu);
+sideMenuOverlay.addEventListener('click', (e) => { if (e.target === sideMenuOverlay) closeSideMenu(); });
+
+function updateSideMenuInfo() {
+  const smNameEl = document.getElementById('smName');
+  const smCoinsEl = document.getElementById('smCoins');
+  if (currentUser) {
+    smNameEl.textContent = currentUser.user_metadata?.full_name || currentUser.email.split('@')[0];
+    smCoinsEl.textContent = '🪙 ' + currentCoins + ' coin';
+    smLogout.classList.remove('hidden');
+    smLogin.classList.add('hidden');
+  } else {
+    smNameEl.textContent = 'Mehmon';
+    smCoinsEl.textContent = "Kirib, coin yig'ishni boshlang";
+    smLogout.classList.add('hidden');
+    smLogin.classList.remove('hidden');
+  }
+}
+
+smLogout.addEventListener('click', () => {
+  closeSideMenu();
+  logoutBtn.click();
+});
+smLogin.addEventListener('click', () => {
+  closeSideMenu();
+  openAuthPanel();
+});
+document.getElementById('smProfile').addEventListener('click', () => {
+  closeSideMenu();
+  if (currentUser) openAuthPanel();
+  else openAuthPanel();
+});
+document.getElementById('smSettings').addEventListener('click', () => {
+  closeSideMenu();
+  alert("Sozlamalar tez orada qo'shiladi 🛠️");
+});
+document.getElementById('smHelp').addEventListener('click', () => {
+  closeSideMenu();
+  alert("Yordam kerakmi? Telegram: @nippon_uz_support (tez orada faollashadi) 💬");
+});
+document.getElementById('smAbout').addEventListener('click', () => {
+  closeSideMenu();
+  alert("Nippon.uz — o'zbek tilida yapon tilini o'rgatuvchi platforma. Registondan Tokiogacha bo'lgan safar orqali, kanji, grammatika va boshqa mavzularni bosqichma-bosqich o'rganasiz. 🌸");
+});
 
 async function initAuth() {
   const { data: { session } } = await supabaseClient.auth.getSession();
