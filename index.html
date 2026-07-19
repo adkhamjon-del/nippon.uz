@@ -320,6 +320,10 @@
     color: var(--line); font-size: 16px; border-left: 1px dashed var(--line);
   }
   .loading-msg, .empty-msg { text-align: center; padding: 40px 20px; color: #8a8070; font-size: 14px; }
+  .retry-btn {
+    margin-top: 14px; background: var(--ai-blue); color: #fff; border: none; border-radius: 100px;
+    padding: 10px 22px; font-size: 13px; font-weight: 800; cursor: pointer;
+  }
 
   /* ---------- HOME: PROMO BANNER (6 mavzu bilan) ---------- */
   .promo-banner {
@@ -915,6 +919,25 @@ const flipCard = document.getElementById('flipCard');
 /* ================== STATE: LESSONS + COMPLETIONS ================== */
 let allLessons = [];
 
+// Universal "qayta urinish" funksiyasi — tarmoq/sessiya vaqtinchalik uzilsa,
+// avtomatik 2 marta qayta urinadi, foydalanuvchi "qotib qolgan" his qilmaydi
+async function withRetry(queryFn, label, retries = 2) {
+  let lastErr = null;
+  for (let i = 0; i <= retries; i++) {
+    try {
+      const result = await queryFn();
+      if (!result || !result.error) return result;
+      lastErr = result.error;
+    } catch (e) {
+      lastErr = e;
+    }
+    console.warn(`[${label}] ${i + 1}-urinish muvaffaqiyatsiz:`, lastErr);
+    if (i < retries) await new Promise(r => setTimeout(r, 700 * (i + 1)));
+  }
+  return { data: null, error: lastErr };
+}
+
+
 // Har bir darajada dars raqami 1'dan qayta boshlanishi uchun
 function getDisplayNum(lesson) {
   const sameLevel = allLessons
@@ -937,23 +960,23 @@ const CATEGORY_META = {
 async function loadLessonList() {
   levelContent.innerHTML = '<div class="loading-msg">Yuklanmoqda...</div>';
 
-  const { data, error } = await supabaseClient
-    .from('lessons')
-    .select('*')
-    .order('sort_order', { ascending: true });
+  const { data, error } = await withRetry(
+    () => supabaseClient.from('lessons').select('*').order('sort_order', { ascending: true }),
+    'darslarni yuklash'
+  );
 
   if (error) {
-    levelContent.innerHTML = `<div class="empty-msg">Xatolik: ${error.message}</div>`;
+    levelContent.innerHTML = `<div class="empty-msg">Ulanishda muammo bo'ldi 😕<br><br><button class="retry-btn" onclick="loadLessonList()">↻ Qayta urinish</button></div>`;
     return;
   }
   allLessons = data || [];
 
   completedLessonIds = new Set();
   if (currentUser) {
-    const { data: completions } = await supabaseClient
-      .from('lesson_completions')
-      .select('lesson_id')
-      .eq('user_id', currentUser.id);
+    const { data: completions } = await withRetry(
+      () => supabaseClient.from('lesson_completions').select('lesson_id').eq('user_id', currentUser.id),
+      'progressni yuklash'
+    );
     (completions || []).forEach(c => completedLessonIds.add(c.lesson_id));
   }
 
@@ -987,11 +1010,11 @@ let announcementIdx = 0;
 let announcementTimer = null;
 
 async function renderPromoBanner() {
-  const { data, error } = await supabaseClient
-    .from('announcements')
-    .select('*')
-    .eq('is_active', true)
-    .order('sort_order', { ascending: true });
+  const { data, error } = await withRetry(
+    () => supabaseClient.from('announcements').select('*').eq('is_active', true).order('sort_order', { ascending: true }),
+    'elonlarni yuklash',
+    1
+  );
 
   if (error || !data || data.length === 0) {
     document.getElementById('promoTitle').textContent = 'Xush kelibsiz!';
@@ -1278,14 +1301,13 @@ async function openLesson(lesson) {
   quizArea.innerHTML_backup = null;
   optionsArea.innerHTML = '<div class="loading-msg">Yuklanmoqda...</div>';
 
-  const { data: kanjiRows, error } = await supabaseClient
-    .from('kanji')
-    .select('*, kanji_combos(*), quiz_questions(*)')
-    .eq('lesson_id', lesson.id)
-    .order('kanji_number', { ascending: true });
+  const { data: kanjiRows, error } = await withRetry(
+    () => supabaseClient.from('kanji').select('*, kanji_combos(*), quiz_questions(*)').eq('lesson_id', lesson.id).order('kanji_number', { ascending: true }),
+    'dars mazmunini yuklash'
+  );
 
   if (error) {
-    optionsArea.innerHTML = `<div class="empty-msg">Xatolik: ${error.message}</div>`;
+    optionsArea.innerHTML = `<div class="empty-msg">Ulanishda muammo bo'ldi 😕<br><br><button class="retry-btn" onclick="openLesson(currentLesson)">↻ Qayta urinish</button></div>`;
     return;
   }
 
@@ -1572,11 +1594,10 @@ let currentTier = 'free';
 async function loadCoins() {
   if (!currentUser) { currentCoins = 0; currentTier = 'free'; updateCoinBadge(); return; }
   try {
-    const { data, error } = await supabaseClient
-      .from('profiles')
-      .select('coins, subscription_tier')
-      .eq('id', currentUser.id)
-      .single();
+    const { data, error } = await withRetry(
+      () => supabaseClient.from('profiles').select('coins, subscription_tier').eq('id', currentUser.id).single(),
+      'profilni yuklash'
+    );
     if (error) throw error;
     currentCoins = data?.coins || 0;
     currentTier = data?.subscription_tier || 'free';
