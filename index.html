@@ -408,6 +408,11 @@
   .cat-progress { font-size: 11px; color: var(--ai-blue); font-weight: 700; flex-shrink: 0; }
   .cat-chevron { color: #c9c1b6; flex-shrink: 0; }
 
+  /* KATEGORIYA EKRANI */
+  .cat-screen-header { margin-bottom: 18px; }
+  .cat-screen-header .journey-back { color: var(--ai-blue); font-weight: 700; margin-bottom: 12px; }
+  .cat-screen-title { font-family: 'Noto Serif JP', serif; font-weight: 900; font-size: 20px; }
+
   .journey-cta {
     padding: 16px; border-radius: 16px; background: linear-gradient(135deg, var(--doppi, #1f2d4d), var(--ai-blue));
     color: #fff; display: flex; align-items: center; gap: 12px; cursor: pointer;
@@ -689,6 +694,15 @@
     </div>
   </div>
 
+  <!-- KATEGORIYA EKRANI (masalan faqat Kanji uchun kunlar) -->
+  <div id="categoryScreen" class="hidden">
+    <div class="cat-screen-header">
+      <div class="journey-back" id="catBackBtn">← Ortga</div>
+      <div class="cat-screen-title" id="catScreenTitle"></div>
+    </div>
+    <div id="catScreenContent"></div>
+  </div>
+
   <!-- JOURNEY MAP SCREEN -->
   <div id="journeyScreen" class="hidden">
     <div class="journey-header">
@@ -890,6 +904,7 @@ let flipped = false;
 
 /* ================== DOM REFS ================== */
 const lessonListScreen = document.getElementById('lessonListScreen');
+const categoryScreen = document.getElementById('categoryScreen');
 const journeyScreen = document.getElementById('journeyScreen');
 const quizScreen = document.getElementById('quizScreen');
 const levelRow = document.getElementById('levelRow');
@@ -985,6 +1000,89 @@ async function loadLessonList() {
   renderPromoBanner();
 }
 
+/* ================== KATEGORIYA EKRANI (masalan faqat Kanji) ================== */
+let lastOpenedCategory = null;
+
+function openCategoryScreen(cat) {
+  lastOpenedCategory = cat;
+  const levelLessons = allLessons.filter(l => l.jlpt_level === selectedLevel && l.category === cat);
+  const meta = CATEGORY_META[cat];
+
+  document.getElementById('catScreenTitle').textContent = `${meta.icon} ${meta.label} — ${selectedLevel}`;
+
+  const days = {};
+  levelLessons.forEach(l => {
+    const d = l.day_number || 1;
+    if (!days[d]) days[d] = [];
+    days[d].push(l);
+  });
+  const dayNumbers = Object.keys(days).map(Number).sort((a, b) => a - b);
+
+  const flatLessons = [];
+  dayNumbers.forEach(dayNum => {
+    days[dayNum].forEach((l, idx) => flatLessons.push({ lesson: l, dayNum, idxInDay: idx }));
+  });
+
+  let html = `<div class="path-wrap"><div class="path-scroll">`;
+
+  flatLessons.forEach((item, i) => {
+    const { lesson: l, dayNum, idxInDay } = item;
+    const dayLessons = days[dayNum];
+    const dayIdx = dayNumbers.indexOf(dayNum);
+    const prevDayDone = dayIdx === 0 || days[dayNumbers[dayIdx - 1]].every(x => completedLessonIds.has(x.id));
+    const isDone = completedLessonIds.has(l.id);
+    const prevInDay = idxInDay === 0 ? true : completedLessonIds.has(dayLessons[idxInDay - 1].id);
+    const isProgressLocked = !prevDayDone || !prevInDay;
+    const isSubLocked = !isDone && !canAccessLesson(l);
+
+    let stateCls, nodeContent;
+    if (isDone) {
+      stateCls = 'done'; nodeContent = '✓';
+    } else if (isSubLocked) {
+      stateCls = 'sub-locked'; nodeContent = '💎';
+    } else if (isProgressLocked) {
+      stateCls = 'locked'; nodeContent = '🔒';
+    } else {
+      stateCls = 'current'; nodeContent = getDisplayNum(l);
+    }
+
+    if (i > 0) {
+      const prevDone = completedLessonIds.has(flatLessons[i - 1].lesson.id);
+      html += `<div class="path-connector ${prevDone ? 'done' : ''}"></div>`;
+    }
+
+    html += `
+      <div class="path-node-wrap">
+        <div class="path-node ${stateCls}" data-lesson-id="${l.id}">
+          <div class="pn-day">${dayNum}-kun</div>
+          ${nodeContent}
+        </div>
+      </div>`;
+  });
+
+  html += `</div></div>`;
+  document.getElementById('catScreenContent').innerHTML = html;
+
+  document.getElementById('catScreenContent').querySelectorAll('.path-node').forEach(card => {
+    card.addEventListener('click', () => {
+      if (card.classList.contains('locked')) return;
+      const lessonId = parseInt(card.dataset.lessonId);
+      const lesson = allLessons.find(l => l.id === lessonId);
+      if (lesson) openLesson(lesson);
+    });
+  });
+
+  lessonListScreen.classList.add('hidden');
+  journeyScreen.classList.add('hidden');
+  categoryScreen.classList.remove('hidden');
+}
+
+document.getElementById('catBackBtn').addEventListener('click', () => {
+  lastOpenedCategory = null;
+  categoryScreen.classList.add('hidden');
+  lessonListScreen.classList.remove('hidden');
+});
+
 function renderLevelTabs() {
   levelRow.innerHTML = '';
   LEVELS.forEach(lvl => {
@@ -1069,61 +1167,9 @@ function renderLevelContent() {
     return;
   }
 
-  // Kunlarga guruhlash (tartib uchun), lekin ko'rinishda gorizontal yagona qator bo'ladi
-  const days = {};
-  levelLessons.forEach(l => {
-    const d = l.day_number || 1;
-    if (!days[d]) days[d] = [];
-    days[d].push(l);
-  });
-  const dayNumbers = Object.keys(days).map(Number).sort((a,b) => a-b);
+  let html = '';
 
-  // Barcha darslarni kun tartibida yagona ro'yxatga tekislaymiz
-  const flatLessons = [];
-  dayNumbers.forEach(dayNum => {
-    days[dayNum].forEach((l, idx) => flatLessons.push({ lesson: l, dayNum, idxInDay: idx }));
-  });
-
-  let html = `<div class="path-wrap"><div class="path-label">O'quv yo'li</div><div class="path-scroll">`;
-
-  flatLessons.forEach((item, i) => {
-    const { lesson: l, dayNum, idxInDay } = item;
-    const dayLessons = days[dayNum];
-    const dayIdx = dayNumbers.indexOf(dayNum);
-    const prevDayDone = dayIdx === 0 || days[dayNumbers[dayIdx-1]].every(x => completedLessonIds.has(x.id));
-    const isDone = completedLessonIds.has(l.id);
-    const prevInDay = idxInDay === 0 ? true : completedLessonIds.has(dayLessons[idxInDay-1].id);
-    const isProgressLocked = !prevDayDone || !prevInDay;
-    const isSubLocked = !isDone && !canAccessLesson(l);
-
-    let stateCls, nodeContent;
-    if (isDone) {
-      stateCls = 'done'; nodeContent = '✓';
-    } else if (isSubLocked) {
-      stateCls = 'sub-locked'; nodeContent = '💎';
-    } else if (isProgressLocked) {
-      stateCls = 'locked'; nodeContent = '🔒';
-    } else {
-      stateCls = 'current'; nodeContent = getDisplayNum(l);
-    }
-
-    if (i > 0) {
-      const prevDone = completedLessonIds.has(flatLessons[i-1].lesson.id);
-      html += `<div class="path-connector ${prevDone ? 'done' : ''}"></div>`;
-    }
-
-    html += `
-      <div class="path-node-wrap">
-        <div class="path-node ${stateCls}" data-lesson-id="${l.id}">
-          <div class="pn-day">${dayNum}-kun</div>
-          ${nodeContent}
-        </div>
-      </div>`;
-  });
-
-  html += `</div></div>`;
-
-  // Kategoriya kartalari
+  // Kategoriya kartalari (ixcham — bosgandan keyingina o'sha skillning kunlari ko'rinadi)
   const categories = ['kanji', 'grammar', 'reading', 'listening'];
   html += `<div class="cat-list">`;
   categories.forEach(cat => {
@@ -1140,14 +1186,13 @@ function renderLevelContent() {
         </div>`;
     } else {
       const doneCount = catLessons.filter(l => completedLessonIds.has(l.id)).length;
-      const lessonNums = catLessons.map(l => getDisplayNum(l) + '-dars').join(' · ');
       const anyLocked = catLessons.some(l => !canAccessLesson(l));
       html += `
-        <div class="cat-card" data-first-lesson="${catLessons[0].id}">
+        <div class="cat-card" data-cat="${cat}">
           <div class="cat-icon ${meta.cls}">${meta.icon}</div>
           <div class="cat-info">
             <div class="cat-title">${meta.label} ${anyLocked ? '💎' : ''}</div>
-            <div class="cat-sub">${lessonNums}</div>
+            <div class="cat-sub">${catLessons.length} ta dars</div>
           </div>
           <div class="cat-progress">${doneCount}/${catLessons.length}</div>
           <div class="cat-chevron">›</div>
@@ -1168,29 +1213,19 @@ function renderLevelContent() {
   levelContent.innerHTML = html;
 
   // Event listenerlar
-  levelContent.querySelectorAll('.path-node').forEach(card => {
-    card.addEventListener('click', () => {
-      if (card.classList.contains('locked')) return;
-      const lessonId = parseInt(card.dataset.lessonId);
-      const lesson = allLessons.find(l => l.id === lessonId);
-      if (lesson) openLesson(lesson);
-    });
-  });
   levelContent.querySelectorAll('.cat-card:not(.disabled)').forEach(card => {
     card.addEventListener('click', () => {
-      const lessonId = parseInt(card.dataset.firstLesson);
-      const lesson = allLessons.find(l => l.id === lessonId);
-      if (lesson) openLesson(lesson);
+      openCategoryScreen(card.dataset.cat);
     });
   });
   const jcta = document.getElementById('journeyCta');
   if (jcta) jcta.addEventListener('click', showJourneyScreen);
 }
 
-function showLessonListScreen() {
+async function showLessonListScreen() {
   quizScreen.classList.add('hidden');
   journeyScreen.classList.add('hidden');
-  lessonListScreen.classList.remove('hidden');
+  categoryScreen.classList.add('hidden');
   backBtn.classList.add('hidden');
   progressWrap.classList.add('hidden');
   scoreRow.classList.add('hidden');
@@ -1199,7 +1234,15 @@ function showLessonListScreen() {
   headerEyebrow.textContent = '日本語レッスン';
   headerTitle.textContent = "Darslar ro'yxati";
   currentLesson = null;
-  loadLessonList();
+
+  if (lastOpenedCategory) {
+    lessonListScreen.classList.add('hidden');
+    await loadLessonList();
+    openCategoryScreen(lastOpenedCategory);
+  } else {
+    lessonListScreen.classList.remove('hidden');
+    loadLessonList();
+  }
 }
 
 backBtn.addEventListener('click', showLessonListScreen);
