@@ -144,6 +144,13 @@
   .paywall-steps { font-size: 12.5px; color: var(--sumi); line-height: 1.6; margin-bottom: 16px; }
   .paywall-steps li { margin-bottom: 4px; }
   .paywall-note { font-size: 11px; color: #8a8070; text-align: center; }
+  .admin-contact-btn {
+    display: flex; align-items: center; justify-content: center; gap: 7px;
+    background: var(--washi); border: 1px solid var(--line); border-radius: 12px;
+    padding: 12px; font-size: 12.5px; font-weight: 800; color: var(--sumi);
+    margin-top: 12px; margin-bottom: 10px; cursor: pointer;
+  }
+  .admin-contact-btn:hover { background: var(--ai-blue-soft); }
 
   /* ---------- HAMBURGER + SIDE MENU ---------- */
   .hamburger-btn {
@@ -860,10 +867,11 @@
     </div>
     <ol class="paywall-steps">
       <li>Tanlagan tarifingiz summasini yuqoridagi kartaga o'tkazing</li>
-      <li>To'lov izohiga shaxsiy kodingizni yozing</li>
+      <li>To'lov izohiga shaxsiy kodingizni yozing (agar izoh maydoni bo'lmasa, pastdagi tugma orqali kodingizni yuboring)</li>
       <li>Biz tekshirib, hisobingizni faollashtiramiz (odatda bir necha soat ichida)</li>
     </ol>
-    <div class="paywall-note">Savol bo'lsa, ☰ menyudan "Yordam" bo'limiga murojaat qiling</div>
+    <div class="admin-contact-btn" id="adminContactBtn">📩 Administrator bilan bog'lanish</div>
+    <div class="paywall-note">To'lovni tasdiqlash yoki savol uchun yozing</div>
   </div>
 </div>
 
@@ -1740,6 +1748,11 @@ function showPaywall(lesson) {
 function closePaywall() {
   document.getElementById('paywallOverlay').classList.remove('open');
 }
+document.getElementById('adminContactBtn').addEventListener('click', () => {
+  const code = getPaymentCode();
+  const msg = encodeURIComponent(`Salom! Men to'lov qildim. Mening shaxsiy kodim: ${code}`);
+  window.open(`https://t.me/Nip_akademy?text=${msg}`, '_blank');
+});
 document.getElementById('paywallClose').addEventListener('click', closePaywall);
 document.getElementById('paywallOverlay').addEventListener('click', (e) => {
   if (e.target.id === 'paywallOverlay') closePaywall();
