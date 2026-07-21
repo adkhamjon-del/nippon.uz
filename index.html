@@ -867,11 +867,11 @@
     </div>
     <ol class="paywall-steps">
       <li>Tanlagan tarifingiz summasini yuqoridagi kartaga o'tkazing</li>
-      <li>To'lov izohiga shaxsiy kodingizni yozing (agar izoh maydoni bo'lmasa, pastdagi tugma orqali kodingizni yuboring)</li>
-      <li>Biz tekshirib, hisobingizni faollashtiramiz (odatda bir necha soat ichida)</li>
+      <li>To'lov <b>chekining rasmini</b> (screenshot) va shaxsiy kodingizni pastdagi tugma orqali administratorga yuboring</li>
+      <li>Chekni tekshirib, hisobingizni faollashtiramiz (odatda bir necha soat ichida)</li>
     </ol>
-    <div class="admin-contact-btn" id="adminContactBtn">📩 Administrator bilan bog'lanish</div>
-    <div class="paywall-note">To'lovni tasdiqlash yoki savol uchun yozing</div>
+    <div class="admin-contact-btn" id="adminContactBtn">📩 Chek rasmini yuborish</div>
+    <div class="paywall-note">Tugmani bosgach, Telegram'da chek rasmini biriktirib yuboring</div>
   </div>
 </div>
 
@@ -1679,7 +1679,7 @@ function updateCoinBadge() {
 /* ================== OBUNA CHEKLOVI ================== */
 function getPaymentCode() {
   if (!currentUser) return '';
-  return 'NP-' + currentUser.id.slice(0, 6).toUpperCase();
+  return 'NP-' + currentUser.id.slice(0, 8).toUpperCase();
 }
 
 function isLessonFree(lesson) {
@@ -1750,7 +1750,7 @@ function closePaywall() {
 }
 document.getElementById('adminContactBtn').addEventListener('click', () => {
   const code = getPaymentCode();
-  const msg = encodeURIComponent(`Salom! Men to'lov qildim. Mening shaxsiy kodim: ${code}`);
+  const msg = encodeURIComponent(`Salom! Men to'lov qildim. Mening shaxsiy kodim: ${code}\n\n(Chek rasmini shu yerga biriktirib yuboraman 👇)`);
   window.open(`https://t.me/Nip_akademy?text=${msg}`, '_blank');
 });
 document.getElementById('paywallClose').addEventListener('click', closePaywall);
