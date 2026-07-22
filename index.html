@@ -420,6 +420,15 @@
   .cat-screen-header .journey-back { color: var(--ai-blue); font-weight: 700; margin-bottom: 12px; }
   .cat-screen-title { font-family: 'Noto Serif JP', serif; font-weight: 900; font-size: 20px; }
 
+  /* GRAMMATIKA DARSI EKRANI */
+  .grammar-video-wrap { position: relative; width: 100%; padding-top: 56.25%; border-radius: 16px; overflow: hidden; margin-bottom: 16px; background: #000; }
+  .grammar-video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+  .grammar-guide-frame { width: 100%; height: 1400px; border: none; border-radius: 16px; margin-bottom: 16px; }
+  .grammar-complete-btn {
+    display: block; width: 100%; background: var(--shu); color: #fff; border: none; border-radius: 14px;
+    padding: 15px; font-size: 14.5px; font-weight: 900; cursor: pointer; margin-bottom: 20px;
+  }
+
   .journey-cta {
     padding: 16px; border-radius: 16px; background: linear-gradient(135deg, var(--doppi, #1f2d4d), var(--ai-blue));
     color: #fff; display: flex; align-items: center; gap: 12px; cursor: pointer;
@@ -710,6 +719,16 @@
     <div id="catScreenContent"></div>
   </div>
 
+  <!-- GRAMMATIKA DARSI EKRANI (video + doska qollanma) -->
+  <div id="grammarScreen" class="hidden">
+    <div class="grammar-video-wrap">
+      <iframe id="grammarVideoFrame" class="grammar-video" src="" title="Video dars" frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
+    <iframe id="grammarGuideFrame" class="grammar-guide-frame" srcdoc=""></iframe>
+    <button class="grammar-complete-btn" id="grammarCompleteBtn">✓ Darsni tugatdim</button>
+  </div>
+
   <!-- JOURNEY MAP SCREEN -->
   <div id="journeyScreen" class="hidden">
     <div class="journey-header">
@@ -913,6 +932,7 @@ let flipped = false;
 /* ================== DOM REFS ================== */
 const lessonListScreen = document.getElementById('lessonListScreen');
 const categoryScreen = document.getElementById('categoryScreen');
+const grammarScreen = document.getElementById('grammarScreen');
 const journeyScreen = document.getElementById('journeyScreen');
 const quizScreen = document.getElementById('quizScreen');
 const levelRow = document.getElementById('levelRow');
@@ -1234,6 +1254,7 @@ async function showLessonListScreen() {
   quizScreen.classList.add('hidden');
   journeyScreen.classList.add('hidden');
   categoryScreen.classList.add('hidden');
+  grammarScreen.classList.add('hidden');
   backBtn.classList.add('hidden');
   progressWrap.classList.add('hidden');
   scoreRow.classList.add('hidden');
@@ -1339,6 +1360,12 @@ async function openLesson(lesson) {
     return;
   }
   currentLesson = lesson;
+
+  if (lesson.category === 'grammar') {
+    await openGrammarLesson(lesson);
+    return;
+  }
+
   lessonListScreen.classList.add('hidden');
   journeyScreen.classList.add('hidden');
   quizScreen.classList.remove('hidden');
@@ -1516,6 +1543,38 @@ function handleAnswer(selected, q, btnEl) {
 document.getElementById('nextBtn').addEventListener('click', () => {
   pos++;
   renderQuestion();
+});
+
+/* ================== GRAMMATIKA DARSI (video + doska) ================== */
+async function openGrammarLesson(lesson) {
+  lessonListScreen.classList.add('hidden');
+  categoryScreen.classList.add('hidden');
+  journeyScreen.classList.add('hidden');
+  grammarScreen.classList.remove('hidden');
+  backBtn.classList.remove('hidden');
+  headerEyebrow.textContent = `${lesson.jlpt_level || ''} レベル · ${getDisplayNum(lesson)}課`;
+  headerTitle.textContent = lesson.title;
+
+  document.getElementById('grammarGuideFrame').srcdoc = '<div style="font-family:sans-serif;padding:40px;text-align:center;color:#8a8070;">Yuklanmoqda...</div>';
+
+  const { data, error } = await withRetry(
+    () => supabaseClient.from('grammar_lessons').select('*').eq('lesson_id', lesson.id).single(),
+    'grammatika darsini yuklash'
+  );
+
+  if (error || !data) {
+    document.getElementById('grammarGuideFrame').srcdoc = '<div style="font-family:sans-serif;padding:40px;text-align:center;color:#c0483a;">Dars mazmuni topilmadi 😕</div>';
+    return;
+  }
+
+  document.getElementById('grammarVideoFrame').src = `https://www.youtube.com/embed/${data.video_id}`;
+  document.getElementById('grammarGuideFrame').srcdoc = data.guide_html || '';
+}
+
+document.getElementById('grammarCompleteBtn').addEventListener('click', async () => {
+  goodCount = 1; badCount = 0; // grammatika darsida alohida test hisoblanmaydi, dars tugatilgani belgilanadi
+  await saveLessonCompletion();
+  showLessonListScreen();
 });
 
 document.getElementById('explainBtn').addEventListener('click', () => {
