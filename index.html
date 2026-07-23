@@ -523,6 +523,15 @@
   .lr-script { font-family: 'Noto Serif JP', serif; font-size: 15px; line-height: 1.9; color: var(--sumi); }
   .lr-translation { font-size: 13.5px; line-height: 1.6; color: #2f7a52; }
   .lr-explanation { font-size: 13px; line-height: 1.6; color: var(--sumi); }
+  .lr-answer-key { background: var(--washi); border-radius: 10px; padding: 12px 14px; font-size: 13px; line-height: 1.9; margin-bottom: 6px; }
+  .lr-answer-key b { color: var(--ok); }
+  .lr-replay-btn, .lr-shadow-btn {
+    display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%;
+    background: var(--doppi, #1f2d4d); color: #fff; border: none; border-radius: 12px;
+    padding: 12px; font-size: 13px; font-weight: 800; cursor: pointer; margin-top: 6px;
+  }
+  .lr-shadow-text { font-family: 'Noto Serif JP', serif; font-size: 16px; text-align: center; padding: 14px; background: var(--washi); border-radius: 10px; margin-bottom: 8px; color: var(--sumi); }
+  .lr-shadow-hint { font-size: 11.5px; color: #8a8070; text-align: center; margin-top: 6px; }
   .listening-complete-btn {
     display: block; width: 100%; background: var(--shu); color: #fff; border: none; border-radius: 14px;
     padding: 15px; font-size: 14.5px; font-weight: 900; cursor: pointer; margin-top: 16px;
@@ -2037,12 +2046,47 @@ function showListeningDone() {
     const revealWrap = document.getElementById('listeningRevealWrap');
     const lesson = listeningCurrentLesson;
     let html = '';
+
+    // Javob kaliti
+    let answerKeyHtml = '';
+    listeningQuestions.forEach((q, i) => {
+      const optMap = { a: q.option_a, b: q.option_b, c: q.option_c };
+      const correctText = optMap[q.correct_answer] || q.correct_answer;
+      answerKeyHtml += `${i + 1}️⃣ <b>${escapeHtml(correctText)}</b>${i < listeningQuestions.length - 1 ? '<br>' : ''}`;
+    });
+    if (answerKeyHtml) html += `<div class="lr-block-label">🔍 Javoblar</div><div class="lr-answer-key">${answerKeyHtml}</div>`;
+
     if (lesson.script) html += `<div class="lr-block-label">🇯🇵 Matn</div><div class="lr-script">${escapeHtml(lesson.script)}</div>`;
     if (lesson.translation) html += `<div class="lr-block-label">🇺🇿 Tarjima</div><div class="lr-translation">${escapeHtml(lesson.translation)}</div>`;
     if (lesson.listening_explanation) html += `<div class="lr-block-label">💡 Tushuntirish</div><div class="lr-explanation">${escapeHtml(lesson.listening_explanation)}</div>`;
+
+    if (lesson.audio_url) {
+      html += `<div class="lr-block-label">🔁 Qayta tinglash</div>
+        <div class="lr-replay-btn" id="listeningReplayBtn">▶ Matn bilan birga tinglash</div>`;
+    }
+    if (lesson.script) {
+      html += `<div class="lr-block-label">🗣️ Shadowing — Takrorlang</div>
+        <div class="lr-shadow-text">${escapeHtml(lesson.script)}</div>
+        <div class="lr-shadow-btn" id="listeningShadowBtn">🔊 Eshitish</div>
+        <div class="lr-shadow-hint">Audio tugashi bilan ovoz chiqarib takrorlang</div>`;
+    }
+
     revealWrap.innerHTML = `<div class="listening-reveal-panel">${html || "Qo'shimcha ma'lumot yo'q."}</div>`;
     revealWrap.classList.remove('hidden');
     document.getElementById('listeningRevealBtn').style.display = 'none';
+
+    const player = document.getElementById('listeningAudioPlayer');
+    const replayBtn = document.getElementById('listeningReplayBtn');
+    if (replayBtn) replayBtn.addEventListener('click', () => {
+      player.currentTime = 0;
+      player.play();
+      player.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+    const shadowBtn = document.getElementById('listeningShadowBtn');
+    if (shadowBtn) shadowBtn.addEventListener('click', () => {
+      player.currentTime = 0;
+      player.play();
+    });
   });
 
   document.getElementById('listeningCompleteBtn').addEventListener('click', async () => {
