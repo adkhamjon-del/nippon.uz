@@ -1990,6 +1990,15 @@ async function openListeningLesson(lesson) {
   renderListeningQuestion();
 }
 
+function checkListeningAnswer(letter, optionText, correctAnswer) {
+  if (correctAnswer == null) return false;
+  const norm = s => String(s).trim().toLowerCase();
+  const ca = norm(correctAnswer);
+  if (norm(letter) === ca) return true; // "a" / "b" / "c" korinishida saqlangan bolsa
+  if (optionText != null && norm(optionText) === ca) return true; // toliq javob matni saqlangan bolsa
+  return false;
+}
+
 function renderListeningQuestion() {
   const wrap = document.getElementById('listeningQuizWrap');
   if (listeningPos >= listeningQuestions.length) {
@@ -2017,10 +2026,12 @@ function renderListeningQuestion() {
   wrap.querySelectorAll('.opt-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const chosen = btn.dataset.letter;
-      const isCorrect = chosen === q.correct_answer;
+      const chosenOpt = opts.find(o => o.letter === chosen);
+      const isCorrect = checkListeningAnswer(chosen, chosenOpt?.text, q.correct_answer);
       wrap.querySelectorAll('.opt-btn').forEach(b => {
         b.disabled = true;
-        if (b.dataset.letter === q.correct_answer) b.classList.add('correct');
+        const bOpt = opts.find(o => o.letter === b.dataset.letter);
+        if (checkListeningAnswer(b.dataset.letter, bOpt?.text, q.correct_answer)) b.classList.add('correct');
         else if (b === btn) b.classList.add('wrong');
         else b.classList.add('dim');
       });
@@ -2050,8 +2061,13 @@ function showListeningDone() {
     // Javob kaliti
     let answerKeyHtml = '';
     listeningQuestions.forEach((q, i) => {
-      const optMap = { a: q.option_a, b: q.option_b, c: q.option_c };
-      const correctText = optMap[q.correct_answer] || q.correct_answer;
+      const opts = [
+        { letter: 'a', text: q.option_a },
+        { letter: 'b', text: q.option_b },
+        { letter: 'c', text: q.option_c },
+      ].filter(o => o.text);
+      const correctOpt = opts.find(o => checkListeningAnswer(o.letter, o.text, q.correct_answer));
+      const correctText = correctOpt ? correctOpt.text : q.correct_answer;
       answerKeyHtml += `${i + 1}️⃣ <b>${escapeHtml(correctText)}</b>${i < listeningQuestions.length - 1 ? '<br>' : ''}`;
     });
     if (answerKeyHtml) html += `<div class="lr-block-label">🔍 Javoblar</div><div class="lr-answer-key">${answerKeyHtml}</div>`;
