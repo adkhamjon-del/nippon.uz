@@ -1139,7 +1139,7 @@ async function withRetry(queryFn, label, retries = 2) {
 // Har bir darajada dars raqami 1'dan qayta boshlanishi uchun
 function getDisplayNum(lesson) {
   const sameLevel = allLessons
-    .filter(l => l.jlpt_level === lesson.jlpt_level)
+    .filter(l => l.jlpt_level === lesson.jlpt_level && l.category === lesson.category)
     .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
   const idx = sameLevel.findIndex(l => l.id === lesson.id);
   return idx >= 0 ? idx + 1 : lesson.lesson_number;
