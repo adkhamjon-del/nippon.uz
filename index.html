@@ -464,7 +464,8 @@
   .rp-lock-toast b { color: #e7b96a; }
   .rp-lock-toast .rp-lock-cta { margin-top: 8px; background: #e7b96a; border: none; color: var(--doppi, #1f2d4d); font-weight: 700; font-size: 11px; padding: 6px 14px; border-radius: 8px; cursor: pointer; }
 
-  .reading-summary-text { font-size: 13.5px; line-height: 1.6; color: var(--sumi); padding: 14px 0; }
+  .reading-summary-jp { font-family: 'Noto Serif JP', serif; font-size: 15px; line-height: 1.9; color: var(--sumi); padding: 14px 0 10px; }
+  .reading-summary-uz { font-size: 13.5px; line-height: 1.6; color: #2f7a52; padding-bottom: 14px; }
 
   .rq-num { font-size: 10px; color: var(--shu); letter-spacing: 1px; margin: 14px 0 4px; font-weight: 800; }
   .rq-num.first { margin-top: 14px; }
@@ -476,13 +477,16 @@
   .rq-opt.correct.show .rq-circ::after { content: "✓"; color: #fff; font-size: 10px; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
   .rq-reveal-btn { width: 100%; background: #fdf6ec; border: 1.5px dashed var(--kin, #9c7a35); color: #8a6a1f; font-size: 12px; padding: 9px; border-radius: 9px; text-align: center; cursor: pointer; margin: 4px 0 14px; }
 
-  .rv-row { display: flex; justify-content: space-between; align-items: center; padding: 11px 0; border-bottom: 1px solid var(--line); font-size: 14px; gap: 10px; }
+  .rv-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid var(--line); font-size: 14px; gap: 10px; }
   .rv-row:last-child { border-bottom: none; }
-  .rv-word { display: flex; flex-direction: column; }
-  .rv-jp { font-family: 'Noto Serif JP', serif; color: var(--sumi); font-weight: 700; font-size: 15.5px; }
+  .rv-word { display: flex; flex-direction: column; padding-top: 4px; }
+  .rv-jp { font-family: 'Noto Serif JP', serif; color: var(--sumi); font-weight: 700; font-size: 16px; line-height: 2; }
+  .rv-jp ruby rt { font-size: 9px; color: var(--ai-blue); font-weight: 500; }
   .rv-jp.kana-hidden { display: none; }
   .rv-romaji { font-size: 10px; color: #a8a396; margin-top: 2px; }
-  .rv-uz { color: #5a5f6d; font-size: 12.5px; text-align: right; max-width: 130px; }
+  .rv-meanings { text-align: right; max-width: 150px; }
+  .rv-uz { color: #2f7a52; font-size: 12.5px; font-weight: 600; }
+  .rv-en { color: #a8a396; font-size: 11px; font-style: italic; margin-top: 2px; }
 
   .reading-complete-btn {
     display: block; width: 100%; background: var(--shu); color: #fff; border: none; border-radius: 14px;
@@ -811,7 +815,10 @@
 
     <div class="racc" id="raccSummary">
       <div class="racc-head" data-racc-head><div class="racc-lbl">📝 Qisqacha mazmuni</div><div class="racc-chev">›</div></div>
-      <div class="racc-body"><div class="reading-summary-text" id="readingSummaryText"></div></div>
+      <div class="racc-body">
+        <div class="reading-summary-jp" id="readingSummaryJp"></div>
+        <div id="readingSummaryUzWrap"></div>
+      </div>
     </div>
 
     <div class="racc" id="raccQuiz">
@@ -1715,7 +1722,8 @@ async function openReadingLesson(lesson) {
   headerTitle.textContent = lesson.title;
 
   document.getElementById('readingPassageWrap').innerHTML = '<div class="loading-msg">Yuklanmoqda...</div>';
-  document.getElementById('readingSummaryText').textContent = '';
+  document.getElementById('readingSummaryJp').textContent = '';
+  document.getElementById('readingSummaryUzWrap').innerHTML = '';
   document.getElementById('readingVocabWrap').innerHTML = '';
   document.getElementById('readingQuizWrap').innerHTML = '';
   document.getElementById('readingWatermark').innerHTML = '';
@@ -1771,7 +1779,27 @@ async function openReadingLesson(lesson) {
   });
 
   // QISQACHA MAZMUNI
-  document.getElementById('readingSummaryText').textContent = lesson.summary_uz || "Qisqacha mazmun hali qo'shilmagan.";
+  document.getElementById('readingSummaryJp').textContent = lesson.summary_jp || "Xulosa hali qo'shilmagan.";
+  const summaryUzWrap = document.getElementById('readingSummaryUzWrap');
+  if (lesson.summary_uz) {
+    if (uzUnlocked) {
+      summaryUzWrap.innerHTML = `<div class="reading-summary-uz">🇺🇿 ${escapeHtml(lesson.summary_uz)}</div>`;
+    } else {
+      summaryUzWrap.innerHTML = `
+        <div class="reading-summary-uz">
+          <span class="rp-uz-locked">🇺🇿 ${escapeHtml(lesson.summary_uz)}</span>
+          <div class="rp-lock-btn" data-lock-btn>🔒 O'zbekcha tarjimani ko'rish</div>
+          <div class="rp-lock-toast" data-lock-toast>Bu tarjima <b>Premium</b> obunachilar uchun ochiq.
+            <div><button class="rp-lock-cta" data-lock-cta>Premiumga o'tish</button></div>
+          </div>
+        </div>`;
+      summaryUzWrap.querySelector('[data-lock-btn]').addEventListener('click', (e) => {
+        e.target.style.display = 'none';
+        e.target.nextElementSibling.classList.add('show');
+      });
+      summaryUzWrap.querySelector('[data-lock-cta]').addEventListener('click', () => showPaywall(lesson));
+    }
+  }
 
   // YANGI SOZLAR
   const vocabList = vocabRes.data || [];
@@ -1780,11 +1808,14 @@ async function openReadingLesson(lesson) {
     vocabHtml += `
       <div class="rv-row">
         <div class="rv-word">
-          <span class="rv-jp" data-jp-kanji>${escapeHtml(v.word_kanji)}</span>
+          <span class="rv-jp" data-jp-kanji><ruby>${escapeHtml(v.word_kanji)}<rt>${escapeHtml(v.reading)}</rt></ruby></span>
           <span class="rv-jp kana-hidden" data-jp-kana>${escapeHtml(v.reading)}</span>
           <span class="rv-romaji">${escapeHtml(v.romaji)}</span>
         </div>
-        <div class="rv-uz">${escapeHtml(v.meaning_uz)}</div>
+        <div class="rv-meanings">
+          <div class="rv-uz">🇺🇿 ${escapeHtml(v.meaning_uz)}</div>
+          ${v.meaning_en ? `<div class="rv-en">🇬🇧 ${escapeHtml(v.meaning_en)}</div>` : ''}
+        </div>
       </div>`;
   });
   document.getElementById('readingVocabWrap').innerHTML = vocabHtml || '<div class="empty-msg">Soz yoq</div>';
