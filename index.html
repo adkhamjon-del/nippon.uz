@@ -499,6 +499,35 @@
     white-space: nowrap; pointer-events: none;
   }
 
+  /* TINGLASH DARSI EKRANI */
+  .listening-audio-wrap {
+    background: var(--doppi, #1f2d4d); border-radius: 16px; padding: 18px; margin-bottom: 18px;
+  }
+  .listening-audio-wrap audio { width: 100%; }
+  .lq-card { background: var(--paper); border: 1px solid var(--line); border-radius: 16px; padding: 18px; margin-bottom: 16px; }
+  .lq-progress { font-size: 11px; color: #a89e91; font-weight: 700; margin-bottom: 8px; }
+  .lq-text { font-size: 15.5px; font-weight: 700; margin-bottom: 14px; }
+  .lq-options { display: grid; gap: 9px; }
+  .listening-done-card { text-align: center; padding: 30px 20px; }
+  .listening-done-card .ld-emoji { font-size: 40px; margin-bottom: 10px; }
+  .listening-done-card .ld-score { font-size: 22px; font-weight: 900; margin-bottom: 6px; }
+  .listening-reveal-btn {
+    display: block; width: 100%; background: var(--paper); border: 1px solid var(--line); border-radius: 12px;
+    padding: 12px; font-size: 12.5px; font-weight: 800; cursor: pointer; margin-top: 14px; color: var(--ai-blue);
+  }
+  .listening-reveal-panel {
+    background: var(--paper); border: 1px solid var(--line); border-radius: 16px; padding: 18px; margin-top: 14px;
+  }
+  .lr-block-label { font-size: 10.5px; font-weight: 800; color: #8a8070; text-transform: uppercase; margin: 14px 0 6px; }
+  .lr-block-label:first-child { margin-top: 0; }
+  .lr-script { font-family: 'Noto Serif JP', serif; font-size: 15px; line-height: 1.9; color: var(--sumi); }
+  .lr-translation { font-size: 13.5px; line-height: 1.6; color: #2f7a52; }
+  .lr-explanation { font-size: 13px; line-height: 1.6; color: var(--sumi); }
+  .listening-complete-btn {
+    display: block; width: 100%; background: var(--shu); color: #fff; border: none; border-radius: 14px;
+    padding: 15px; font-size: 14.5px; font-weight: 900; cursor: pointer; margin-top: 16px;
+  }
+
   .journey-cta {
     padding: 16px; border-radius: 16px; background: linear-gradient(135deg, var(--doppi, #1f2d4d), var(--ai-blue));
     color: #fff; display: flex; align-items: center; gap: 12px; cursor: pointer;
@@ -835,6 +864,15 @@
     <div class="reading-watermark" id="readingWatermark"></div>
   </div>
 
+  <!-- TINGLASH DARSI EKRANI -->
+  <div id="listeningScreen" class="hidden">
+    <div class="listening-audio-wrap">
+      <audio id="listeningAudioPlayer" controls preload="metadata"></audio>
+    </div>
+    <div id="listeningQuizWrap"></div>
+    <div id="listeningRevealWrap" class="hidden"></div>
+  </div>
+
   <!-- JOURNEY MAP SCREEN -->
   <div id="journeyScreen" class="hidden">
     <div class="journey-header">
@@ -1040,6 +1078,7 @@ const lessonListScreen = document.getElementById('lessonListScreen');
 const categoryScreen = document.getElementById('categoryScreen');
 const grammarScreen = document.getElementById('grammarScreen');
 const readingScreen = document.getElementById('readingScreen');
+const listeningScreen = document.getElementById('listeningScreen');
 const journeyScreen = document.getElementById('journeyScreen');
 const quizScreen = document.getElementById('quizScreen');
 const levelRow = document.getElementById('levelRow');
@@ -1363,6 +1402,7 @@ async function showLessonListScreen() {
   categoryScreen.classList.add('hidden');
   grammarScreen.classList.add('hidden');
   readingScreen.classList.add('hidden');
+  listeningScreen.classList.add('hidden');
   backBtn.classList.add('hidden');
   progressWrap.classList.add('hidden');
   scoreRow.classList.add('hidden');
@@ -1475,6 +1515,10 @@ async function openLesson(lesson) {
   }
   if (lesson.category === 'reading') {
     await openReadingLesson(lesson);
+    return;
+  }
+  if (lesson.category === 'listening') {
+    await openListeningLesson(lesson);
     return;
   }
 
@@ -1899,6 +1943,114 @@ document.getElementById('readingCompleteBtn').addEventListener('click', async ()
   await saveLessonCompletion();
   showLessonListScreen();
 });
+
+/* ================== TINGLASH DARSI ================== */
+let listeningQuestions = [];
+let listeningPos = 0;
+let listeningGood = 0;
+let listeningBad = 0;
+let listeningCurrentLesson = null;
+
+async function openListeningLesson(lesson) {
+  listeningCurrentLesson = lesson;
+  lessonListScreen.classList.add('hidden');
+  categoryScreen.classList.add('hidden');
+  journeyScreen.classList.add('hidden');
+  listeningScreen.classList.remove('hidden');
+  backBtn.classList.remove('hidden');
+  headerEyebrow.textContent = `${lesson.jlpt_level || ''} レベル · ${getDisplayNum(lesson)}課`;
+  headerTitle.textContent = lesson.title;
+
+  document.getElementById('listeningAudioPlayer').src = lesson.audio_url || '';
+  document.getElementById('listeningQuizWrap').innerHTML = '<div class="loading-msg">Yuklanmoqda...</div>';
+  document.getElementById('listeningRevealWrap').classList.add('hidden');
+  document.getElementById('listeningRevealWrap').innerHTML = '';
+
+  const { data, error } = await withRetry(
+    () => supabaseClient.from('listening_questions').select('*').eq('lesson_id', lesson.id).order('sort_order', { ascending: true }),
+    'savollarni yuklash'
+  );
+
+  if (error) {
+    document.getElementById('listeningQuizWrap').innerHTML = `<div class="empty-msg">Ulanishda muammo bo'ldi 😕<br><br><button class="retry-btn" onclick="openListeningLesson(listeningCurrentLesson)">↻ Qayta urinish</button></div>`;
+    return;
+  }
+
+  listeningQuestions = data || [];
+  listeningPos = 0; listeningGood = 0; listeningBad = 0;
+  renderListeningQuestion();
+}
+
+function renderListeningQuestion() {
+  const wrap = document.getElementById('listeningQuizWrap');
+  if (listeningPos >= listeningQuestions.length) {
+    showListeningDone();
+    return;
+  }
+  const q = listeningQuestions[listeningPos];
+  const opts = [
+    { letter: 'a', text: q.option_a },
+    { letter: 'b', text: q.option_b },
+    { letter: 'c', text: q.option_c },
+  ].filter(o => o.text);
+
+  let html = `
+    <div class="lq-card">
+      <div class="lq-progress">Savol ${listeningPos + 1} / ${listeningQuestions.length}</div>
+      <div class="lq-text">${escapeHtml(q.question)}</div>
+      <div class="lq-options">`;
+  opts.forEach(o => {
+    html += `<button class="opt-btn" data-letter="${o.letter}">${escapeHtml(o.text)}</button>`;
+  });
+  html += `</div></div>`;
+  wrap.innerHTML = html;
+
+  wrap.querySelectorAll('.opt-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const chosen = btn.dataset.letter;
+      const isCorrect = chosen === q.correct_answer;
+      wrap.querySelectorAll('.opt-btn').forEach(b => {
+        b.disabled = true;
+        if (b.dataset.letter === q.correct_answer) b.classList.add('correct');
+        else if (b === btn) b.classList.add('wrong');
+        else b.classList.add('dim');
+      });
+      if (isCorrect) listeningGood++; else listeningBad++;
+      setTimeout(() => { listeningPos++; renderListeningQuestion(); }, 900);
+    });
+  });
+}
+
+function showListeningDone() {
+  const wrap = document.getElementById('listeningQuizWrap');
+  const total = listeningGood + listeningBad;
+  const pct = total ? Math.round(listeningGood / total * 100) : 100;
+  wrap.innerHTML = `
+    <div class="listening-done-card">
+      <div class="ld-emoji">${pct >= 70 ? '🎉' : '🎧'}</div>
+      <div class="ld-score">${listeningGood} / ${total} to'g'ri</div>
+      <div class="listening-reveal-btn" id="listeningRevealBtn">📄 Matn va tarjimani ko'rish</div>
+      <button class="listening-complete-btn" id="listeningCompleteBtn">✓ Darsni tugatdim</button>
+    </div>`;
+
+  document.getElementById('listeningRevealBtn').addEventListener('click', () => {
+    const revealWrap = document.getElementById('listeningRevealWrap');
+    const lesson = listeningCurrentLesson;
+    let html = '';
+    if (lesson.script) html += `<div class="lr-block-label">🇯🇵 Matn</div><div class="lr-script">${escapeHtml(lesson.script)}</div>`;
+    if (lesson.translation) html += `<div class="lr-block-label">🇺🇿 Tarjima</div><div class="lr-translation">${escapeHtml(lesson.translation)}</div>`;
+    if (lesson.listening_explanation) html += `<div class="lr-block-label">💡 Tushuntirish</div><div class="lr-explanation">${escapeHtml(lesson.listening_explanation)}</div>`;
+    revealWrap.innerHTML = `<div class="listening-reveal-panel">${html || "Qo'shimcha ma'lumot yo'q."}</div>`;
+    revealWrap.classList.remove('hidden');
+    document.getElementById('listeningRevealBtn').style.display = 'none';
+  });
+
+  document.getElementById('listeningCompleteBtn').addEventListener('click', async () => {
+    goodCount = listeningGood; badCount = listeningBad;
+    await saveLessonCompletion();
+    showLessonListScreen();
+  });
+}
 
 document.getElementById('explainBtn').addEventListener('click', () => {
   const q = questions[order[pos]];
