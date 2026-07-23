@@ -429,6 +429,44 @@
     padding: 15px; font-size: 14.5px; font-weight: 900; cursor: pointer; margin-bottom: 20px;
   }
 
+  /* OQISH DARSI EKRANI */
+  .reading-summary { font-size: 13px; color: #8a8070; margin-bottom: 14px; line-height: 1.5; }
+  .reading-passage-wrap {
+    background: var(--paper); border: 1px solid var(--line); border-radius: 16px; padding: 20px;
+    font-size: 20px; line-height: 2.4; margin-bottom: 12px;
+  }
+  .reading-passage-wrap ruby { margin: 0 1px; }
+  .reading-passage-wrap rt { font-size: 10px; color: var(--ai-blue); }
+  .reading-translation {
+    background: var(--ai-blue-soft); border-radius: 12px; padding: 14px 16px; font-size: 13.5px;
+    line-height: 1.6; margin-bottom: 16px; display: none;
+  }
+  .reading-translation.show { display: block; }
+  .reading-toggle-btn {
+    display: block; width: 100%; background: var(--paper); border: 1px solid var(--line); border-radius: 12px;
+    padding: 11px; font-size: 12.5px; font-weight: 800; cursor: pointer; margin-bottom: 16px; color: var(--ai-blue);
+  }
+  .reading-vocab-wrap { margin-bottom: 20px; }
+  .reading-vocab-title { font-size: 12px; font-weight: 800; color: #8a8070; margin-bottom: 8px; text-transform: uppercase; }
+  .vocab-row {
+    display: flex; align-items: baseline; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 13.5px;
+  }
+  .vocab-row .vw-kanji { font-weight: 800; flex-shrink: 0; }
+  .vocab-row .vw-reading { color: #a89e91; font-size: 11.5px; flex-shrink: 0; }
+  .vocab-row .vw-meaning { color: var(--sumi); margin-left: auto; text-align: right; }
+
+  .reading-q-card { background: var(--paper); border: 1px solid var(--line); border-radius: 16px; padding: 18px; margin-bottom: 16px; }
+  .reading-q-progress { font-size: 11px; color: #a89e91; font-weight: 700; margin-bottom: 8px; }
+  .reading-q-text { font-size: 16px; font-weight: 700; margin-bottom: 14px; }
+  .reading-q-options { display: grid; gap: 9px; }
+  .reading-done-card { text-align: center; padding: 30px 20px; }
+  .reading-done-card .rd-emoji { font-size: 40px; margin-bottom: 10px; }
+  .reading-done-card .rd-score { font-size: 22px; font-weight: 900; margin-bottom: 6px; }
+  .reading-done-btn {
+    display: block; width: 100%; background: var(--shu); color: #fff; border: none; border-radius: 14px;
+    padding: 15px; font-size: 14.5px; font-weight: 900; cursor: pointer; margin-top: 16px;
+  }
+
   .journey-cta {
     padding: 16px; border-radius: 16px; background: linear-gradient(135deg, var(--doppi, #1f2d4d), var(--ai-blue));
     color: #fff; display: flex; align-items: center; gap: 12px; cursor: pointer;
@@ -729,6 +767,16 @@
     <button class="grammar-complete-btn" id="grammarCompleteBtn">✓ Darsni tugatdim</button>
   </div>
 
+  <!-- OQISH DARSI EKRANI -->
+  <div id="readingScreen" class="hidden">
+    <div id="readingSummary" class="reading-summary"></div>
+    <div id="readingPassageWrap" class="reading-passage-wrap"></div>
+    <div id="readingTranslationWrap" class="reading-translation"></div>
+    <button class="reading-toggle-btn" id="readingToggleTranslation">🇺🇿 Tarjimani ko'rsatish</button>
+    <div id="readingVocabWrap" class="reading-vocab-wrap"></div>
+    <div id="readingQuizWrap" class="reading-quiz-wrap"></div>
+  </div>
+
   <!-- JOURNEY MAP SCREEN -->
   <div id="journeyScreen" class="hidden">
     <div class="journey-header">
@@ -933,6 +981,7 @@ let flipped = false;
 const lessonListScreen = document.getElementById('lessonListScreen');
 const categoryScreen = document.getElementById('categoryScreen');
 const grammarScreen = document.getElementById('grammarScreen');
+const readingScreen = document.getElementById('readingScreen');
 const journeyScreen = document.getElementById('journeyScreen');
 const quizScreen = document.getElementById('quizScreen');
 const levelRow = document.getElementById('levelRow');
@@ -981,15 +1030,15 @@ async function withRetry(queryFn, label, retries = 2) {
 }
 
 
-// Har bir daraja + skill (kategoriya) ichida dars raqami 1'dan qayta boshlanishi uchun
+// Har bir darajada dars raqami 1'dan qayta boshlanishi uchun
 function getDisplayNum(lesson) {
   const sameLevel = allLessons
-    .filter(l => l.jlpt_level === lesson.jlpt_level && l.category === lesson.category)
-        .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+    .filter(l => l.jlpt_level === lesson.jlpt_level)
+    .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
   const idx = sameLevel.findIndex(l => l.id === lesson.id);
   return idx >= 0 ? idx + 1 : lesson.lesson_number;
 }
-  let completedLessonIds = new Set();
+let completedLessonIds = new Set();
 let selectedLevel = 'N3';
 const LEVELS = ['N5', 'N4', 'N3', 'N2', 'N1'];
 const CATEGORY_META = {
@@ -1255,6 +1304,7 @@ async function showLessonListScreen() {
   journeyScreen.classList.add('hidden');
   categoryScreen.classList.add('hidden');
   grammarScreen.classList.add('hidden');
+  readingScreen.classList.add('hidden');
   backBtn.classList.add('hidden');
   progressWrap.classList.add('hidden');
   scoreRow.classList.add('hidden');
@@ -1363,6 +1413,10 @@ async function openLesson(lesson) {
 
   if (lesson.category === 'grammar') {
     await openGrammarLesson(lesson);
+    return;
+  }
+  if (lesson.category === 'reading') {
+    await openReadingLesson(lesson);
     return;
   }
 
@@ -1576,6 +1630,148 @@ document.getElementById('grammarCompleteBtn').addEventListener('click', async ()
   await saveLessonCompletion();
   showLessonListScreen();
 });
+
+/* ================== OQISH DARSI ================== */
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str == null ? '' : String(str);
+  return div.innerHTML;
+}
+
+function renderReadingPassage(tokens) {
+  return tokens.map(tok => {
+    if (tok.r) return `<ruby>${escapeHtml(tok.t)}<rt>${escapeHtml(tok.r)}</rt></ruby>`;
+    return escapeHtml(tok.t);
+  }).join('');
+}
+
+let readingQuestions = [];
+let readingPos = 0;
+let readingGood = 0;
+let readingBad = 0;
+
+async function openReadingLesson(lesson) {
+  lessonListScreen.classList.add('hidden');
+  categoryScreen.classList.add('hidden');
+  journeyScreen.classList.add('hidden');
+  readingScreen.classList.remove('hidden');
+  backBtn.classList.remove('hidden');
+  headerEyebrow.textContent = `${lesson.jlpt_level || ''} レベル · ${getDisplayNum(lesson)}課`;
+  headerTitle.textContent = lesson.title;
+
+  document.getElementById('readingSummary').textContent = lesson.summary_uz || '';
+  document.getElementById('readingPassageWrap').innerHTML = '<div class="loading-msg">Yuklanmoqda...</div>';
+  document.getElementById('readingVocabWrap').innerHTML = '';
+  document.getElementById('readingQuizWrap').innerHTML = '';
+  document.getElementById('readingToggleTranslation').classList.add('hidden');
+
+  const [paraRes, vocabRes, qRes] = await Promise.all([
+    withRetry(() => supabaseClient.from('reading_paragraphs').select('*').eq('lesson_id', lesson.id).order('paragraph_order', { ascending: true }), 'matnni yuklash'),
+    withRetry(() => supabaseClient.from('reading_vocab').select('*').eq('lesson_id', lesson.id).order('sort_order', { ascending: true }), 'lugatni yuklash'),
+    withRetry(() => supabaseClient.from('reading_questions').select('*').eq('lesson_id', lesson.id).order('sort_order', { ascending: true }), 'savollarni yuklash'),
+  ]);
+
+  if (paraRes.error || !paraRes.data || paraRes.data.length === 0) {
+    document.getElementById('readingPassageWrap').innerHTML = '<div class="empty-msg">Matn topilmadi 😕</div>';
+    return;
+  }
+
+  // Matnni chizish (furigana bilan)
+  const passageHtml = paraRes.data.map(p => `<p>${renderReadingPassage(p.tokens)}</p>`).join('');
+  document.getElementById('readingPassageWrap').innerHTML = passageHtml;
+
+  // Tarjima
+  const translationHtml = paraRes.data.map(p => `<p>${escapeHtml(p.text_uz)}</p>`).join('');
+  const toggleBtn = document.getElementById('readingToggleTranslation');
+  toggleBtn.classList.remove('hidden');
+  let translationShown = false;
+  const transWrap = document.getElementById('readingTranslationWrap');
+  transWrap.innerHTML = translationHtml;
+  transWrap.classList.remove('show');
+  toggleBtn.textContent = "🇺🇿 Tarjimani ko'rsatish";
+  toggleBtn.onclick = () => {
+    translationShown = !translationShown;
+    transWrap.classList.toggle('show', translationShown);
+    toggleBtn.textContent = translationShown ? '🙈 Tarjimani yashirish' : "🇺🇿 Tarjimani ko'rsatish";
+  };
+
+  // Lugat
+  const vocabList = vocabRes.data || [];
+  if (vocabList.length > 0) {
+    let vocabHtml = '<div class="reading-vocab-title">📖 Lug\'at</div>';
+    vocabList.forEach(v => {
+      vocabHtml += `
+        <div class="vocab-row">
+          <span class="vw-kanji">${escapeHtml(v.word_kanji)}</span>
+          <span class="vw-reading">${escapeHtml(v.reading)}</span>
+          <span class="vw-meaning">${escapeHtml(v.meaning_uz)}</span>
+        </div>`;
+    });
+    document.getElementById('readingVocabWrap').innerHTML = vocabHtml;
+  }
+
+  // Savollar
+  readingQuestions = qRes.data || [];
+  readingPos = 0; readingGood = 0; readingBad = 0;
+  if (readingQuestions.length > 0) {
+    renderReadingQuestion();
+  } else {
+    document.getElementById('readingQuizWrap').innerHTML = '';
+  }
+}
+
+function renderReadingQuestion() {
+  const wrap = document.getElementById('readingQuizWrap');
+  if (readingPos >= readingQuestions.length) {
+    showReadingDone();
+    return;
+  }
+  const q = readingQuestions[readingPos];
+  const letters = ['a', 'b', 'c', 'd'];
+
+  let html = `
+    <div class="reading-q-card">
+      <div class="reading-q-progress">Savol ${readingPos + 1} / ${readingQuestions.length}</div>
+      <div class="reading-q-text">${escapeHtml(q.question_jp)}</div>
+      <div class="reading-q-options">`;
+  q.options.forEach((opt, idx) => {
+    html += `<button class="opt-btn" data-letter="${letters[idx]}">${escapeHtml(opt)}</button>`;
+  });
+  html += `</div></div>`;
+  wrap.innerHTML = html;
+
+  wrap.querySelectorAll('.opt-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const chosen = btn.dataset.letter;
+      const isCorrect = chosen === q.correct_answer;
+      wrap.querySelectorAll('.opt-btn').forEach(b => {
+        b.disabled = true;
+        if (b.dataset.letter === q.correct_answer) b.classList.add('correct');
+        else if (b === btn) b.classList.add('wrong');
+        else b.classList.add('dim');
+      });
+      if (isCorrect) readingGood++; else readingBad++;
+      setTimeout(() => { readingPos++; renderReadingQuestion(); }, 900);
+    });
+  });
+}
+
+async function showReadingDone() {
+  const wrap = document.getElementById('readingQuizWrap');
+  const total = readingGood + readingBad;
+  const pct = total ? Math.round(readingGood / total * 100) : 100;
+  wrap.innerHTML = `
+    <div class="reading-done-card">
+      <div class="rd-emoji">${pct >= 70 ? '🎉' : '📖'}</div>
+      <div class="rd-score">${readingGood} / ${total} to'g'ri</div>
+      <button class="reading-done-btn" id="readingDoneBtn">✓ Darsni tugatdim</button>
+    </div>`;
+  document.getElementById('readingDoneBtn').addEventListener('click', async () => {
+    goodCount = readingGood; badCount = readingBad;
+    await saveLessonCompletion();
+    showLessonListScreen();
+  });
+}
 
 document.getElementById('explainBtn').addEventListener('click', () => {
   const q = questions[order[pos]];
