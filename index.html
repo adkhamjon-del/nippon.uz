@@ -429,42 +429,70 @@
     padding: 15px; font-size: 14.5px; font-weight: 900; cursor: pointer; margin-bottom: 20px;
   }
 
-  /* OQISH DARSI EKRANI */
-  .reading-summary { font-size: 13px; color: #8a8070; margin-bottom: 14px; line-height: 1.5; }
-  .reading-passage-wrap {
-    background: var(--paper); border: 1px solid var(--line); border-radius: 16px; padding: 20px;
-    font-size: 20px; line-height: 2.4; margin-bottom: 12px;
-  }
-  .reading-passage-wrap ruby { margin: 0 1px; }
-  .reading-passage-wrap rt { font-size: 10px; color: var(--ai-blue); }
-  .reading-translation {
-    background: var(--ai-blue-soft); border-radius: 12px; padding: 14px 16px; font-size: 13.5px;
-    line-height: 1.6; margin-bottom: 16px; display: none;
-  }
-  .reading-translation.show { display: block; }
-  .reading-toggle-btn {
-    display: block; width: 100%; background: var(--paper); border: 1px solid var(--line); border-radius: 12px;
-    padding: 11px; font-size: 12.5px; font-weight: 800; cursor: pointer; margin-bottom: 16px; color: var(--ai-blue);
-  }
-  .reading-vocab-wrap { margin-bottom: 20px; }
-  .reading-vocab-title { font-size: 12px; font-weight: 800; color: #8a8070; margin-bottom: 8px; text-transform: uppercase; }
-  .vocab-row {
-    display: flex; align-items: baseline; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 13.5px;
-  }
-  .vocab-row .vw-kanji { font-weight: 800; flex-shrink: 0; }
-  .vocab-row .vw-reading { color: #a89e91; font-size: 11.5px; flex-shrink: 0; }
-  .vocab-row .vw-meaning { color: var(--sumi); margin-left: auto; text-align: right; }
+  /* OQISH DARSI EKRANI — accordion dizayn */
+  .reading-kana-toggle { display: flex; align-items: center; gap: 6px; background: var(--doppi, #1f2d4d); border-radius: 20px; padding: 4px; margin-bottom: 6px; }
+  .reading-kana-toggle button { flex: 1; border: none; background: transparent; color: #9aa6c4; font-size: 12.5px; padding: 8px 0; border-radius: 16px; cursor: pointer; font-weight: 700; font-family: inherit; }
+  .reading-kana-toggle button.active { background: #fff; color: var(--doppi, #1f2d4d); }
+  .reading-kana-hint { text-align: center; font-size: 10.5px; color: #a8a396; margin: 0 0 16px; }
 
-  .reading-q-card { background: var(--paper); border: 1px solid var(--line); border-radius: 16px; padding: 18px; margin-bottom: 16px; }
-  .reading-q-progress { font-size: 11px; color: #a89e91; font-weight: 700; margin-bottom: 8px; }
-  .reading-q-text { font-size: 16px; font-weight: 700; margin-bottom: 14px; }
-  .reading-q-options { display: grid; gap: 9px; }
-  .reading-done-card { text-align: center; padding: 30px 20px; }
-  .reading-done-card .rd-emoji { font-size: 40px; margin-bottom: 10px; }
-  .reading-done-card .rd-score { font-size: 22px; font-weight: 900; margin-bottom: 6px; }
-  .reading-done-btn {
+  .racc { background: var(--paper); border: 1px solid var(--line); border-radius: 14px; margin-bottom: 10px; overflow: hidden; }
+  .racc-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; cursor: pointer; }
+  .racc-head .racc-lbl { font-weight: 800; color: var(--sumi); font-size: 14.5px; }
+  .racc-head .racc-chev { color: #c9c1b6; transition: transform .2s; font-size: 14px; }
+  .racc.open .racc-chev { transform: rotate(90deg); }
+  .racc-body { max-height: 0; overflow: hidden; transition: max-height .25s ease; padding: 0 16px; }
+  .racc.open .racc-body { max-height: 3000px; padding: 0 16px 16px; }
+
+  .rp-num { font-size: 10px; color: #b8b2a0; margin-bottom: 6px; }
+  .rp-jp { font-family: 'Noto Serif JP', serif; font-size: 17px; line-height: 2.1; color: var(--sumi); }
+  .rp-jp.kana-hidden { display: none; }
+  .rp-en { margin-top: 9px; padding-top: 9px; border-top: 1px dashed var(--line); font-size: 12.5px; line-height: 1.5; color: #8a8f9c; font-style: italic; }
+  .rp-uz { margin-top: 9px; padding-top: 9px; border-top: 1px dashed var(--line); font-size: 13.5px; line-height: 1.5; color: #2f7a52; position: relative; }
+  .rp-tag { font-style: normal; font-size: 9px; padding: 1px 6px; border-radius: 6px; margin-right: 6px; letter-spacing: .5px; background: #f4f1ea; color: #a8977a; }
+  .rp-uz .rp-tag { background: #eaf5ef; color: #2f7a52; }
+  .rp-para-sep { height: 14px; }
+  .rp-uz-locked { filter: blur(5px); user-select: none; }
+  .rp-lock-btn {
+    margin-top: 8px; width: 100%; background: #fdf6ec; border: 1.5px dashed var(--kin, #9c7a35); color: #8a6a1f;
+    font-size: 12px; padding: 9px 10px; border-radius: 10px; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer;
+  }
+  .rp-lock-toast {
+    display: none; margin-top: 8px; background: var(--doppi, #1f2d4d); color: #fff; font-size: 12px;
+    padding: 10px 12px; border-radius: 10px; line-height: 1.4;
+  }
+  .rp-lock-toast.show { display: block; }
+  .rp-lock-toast b { color: #e7b96a; }
+  .rp-lock-toast .rp-lock-cta { margin-top: 8px; background: #e7b96a; border: none; color: var(--doppi, #1f2d4d); font-weight: 700; font-size: 11px; padding: 6px 14px; border-radius: 8px; cursor: pointer; }
+
+  .reading-summary-text { font-size: 13.5px; line-height: 1.6; color: var(--sumi); padding: 14px 0; }
+
+  .rq-num { font-size: 10px; color: var(--shu); letter-spacing: 1px; margin: 14px 0 4px; font-weight: 800; }
+  .rq-num.first { margin-top: 14px; }
+  .rq-q { font-family: 'Noto Serif JP', serif; color: var(--sumi); font-size: 14.5px; margin-bottom: 10px; }
+  .rq-opt { display: flex; align-items: center; gap: 9px; padding: 9px 11px; border-radius: 9px; border: 1.5px solid var(--line); font-size: 13.5px; color: #3a3f4d; margin-bottom: 7px; }
+  .rq-opt.correct.show { border-color: var(--ok); background: rgba(47,122,79,0.08); color: #2c5c42; font-weight: 700; }
+  .rq-circ { width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid #ccc; flex-shrink: 0; position: relative; }
+  .rq-opt.correct.show .rq-circ { background: var(--ok); border-color: var(--ok); }
+  .rq-opt.correct.show .rq-circ::after { content: "✓"; color: #fff; font-size: 10px; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+  .rq-reveal-btn { width: 100%; background: #fdf6ec; border: 1.5px dashed var(--kin, #9c7a35); color: #8a6a1f; font-size: 12px; padding: 9px; border-radius: 9px; text-align: center; cursor: pointer; margin: 4px 0 14px; }
+
+  .rv-row { display: flex; justify-content: space-between; align-items: center; padding: 11px 0; border-bottom: 1px solid var(--line); font-size: 14px; gap: 10px; }
+  .rv-row:last-child { border-bottom: none; }
+  .rv-word { display: flex; flex-direction: column; }
+  .rv-jp { font-family: 'Noto Serif JP', serif; color: var(--sumi); font-weight: 700; font-size: 15.5px; }
+  .rv-jp.kana-hidden { display: none; }
+  .rv-romaji { font-size: 10px; color: #a8a396; margin-top: 2px; }
+  .rv-uz { color: #5a5f6d; font-size: 12.5px; text-align: right; max-width: 130px; }
+
+  .reading-complete-btn {
     display: block; width: 100%; background: var(--shu); color: #fff; border: none; border-radius: 14px;
-    padding: 15px; font-size: 14.5px; font-weight: 900; cursor: pointer; margin-top: 16px;
+    padding: 15px; font-size: 14.5px; font-weight: 900; cursor: pointer; margin: 6px 0 20px;
+  }
+
+  .reading-watermark { position: fixed; inset: 0; pointer-events: none; z-index: 60; overflow: hidden; }
+  .reading-watermark span {
+    position: absolute; font-size: 10px; color: rgba(28,43,74,0.08); transform: rotate(-30deg);
+    white-space: nowrap; pointer-events: none;
   }
 
   .journey-cta {
@@ -768,13 +796,36 @@
   </div>
 
   <!-- OQISH DARSI EKRANI -->
-  <div id="readingScreen" class="hidden">
-    <div id="readingSummary" class="reading-summary"></div>
-    <div id="readingPassageWrap" class="reading-passage-wrap"></div>
-    <div id="readingTranslationWrap" class="reading-translation"></div>
-    <button class="reading-toggle-btn" id="readingToggleTranslation">🇺🇿 Tarjimani ko'rsatish</button>
-    <div id="readingVocabWrap" class="reading-vocab-wrap"></div>
-    <div id="readingQuizWrap" class="reading-quiz-wrap"></div>
+  <div id="readingScreen" class="hidden" oncontextmenu="return false" ondragstart="return false">
+
+    <div class="reading-kana-toggle">
+      <button class="active" id="readingModeKanjiBtn">漢字 + かな</button>
+      <button id="readingModeKanaBtn">かな (kanjisiz)</button>
+    </div>
+    <div class="reading-kana-hint">Kanjidan qo'rqasizmi? 😅 unda "かな" rejimiga o'ting 😆</div>
+
+    <div class="racc open" id="raccText">
+      <div class="racc-head" data-racc-head><div class="racc-lbl">📖 Matn</div><div class="racc-chev">›</div></div>
+      <div class="racc-body" id="readingPassageWrap"></div>
+    </div>
+
+    <div class="racc" id="raccSummary">
+      <div class="racc-head" data-racc-head><div class="racc-lbl">📝 Qisqacha mazmuni</div><div class="racc-chev">›</div></div>
+      <div class="racc-body"><div class="reading-summary-text" id="readingSummaryText"></div></div>
+    </div>
+
+    <div class="racc" id="raccQuiz">
+      <div class="racc-head" data-racc-head><div class="racc-lbl">✅ Savol-javob (読解)</div><div class="racc-chev">›</div></div>
+      <div class="racc-body" id="readingQuizWrap"></div>
+    </div>
+
+    <div class="racc" id="raccVocab">
+      <div class="racc-head" data-racc-head><div class="racc-lbl">📚 Yangi so'zlar</div><div class="racc-chev">›</div></div>
+      <div class="racc-body"><div id="readingVocabWrap"></div></div>
+    </div>
+
+    <button class="reading-complete-btn" id="readingCompleteBtn">✓ Darsni tugatdim</button>
+    <div class="reading-watermark" id="readingWatermark"></div>
   </div>
 
   <!-- JOURNEY MAP SCREEN -->
@@ -1638,17 +1689,21 @@ function escapeHtml(str) {
   return div.innerHTML;
 }
 
-function renderReadingPassage(tokens) {
+function renderTokensJp(tokens) {
   return tokens.map(tok => {
     if (tok.r) return `<ruby>${escapeHtml(tok.t)}<rt>${escapeHtml(tok.r)}</rt></ruby>`;
     return escapeHtml(tok.t);
   }).join('');
 }
+function renderTokensKana(tokens) {
+  return tokens.map(tok => escapeHtml(tok.r || tok.t)).join('');
+}
 
-let readingQuestions = [];
-let readingPos = 0;
-let readingGood = 0;
-let readingBad = 0;
+let readingKanaMode = false;
+
+function canSeeUzTranslation(lesson) {
+  return isLessonFree(lesson) || currentTier === 'pro';
+}
 
 async function openReadingLesson(lesson) {
   lessonListScreen.classList.add('hidden');
@@ -1659,11 +1714,14 @@ async function openReadingLesson(lesson) {
   headerEyebrow.textContent = `${lesson.jlpt_level || ''} レベル · ${getDisplayNum(lesson)}課`;
   headerTitle.textContent = lesson.title;
 
-  document.getElementById('readingSummary').textContent = lesson.summary_uz || '';
   document.getElementById('readingPassageWrap').innerHTML = '<div class="loading-msg">Yuklanmoqda...</div>';
+  document.getElementById('readingSummaryText').textContent = '';
   document.getElementById('readingVocabWrap').innerHTML = '';
   document.getElementById('readingQuizWrap').innerHTML = '';
-  document.getElementById('readingToggleTranslation').classList.add('hidden');
+  document.getElementById('readingWatermark').innerHTML = '';
+
+  document.querySelectorAll('#readingScreen .racc').forEach(a => a.classList.remove('open'));
+  document.getElementById('raccText').classList.add('open');
 
   const [paraRes, vocabRes, qRes] = await Promise.all([
     withRetry(() => supabaseClient.from('reading_paragraphs').select('*').eq('lesson_id', lesson.id).order('paragraph_order', { ascending: true }), 'matnni yuklash'),
@@ -1676,102 +1734,140 @@ async function openReadingLesson(lesson) {
     return;
   }
 
-  // Matnni chizish (furigana bilan)
-  const passageHtml = paraRes.data.map(p => `<p>${renderReadingPassage(p.tokens)}</p>`).join('');
+  const uzUnlocked = canSeeUzTranslation(lesson);
+
+  // MATN
+  let passageHtml = '';
+  paraRes.data.forEach((p, idx) => {
+    if (idx > 0) passageHtml += '<div class="rp-para-sep"></div>';
+    passageHtml += `<div class="rp-num">${idx + 1}</div>`;
+    passageHtml += `<div class="rp-jp" data-jp-kanji>${renderTokensJp(p.tokens)}</div>`;
+    passageHtml += `<div class="rp-jp kana-hidden" data-jp-kana>${renderTokensKana(p.tokens)}</div>`;
+    if (p.text_en) passageHtml += `<div class="rp-en"><span class="rp-tag">EN</span>${escapeHtml(p.text_en)}</div>`;
+    if (uzUnlocked) {
+      passageHtml += `<div class="rp-uz"><span class="rp-tag">UZ</span>${escapeHtml(p.text_uz)}</div>`;
+    } else {
+      passageHtml += `
+        <div class="rp-uz">
+          <span class="rp-tag">UZ</span>
+          <span class="rp-uz-locked">${escapeHtml(p.text_uz)}</span>
+          <div class="rp-lock-btn" data-lock-btn>🔒 O'zbekcha tarjimani ko'rish</div>
+          <div class="rp-lock-toast" data-lock-toast>Bu tarjima <b>Premium</b> obunachilar uchun ochiq. Ushbu darsda o'zbekcha tarjimani ko'rish uchun Premium tarifga o'ting.
+            <div><button class="rp-lock-cta" data-lock-cta>Premiumga o'tish</button></div>
+          </div>
+        </div>`;
+    }
+  });
   document.getElementById('readingPassageWrap').innerHTML = passageHtml;
 
-  // Tarjima
-  const translationHtml = paraRes.data.map(p => `<p>${escapeHtml(p.text_uz)}</p>`).join('');
-  const toggleBtn = document.getElementById('readingToggleTranslation');
-  toggleBtn.classList.remove('hidden');
-  let translationShown = false;
-  const transWrap = document.getElementById('readingTranslationWrap');
-  transWrap.innerHTML = translationHtml;
-  transWrap.classList.remove('show');
-  toggleBtn.textContent = "🇺🇿 Tarjimani ko'rsatish";
-  toggleBtn.onclick = () => {
-    translationShown = !translationShown;
-    transWrap.classList.toggle('show', translationShown);
-    toggleBtn.textContent = translationShown ? '🙈 Tarjimani yashirish' : "🇺🇿 Tarjimani ko'rsatish";
-  };
-
-  // Lugat
-  const vocabList = vocabRes.data || [];
-  if (vocabList.length > 0) {
-    let vocabHtml = '<div class="reading-vocab-title">📖 Lug\'at</div>';
-    vocabList.forEach(v => {
-      vocabHtml += `
-        <div class="vocab-row">
-          <span class="vw-kanji">${escapeHtml(v.word_kanji)}</span>
-          <span class="vw-reading">${escapeHtml(v.reading)}</span>
-          <span class="vw-meaning">${escapeHtml(v.meaning_uz)}</span>
-        </div>`;
-    });
-    document.getElementById('readingVocabWrap').innerHTML = vocabHtml;
-  }
-
-  // Savollar
-  readingQuestions = qRes.data || [];
-  readingPos = 0; readingGood = 0; readingBad = 0;
-  if (readingQuestions.length > 0) {
-    renderReadingQuestion();
-  } else {
-    document.getElementById('readingQuizWrap').innerHTML = '';
-  }
-}
-
-function renderReadingQuestion() {
-  const wrap = document.getElementById('readingQuizWrap');
-  if (readingPos >= readingQuestions.length) {
-    showReadingDone();
-    return;
-  }
-  const q = readingQuestions[readingPos];
-  const letters = ['a', 'b', 'c', 'd'];
-
-  let html = `
-    <div class="reading-q-card">
-      <div class="reading-q-progress">Savol ${readingPos + 1} / ${readingQuestions.length}</div>
-      <div class="reading-q-text">${escapeHtml(q.question_jp)}</div>
-      <div class="reading-q-options">`;
-  q.options.forEach((opt, idx) => {
-    html += `<button class="opt-btn" data-letter="${letters[idx]}">${escapeHtml(opt)}</button>`;
-  });
-  html += `</div></div>`;
-  wrap.innerHTML = html;
-
-  wrap.querySelectorAll('.opt-btn').forEach(btn => {
+  document.getElementById('readingPassageWrap').querySelectorAll('[data-lock-btn]').forEach(btn => {
     btn.addEventListener('click', () => {
-      const chosen = btn.dataset.letter;
-      const isCorrect = chosen === q.correct_answer;
-      wrap.querySelectorAll('.opt-btn').forEach(b => {
-        b.disabled = true;
-        if (b.dataset.letter === q.correct_answer) b.classList.add('correct');
-        else if (b === btn) b.classList.add('wrong');
-        else b.classList.add('dim');
-      });
-      if (isCorrect) readingGood++; else readingBad++;
-      setTimeout(() => { readingPos++; renderReadingQuestion(); }, 900);
+      btn.style.display = 'none';
+      btn.nextElementSibling.classList.add('show');
     });
   });
+  document.getElementById('readingPassageWrap').querySelectorAll('[data-lock-cta]').forEach(btn => {
+    btn.addEventListener('click', () => showPaywall(lesson));
+  });
+
+  // QISQACHA MAZMUNI
+  document.getElementById('readingSummaryText').textContent = lesson.summary_uz || "Qisqacha mazmun hali qo'shilmagan.";
+
+  // YANGI SOZLAR
+  const vocabList = vocabRes.data || [];
+  let vocabHtml = '';
+  vocabList.forEach(v => {
+    vocabHtml += `
+      <div class="rv-row">
+        <div class="rv-word">
+          <span class="rv-jp" data-jp-kanji>${escapeHtml(v.word_kanji)}</span>
+          <span class="rv-jp kana-hidden" data-jp-kana>${escapeHtml(v.reading)}</span>
+          <span class="rv-romaji">${escapeHtml(v.romaji)}</span>
+        </div>
+        <div class="rv-uz">${escapeHtml(v.meaning_uz)}</div>
+      </div>`;
+  });
+  document.getElementById('readingVocabWrap').innerHTML = vocabHtml || '<div class="empty-msg">Soz yoq</div>';
+
+  // SAVOL-JAVOB (JLPT dokkai uslubi)
+  const questions = qRes.data || [];
+  const letters = ['a', 'b', 'c', 'd'];
+  let quizHtml = '';
+  questions.forEach((q, qi) => {
+    quizHtml += `<div class="rq-num${qi === 0 ? ' first' : ''}">問${qi + 1}</div>`;
+    quizHtml += `<div class="rq-q">${escapeHtml(q.question_jp)}</div>`;
+    q.options.forEach((opt, oi) => {
+      const isCorrect = letters[oi] === q.correct_answer;
+      quizHtml += `<div class="rq-opt${isCorrect ? ' correct' : ''}" data-rq-opt><div class="rq-circ"></div>${escapeHtml(opt)}</div>`;
+    });
+    quizHtml += `<div class="rq-reveal-btn" data-rq-reveal>Javobni ko'rsatish</div>`;
+  });
+  document.getElementById('readingQuizWrap').innerHTML = quizHtml || '<div class="empty-msg">Savollar yoq</div>';
+
+  document.getElementById('readingQuizWrap').querySelectorAll('[data-rq-reveal]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      let el = btn.previousElementSibling;
+      while (el && el.hasAttribute('data-rq-opt')) {
+        if (el.classList.contains('correct')) el.classList.add('show');
+        el = el.previousElementSibling;
+      }
+      btn.style.display = 'none';
+    });
+  });
+
+  applyReadingKanaMode();
+  renderReadingWatermark();
 }
 
-async function showReadingDone() {
-  const wrap = document.getElementById('readingQuizWrap');
-  const total = readingGood + readingBad;
-  const pct = total ? Math.round(readingGood / total * 100) : 100;
-  wrap.innerHTML = `
-    <div class="reading-done-card">
-      <div class="rd-emoji">${pct >= 70 ? '🎉' : '📖'}</div>
-      <div class="rd-score">${readingGood} / ${total} to'g'ri</div>
-      <button class="reading-done-btn" id="readingDoneBtn">✓ Darsni tugatdim</button>
-    </div>`;
-  document.getElementById('readingDoneBtn').addEventListener('click', async () => {
-    goodCount = readingGood; badCount = readingBad;
-    await saveLessonCompletion();
-    showLessonListScreen();
-  });
+function applyReadingKanaMode() {
+  document.querySelectorAll('#readingScreen [data-jp-kanji]').forEach(el => el.classList.toggle('kana-hidden', readingKanaMode));
+  document.querySelectorAll('#readingScreen [data-jp-kana]').forEach(el => el.classList.toggle('kana-hidden', !readingKanaMode));
 }
+
+document.getElementById('readingModeKanjiBtn').addEventListener('click', () => {
+  readingKanaMode = false;
+  document.getElementById('readingModeKanjiBtn').classList.add('active');
+  document.getElementById('readingModeKanaBtn').classList.remove('active');
+  applyReadingKanaMode();
+});
+document.getElementById('readingModeKanaBtn').addEventListener('click', () => {
+  readingKanaMode = true;
+  document.getElementById('readingModeKanaBtn').classList.add('active');
+  document.getElementById('readingModeKanjiBtn').classList.remove('active');
+  applyReadingKanaMode();
+});
+
+document.querySelectorAll('#readingScreen [data-racc-head]').forEach(head => {
+  head.addEventListener('click', () => {
+    const acc = head.parentElement;
+    const wasOpen = acc.classList.contains('open');
+    document.querySelectorAll('#readingScreen .racc').forEach(a => a.classList.remove('open'));
+    if (!wasOpen) acc.classList.add('open');
+  });
+});
+
+function renderReadingWatermark() {
+  const wm = document.getElementById('readingWatermark');
+  wm.innerHTML = '';
+  const name = currentUser ? (currentUser.user_metadata?.full_name || currentUser.email.split('@')[0]) : 'mehmon';
+  const label = `${name} · nippon.uz · ${new Date().toISOString().slice(0,10)}`;
+  const rows = 12, cols = 2;
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const s = document.createElement('span');
+      s.textContent = label;
+      s.style.top = (r * 90 - 20) + 'px';
+      s.style.left = (c * 220 - 40) + 'px';
+      wm.appendChild(s);
+    }
+  }
+}
+
+document.getElementById('readingCompleteBtn').addEventListener('click', async () => {
+  goodCount = 1; badCount = 0;
+  await saveLessonCompletion();
+  showLessonListScreen();
+});
 
 document.getElementById('explainBtn').addEventListener('click', () => {
   const q = questions[order[pos]];
