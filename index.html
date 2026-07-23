@@ -376,29 +376,18 @@
   }
   .level-pill.active { background: linear-gradient(135deg, var(--sakura), #d1637a); color: #fff; border: none; box-shadow: 0 4px 12px -4px rgba(232,135,156,0.6); }
 
-  /* ---------- HOME: DAY PATH (gorizontal yo'l) ---------- */
-  .path-wrap { margin-bottom: 20px; }
-  .path-label { font-size: 12px; color: #8a8070; font-weight: 700; margin-bottom: 20px; }
-  .path-scroll {
-    display: flex; align-items: flex-start; gap: 0; overflow-x: auto; overflow-y: visible; padding: 20px 2px 14px;
-    -webkit-overflow-scrolling: touch;
-  }
-  .path-scroll::-webkit-scrollbar { height: 4px; }
-  .path-scroll::-webkit-scrollbar-thumb { background: var(--line); border-radius: 2px; }
-  .path-node-wrap { display: flex; align-items: center; flex-shrink: 0; }
-  .path-node {
-    width: 54px; height: 54px; border-radius: 50%; flex-shrink: 0; cursor: pointer;
+  /* ---------- KATEGORIYA: DARSLAR PANJARASI (grid) ---------- */
+  .lesson-grid { display: grid; gap: 12px; margin-bottom: 20px; }
+  .grid-node {
+    aspect-ratio: 1; border-radius: 16px; cursor: pointer;
     background: var(--paper); border: 2px solid var(--line);
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    font-weight: 800; font-size: 13px; position: relative;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 15px; color: var(--sumi);
   }
-  .path-node .pn-day { font-size: 8px; color: #a89e91; text-transform: uppercase; letter-spacing: 0.03em; position: absolute; top: -16px; white-space: nowrap; }
-  .path-node.done { background: linear-gradient(160deg, #fff, var(--sakura-soft)); border-color: var(--sakura); color: var(--sakura-deep, #d1637a); }
-  .path-node.current { border-color: var(--ai-blue); box-shadow: 0 0 0 4px var(--ai-blue-soft); color: var(--ai-blue); }
-  .path-node.locked { opacity: 0.5; cursor: default; }
-  .path-node.sub-locked { border-color: var(--kin, #9c7a35); background: rgba(156,122,53,0.06); }
-  .path-connector { width: 22px; height: 2px; background: var(--line); flex-shrink: 0; margin-top: 27px; }
-  .path-connector.done { background: var(--sakura); }
+  .grid-node.done { background: linear-gradient(160deg, #fff, var(--sakura-soft)); border-color: var(--sakura); color: var(--sakura-deep, #d1637a); }
+  .grid-node.current { border-color: var(--ai-blue); box-shadow: 0 0 0 3px var(--ai-blue-soft); color: var(--ai-blue); }
+  .grid-node.locked { opacity: 0.45; cursor: default; }
+  .grid-node.sub-locked { border-color: var(--kin, #9c7a35); background: rgba(156,122,53,0.06); color: var(--kin, #9c7a35); }
 
   /* ---------- HOME: CATEGORY LIST ---------- */
   .cat-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; }
@@ -1186,6 +1175,8 @@ async function loadLessonList() {
 /* ================== KATEGORIYA EKRANI (masalan faqat Kanji) ================== */
 let lastOpenedCategory = null;
 
+const GRID_COLS = { kanji: 4, grammar: 5, reading: 4, listening: 5 };
+
 function openCategoryScreen(cat) {
   lastOpenedCategory = cat;
   const levelLessons = allLessons.filter(l => l.jlpt_level === selectedLevel && l.category === cat);
@@ -1206,7 +1197,8 @@ function openCategoryScreen(cat) {
     days[dayNum].forEach((l, idx) => flatLessons.push({ lesson: l, dayNum, idxInDay: idx }));
   });
 
-  let html = `<div class="path-wrap"><div class="path-scroll">`;
+  const cols = GRID_COLS[cat] || 4;
+  let html = `<div class="lesson-grid" style="grid-template-columns: repeat(${cols}, 1fr);">`;
 
   flatLessons.forEach((item, i) => {
     const { lesson: l, dayNum, idxInDay } = item;
@@ -1229,24 +1221,13 @@ function openCategoryScreen(cat) {
       stateCls = 'current'; nodeContent = getDisplayNum(l);
     }
 
-    if (i > 0) {
-      const prevDone = completedLessonIds.has(flatLessons[i - 1].lesson.id);
-      html += `<div class="path-connector ${prevDone ? 'done' : ''}"></div>`;
-    }
-
-    html += `
-      <div class="path-node-wrap">
-        <div class="path-node ${stateCls}" data-lesson-id="${l.id}">
-          <div class="pn-day">${dayNum}-kun</div>
-          ${nodeContent}
-        </div>
-      </div>`;
+    html += `<div class="grid-node ${stateCls}" data-lesson-id="${l.id}">${nodeContent}</div>`;
   });
 
-  html += `</div></div>`;
+  html += `</div>`;
   document.getElementById('catScreenContent').innerHTML = html;
 
-  document.getElementById('catScreenContent').querySelectorAll('.path-node').forEach(card => {
+  document.getElementById('catScreenContent').querySelectorAll('.grid-node').forEach(card => {
     card.addEventListener('click', () => {
       if (card.classList.contains('locked')) return;
       const lessonId = parseInt(card.dataset.lessonId);
