@@ -550,6 +550,33 @@
   .admin-btn-free { background: var(--washi); color: var(--sumi); border: 1px solid var(--line) !important; }
   .admin-success { background: rgba(47,122,79,0.1); border: 1px solid var(--ok); border-radius: 12px; padding: 12px; font-size: 13px; color: #2f7a52; font-weight: 700; margin-top: 10px; text-align: center; }
 
+  /* INFO / SHARTLAR EKRANLARI */
+  .info-content { font-size: 13.5px; line-height: 1.7; color: var(--sumi); padding-bottom: 10px; }
+  .info-part-title { font-family: 'Noto Serif JP', serif; font-weight: 900; font-size: 19px; margin: 22px 0 4px; }
+  .info-part-title:first-child { margin-top: 0; }
+  .info-updated { font-size: 11px; color: #8a8070; margin-bottom: 18px; }
+  .info-h2 { font-weight: 900; font-size: 14.5px; margin: 20px 0 8px; color: var(--doppi, #1f2d4d); }
+  .info-p { margin-bottom: 10px; }
+  .info-list { margin: 0 0 10px 18px; padding: 0; }
+  .info-list li { margin-bottom: 6px; }
+  .info-table { width: 100%; border-collapse: collapse; font-size: 12px; margin: 10px 0 16px; }
+  .info-table th, .info-table td { border: 1px solid var(--line); padding: 8px 7px; text-align: left; }
+  .info-table th { background: var(--washi); font-weight: 800; }
+  .info-note { font-size: 11.5px; color: #8a8070; font-style: italic; margin-top: 16px; padding-top: 12px; border-top: 1px dashed var(--line); }
+  .info-divider { border: none; border-top: 2px solid var(--line); margin: 26px 0; }
+
+  .terms-accept-bar {
+    position: sticky; bottom: 0; background: var(--paper); border-top: 1px solid var(--line);
+    padding: 14px 0 4px; margin-top: 10px;
+  }
+  .terms-accept-btn {
+    display: block; width: 100%; background: var(--shu); color: #fff; border: none; border-radius: 14px;
+    padding: 15px; font-size: 14.5px; font-weight: 900; cursor: pointer;
+  }
+  .terms-accept-btn:disabled { opacity: 0.5; cursor: default; }
+  .terms-checkbox-row { display: flex; align-items: flex-start; gap: 9px; margin-bottom: 12px; font-size: 12.5px; color: var(--sumi); }
+  .terms-checkbox-row input { margin-top: 2px; flex-shrink: 0; width: 16px; height: 16px; }
+
   .journey-cta {
     padding: 16px; border-radius: 16px; background: linear-gradient(135deg, var(--doppi, #1f2d4d), var(--ai-blue));
     color: #fff; display: flex; align-items: center; gap: 12px; cursor: pointer;
@@ -907,6 +934,23 @@
     <div id="adminResultWrap"></div>
   </div>
 
+  <!-- ILOVA HAQIDA EKRANI -->
+  <div id="infoScreen" class="hidden">
+    <div class="info-content" id="infoContentWrap"></div>
+  </div>
+
+  <!-- SHARTLARNI QABUL QILISH EKRANI (majburiy) -->
+  <div id="termsScreen" class="hidden">
+    <div class="info-content" id="termsContentWrap"></div>
+    <div class="terms-accept-bar">
+      <div class="terms-checkbox-row">
+        <input type="checkbox" id="termsCheckbox">
+        <label for="termsCheckbox">Men "Foydalanish shartlari"ni o'qib chiqdim va roziman</label>
+      </div>
+      <button class="terms-accept-btn" id="termsAcceptBtn" disabled>Davom etish</button>
+    </div>
+  </div>
+
   <!-- JOURNEY MAP SCREEN -->
   <div id="journeyScreen" class="hidden">
     <div class="journey-header">
@@ -1114,6 +1158,8 @@ const grammarScreen = document.getElementById('grammarScreen');
 const readingScreen = document.getElementById('readingScreen');
 const listeningScreen = document.getElementById('listeningScreen');
 const adminScreen = document.getElementById('adminScreen');
+const infoScreen = document.getElementById('infoScreen');
+const termsScreen = document.getElementById('termsScreen');
 const journeyScreen = document.getElementById('journeyScreen');
 const quizScreen = document.getElementById('quizScreen');
 const levelRow = document.getElementById('levelRow');
@@ -1431,6 +1477,7 @@ async function showLessonListScreen() {
   readingScreen.classList.add('hidden');
   listeningScreen.classList.add('hidden');
   adminScreen.classList.add('hidden');
+  infoScreen.classList.add('hidden');
   progressWrap.classList.add('hidden');
   scoreRow.classList.add('hidden');
   chatFab.classList.remove('show');
@@ -2253,18 +2300,20 @@ async function awardCoins(amount) {
 
 let currentCoins = 0;
 let currentTier = 'free';
+let currentTermsAccepted = false;
 
 async function loadCoins() {
-  if (!currentUser) { currentCoins = 0; currentTier = 'free'; updateCoinBadge(); return; }
+  if (!currentUser) { currentCoins = 0; currentTier = 'free'; currentTermsAccepted = false; updateCoinBadge(); return; }
   try {
     const { data, error } = await withRetry(
-      () => supabaseClient.from('profiles').select('coins, subscription_tier, subscription_expires_at').eq('id', currentUser.id).single(),
+      () => supabaseClient.from('profiles').select('coins, subscription_tier, subscription_expires_at, terms_accepted_at').eq('id', currentUser.id).single(),
       'profilni yuklash'
     );
     if (error) throw error;
     currentCoins = data?.coins || 0;
     const rawTier = data?.subscription_tier || 'free';
     const expiresAt = data?.subscription_expires_at;
+    currentTermsAccepted = !!data?.terms_accepted_at;
 
     // Obuna muddati o'tgan bo'lsa — avtomatik "free" deb hisoblaymiz
     if (rawTier !== 'free' && expiresAt && new Date(expiresAt) < new Date()) {
@@ -2277,6 +2326,7 @@ async function loadCoins() {
   } catch (err) {
     currentCoins = 0;
     currentTier = 'free';
+    currentTermsAccepted = false;
   }
   updateCoinBadge();
   updateAuthUI();
@@ -2668,8 +2718,7 @@ authSubmitBtn.addEventListener('click', async () => {
       currentUser = data.user;
       updateAuthUI();
       hideAuthGate();
-      await loadCoins();
-      await loadLessonList();
+      await proceedAfterAuth();
     }
   } catch (err) {
     showAuthError(translateAuthError(err.message));
@@ -2888,7 +2937,7 @@ document.getElementById('smHelp').addEventListener('click', () => {
 });
 document.getElementById('smAbout').addEventListener('click', () => {
   closeSideMenu();
-  alert("Nippon.uz — o'zbek tilida yapon tilini o'rgatuvchi platforma. Registondan Tokiogacha bo'lgan safar orqali, kanji, grammatika va boshqa mavzularni bosqichma-bosqich o'rganasiz. 🌸");
+  showInfoScreen();
 });
 
 async function initAuth() {
@@ -2904,14 +2953,190 @@ async function initAuth() {
 }
 
 /* ================== INIT ================== */
+/* ================== SHARTLAR VA ILOVA HAQIDA ================== */
+const TERMS_HTML = `
+  <div class="info-part-title">FOYDALANISH SHARTLARI</div>
+  <div class="info-updated">Oxirgi yangilanish: 2026-yil, iyul</div>
+  <div class="info-p">Nippon.uz ilovasidan foydalanishdan oldin, iltimos quyidagi shartlar bilan tanishib chiqing. Ilovadan foydalanishni davom ettirish — ushbu shartlarni qabul qilganingizni bildiradi.</div>
+
+  <div class="info-h2">1.1. Umumiy qoidalar</div>
+  <div class="info-p">Nippon.uz — o&#39;zbek tilida so&#39;zlashuvchilar uchun mo&#39;ljallangan yapon tili o&#39;quv platformasi. Ilova orqali taqdim etiladigan barcha darslar, videolar, matnlar, audio va boshqa materiallar (bundan buyon — <b>&quot;Kontent&quot;</b>) Nippon.uz mualliflik huquqi bilan himoyalangan.</div>
+
+  <div class="info-h2">1.2. Kontentdan foydalanish qoidalari</div>
+  <ul class="info-list">
+    <li>Kontent <b>faqat shaxsiy, notijorat ta&#39;lim maqsadlarida</b> foydalanish uchun taqdim etiladi.</li>
+    <li>Kontentni <b>ko&#39;chirish, qayta tarqatish, nusxalash, ekran yozib olish, sotish yoki uchinchi shaxslarga uzatish</b> qat&#39;iyan taqiqlanadi.</li>
+    <li>Video darslarni yuklab olish yoki boshqa platformalarga joylashtirish taqiqlanadi.</li>
+    <li>Qo&#39;llanma va konspektlarni skrinshot qilish, nusxalash yoki chop etish taqiqlanadi.</li>
+    <li>Qoidabuzarlik aniqlansa, hisob ogohlantirishsiz to&#39;xtatilishi mumkin.</li>
+  </ul>
+
+  <div class="info-h2">1.3. Ro&#39;yxatdan o&#39;tish va hisob</div>
+  <ul class="info-list">
+    <li>Ilovadan foydalanish uchun email va parol orqali ro&#39;yxatdan o&#39;tish talab qilinadi.</li>
+    <li>Har bir foydalanuvchi faqat bitta shaxsiy hisobga ega bo&#39;lishi kerak.</li>
+    <li>Hisob xavfsizligi uchun javobgarlik foydalanuvchining o&#39;zida.</li>
+  </ul>
+
+  <div class="info-h2">1.4. Obuna va to&#39;lov shartlari</div>
+  <ul class="info-list">
+    <li>Nippon.uz uchta darajada xizmat ko&#39;rsatadi: Bepul, Oddiy va Premium.</li>
+    <li>To&#39;lovlar hozircha qo&#39;lda tekshirish orqali amalga oshiriladi.</li>
+    <li>Obuna 30 kunlik muddatga beriladi. Muddat tugaganda, hisobingiz avtomatik ravishda <b>Bepul</b> rejaga qaytadi — hech qanday jarima yoki qo&#39;shimcha to&#39;lov talab qilinmaydi. Xohlagan vaqtingizda qayta to&#39;lov qilib, obunani osongina davom ettirishingiz mumkin.</li>
+    <li>To&#39;lov qaytarilishi — faqat texnik xatolik yuz berganda, admin bilan kelishilgan holda ko&#39;rib chiqiladi.</li>
+  </ul>
+
+  <div class="info-h2">1.5. Coin tizimi qoidalari</div>
+  <ul class="info-list">
+    <li>Coinlar — darslarni birinchi marta tugatganingizda beriladigan ichki mukofot birligi.</li>
+    <li>Coinlarning naqd pulga almashtirilishi mumkin emas.</li>
+    <li><i>(Rejalashtirilgan)</i> — Coinlarni obuna narxidan chegirma sifatida ishlatish imkoniyati qo&#39;shiladi.</li>
+    <li><i>(Rejalashtirilgan)</i> — Ketma-ket 3 kun faol bo&#39;lmasangiz, avval ogohlantirish keladi, keyin coin biroz kamayadi.</li>
+  </ul>
+
+  <div class="info-h2">1.6. Javobgarlikni cheklash</div>
+  <div class="info-p">Nippon.uz — o&#39;quv yordamchi vositasi bo&#39;lib, JLPT imtihonida muvaffaqiyatni kafolatlamaydi. Ilova &quot;mavjud holatda&quot; taqdim etiladi.</div>
+
+  <div class="info-h2">1.7. Bog&#39;lanish</div>
+  <div class="info-p">Savol yoki shikoyatlar uchun: ☰ menyu → &quot;Administrator bilan bog&#39;lanish&quot; orqali murojaat qiling.</div>
+`;
+const INFO_HTML = `
+  <div class="info-part-title">ILOVA HAQIDA</div>
+
+  <div class="info-h2">Nippon.uz nima?</div>
+  <div class="info-p">Nippon.uz — o&#39;zbek tilida so&#39;zlashuvchilar uchun maxsus yaratilgan yapon tili o&#39;quv platformasi. Biz grammatikani o&#39;zbek tili bilan taqqoslab, sizga tanish, tushunarli tarzda o&#39;rgatamiz.</div>
+
+  <div class="info-h2">Hozirgi imkoniyatlar</div>
+  <table class="info-table">
+    <tr><th>Skill</th><th>Format</th><th>Holat</th></tr>
+    <tr><td>🈷️ Kanji</td><td>Kartochka + test</td><td>✅ Faol</td></tr>
+    <tr><td>✏️ Grammatika</td><td>Video + doska qo&#39;llanma</td><td>✅ Faol</td></tr>
+    <tr><td>📖 O&#39;qish</td><td>Matn + tushunish testi</td><td>✅ Faol</td></tr>
+    <tr><td>🎧 Tinglash</td><td>Audio + savol-javob</td><td>✅ Faol</td></tr>
+  </table>
+  <div class="info-p">Darajalar: N5 → N4 → N3 → N2 → N1 (JLPT tizimiga mos).</div>
+
+  <div class="info-h2">Qanday ishlaydi — dars tartibi</div>
+  <ul class="info-list">
+    <li>Har bir daraja va skill ichida darslar ketma-ket joylashgan.</li>
+    <li>Bir darsni tugatmasdan, keyingisi qulflangan holda qoladi (🔒).</li>
+    <li>Har bir dars birinchi marta tugallanganda — coin beriladi.</li>
+    <li>N5&#39;da har skillning birinchi 3 darsi — hammaga bepul.</li>
+    <li><b>Tavsiya:</b> Darslarni ketma-ket, bir kun ichida bir nechtasini birga o&#39;tishga harakat qiling.</li>
+  </ul>
+
+  <div class="info-h2">Testlar haqida</div>
+  <div class="info-p">Har bir darsda mavzuni mustahkamlash uchun test mavjud. Kanji va Tinglashda — javob tanlaganda darhol natija ko&#39;rinadi. O&#39;qishda — &quot;Javobni ko&#39;rish&quot; orqali tekshirasiz. Grammatikada — qo&#39;llanma ichiga joylashtirilgan qisqa test bor. Testlar baholash uchun emas, mustahkamlash uchun.</div>
+
+  <div class="info-h2">Sertifikatlar 🎓 <i>(tez orada)</i></div>
+  <div class="info-p">Har bir JLPT darajasini (N5, N4, N3, N2, N1) — barcha darslarni to&#39;liq tugatganingizda — Nippon.uz&#39;ning rasmiy sertifikatini qo&#39;lga kiritasiz.</div>
+
+  <div class="info-h2">Coin tizimi</div>
+  <ul class="info-list">
+    <li>Har bir darsni birinchi marta tugatsangiz — coin olasiz.</li>
+    <li><i>(Tez orada)</i> Coinlarni obuna chegirmasiga ishlatish imkoniyati.</li>
+    <li><i>(Tez orada)</i> Ketma-ket 3 kun faol bo&#39;lmasangiz — avval ogohlantirish, keyin coin biroz kamayadi.</li>
+  </ul>
+
+  <div class="info-h2">Obuna darajalari</div>
+  <table class="info-table">
+    <tr><th></th><th>🆓 Bepul</th><th>📘 Oddiy<br>150k/oy</th><th>💎 Premium<br>250k/oy</th></tr>
+    <tr><td>N5 (1-3 dars)</td><td>✅</td><td>✅</td><td>✅</td></tr>
+    <tr><td>N5 (qolgan)</td><td>❌</td><td>✅</td><td>✅</td></tr>
+    <tr><td>N4</td><td>❌</td><td>✅</td><td>✅</td></tr>
+    <tr><td>N3–N1</td><td>❌</td><td>❌</td><td>✅</td></tr>
+    <tr><td>Community</td><td>❌</td><td>❌</td><td>✅</td></tr>
+    <tr><td>Sertifikat</td><td>❌</td><td>N5,N4</td><td>Barchasi</td></tr>
+  </table>
+
+  <div class="info-h2">Kelajak rejalari</div>
+  <table class="info-table">
+    <tr><th>Imkoniyat</th><th>Holat</th></tr>
+    <tr><td>N5 to&#39;liq kontenti</td><td>🟡 Jarayonda</td></tr>
+    <tr><td>N4–N1 kontenti</td><td>⚪ Rejalashtirilgan</td></tr>
+    <tr><td>Daraja sertifikatlari</td><td>⚪ Rejalashtirilgan</td></tr>
+    <tr><td>AI Sensei</td><td>⚪ Rejalashtirilgan</td></tr>
+    <tr><td>Coin → chegirma</td><td>⚪ Rejalashtirilgan</td></tr>
+    <tr><td>Faollik coin tizimi</td><td>⚪ Rejalashtirilgan</td></tr>
+  </table>
+
+  <div class="info-h2">Xavfsizlik haqida</div>
+  <ul class="info-list">
+    <li>Karta/bank ma&#39;lumotlaringizni saqlamaymiz — to&#39;lov to&#39;g&#39;ridan-to&#39;g&#39;ri sizning bank ilovangiz orqali.</li>
+    <li>Parolingiz shifrlangan holda saqlanadi.</li>
+    <li>Video darslar himoyalangan manbadan translyatsiya qilinadi, qo&#39;llanmalar nusxalashdan himoyalangan va shaxsiy watermark bilan belgilangan.</li>
+    <li>Ma&#39;lumotlaringiz uchinchi shaxslarga sotilmaydi.</li>
+  </ul>
+
+  <div class="info-note">To&#39;liq foydalanish shartlarini ko&#39;rish uchun ro&#39;yxatdan o&#39;tishda ko&#39;rsatilgan matnga qarang.</div>
+`;
+
+function showInfoScreen() {
+  lessonListScreen.classList.add('hidden');
+  categoryScreen.classList.add('hidden');
+  journeyScreen.classList.add('hidden');
+  document.getElementById('infoContentWrap').innerHTML = INFO_HTML;
+  infoScreen.classList.remove('hidden');
+  backBtn.classList.remove('hidden');
+  headerEyebrow.textContent = 'ℹ️ NIPPON.UZ';
+  headerTitle.textContent = 'Ilova haqida';
+}
+
+function showTermsScreen() {
+  lessonListScreen.classList.add('hidden');
+  categoryScreen.classList.add('hidden');
+  journeyScreen.classList.add('hidden');
+  quizScreen.classList.add('hidden');
+  grammarScreen.classList.add('hidden');
+  readingScreen.classList.add('hidden');
+  listeningScreen.classList.add('hidden');
+  adminScreen.classList.add('hidden');
+  infoScreen.classList.add('hidden');
+  backBtn.classList.add('hidden');
+  hamburgerBtn.classList.add('hidden');
+  document.getElementById('termsContentWrap').innerHTML = TERMS_HTML;
+  termsScreen.classList.remove('hidden');
+  document.getElementById('termsCheckbox').checked = false;
+  document.getElementById('termsAcceptBtn').disabled = true;
+}
+
+document.getElementById('termsCheckbox').addEventListener('change', (e) => {
+  document.getElementById('termsAcceptBtn').disabled = !e.target.checked;
+});
+
+document.getElementById('termsAcceptBtn').addEventListener('click', async () => {
+  const btn = document.getElementById('termsAcceptBtn');
+  btn.disabled = true;
+  btn.textContent = 'Saqlanmoqda...';
+  await withRetry(
+    () => supabaseClient.from('profiles').update({ terms_accepted_at: new Date().toISOString() }).eq('id', currentUser.id),
+    'shartlarni saqlash'
+  );
+  currentTermsAccepted = true;
+  termsScreen.classList.add('hidden');
+  lessonListScreen.classList.remove('hidden');
+  hamburgerBtn.classList.remove('hidden');
+  headerEyebrow.textContent = '日本語レッスン';
+  headerTitle.textContent = "Darslar ro'yxati";
+  await loadLessonList();
+});
+
+async function proceedAfterAuth() {
+  await loadCoins();
+  if (!currentTermsAccepted) {
+    showTermsScreen();
+    return;
+  }
+  await loadLessonList();
+}
+
 async function initApp() {
   await initAuth();
   if (!currentUser) {
     showAuthGate();
     return;
   }
-  await loadCoins();
-  await loadLessonList();
+  await proceedAfterAuth();
 }
 initApp();
 </script>
