@@ -526,6 +526,30 @@
     padding: 15px; font-size: 14.5px; font-weight: 900; cursor: pointer; margin-top: 16px;
   }
 
+  /* ADMIN PANEL */
+  .admin-search-box { display: flex; gap: 8px; margin-bottom: 18px; }
+  .admin-input {
+    flex: 1; border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px;
+    font-size: 14px; font-family: inherit; background: var(--paper);
+  }
+  .admin-search-btn {
+    background: var(--doppi, #1f2d4d); color: #fff; border: none; border-radius: 12px;
+    padding: 12px 18px; font-size: 13px; font-weight: 800; cursor: pointer;
+  }
+  .admin-card { background: var(--paper); border: 1px solid var(--line); border-radius: 16px; padding: 18px; margin-bottom: 14px; }
+  .admin-card .ac-name { font-size: 16px; font-weight: 900; margin-bottom: 4px; }
+  .admin-card .ac-email { font-size: 12px; color: #8a8070; margin-bottom: 10px; }
+  .admin-card .ac-row { display: flex; justify-content: space-between; font-size: 13px; padding: 7px 0; border-top: 1px solid var(--line); }
+  .admin-card .ac-row b { color: var(--sumi); }
+  .admin-actions { display: flex; gap: 8px; margin-top: 14px; }
+  .admin-actions button {
+    flex: 1; border: none; border-radius: 12px; padding: 12px; font-size: 13px; font-weight: 800; cursor: pointer;
+  }
+  .admin-btn-standard { background: var(--ai-blue); color: #fff; }
+  .admin-btn-pro { background: linear-gradient(135deg,#b8860b,#e8c15a); color: #2a1f0a; }
+  .admin-btn-free { background: var(--washi); color: var(--sumi); border: 1px solid var(--line) !important; }
+  .admin-success { background: rgba(47,122,79,0.1); border: 1px solid var(--ok); border-radius: 12px; padding: 12px; font-size: 13px; color: #2f7a52; font-weight: 700; margin-top: 10px; text-align: center; }
+
   .journey-cta {
     padding: 16px; border-radius: 16px; background: linear-gradient(135deg, var(--doppi, #1f2d4d), var(--ai-blue));
     color: #fff; display: flex; align-items: center; gap: 12px; cursor: pointer;
@@ -761,6 +785,9 @@
       <div class="sm-item" id="smAbout">
         <span class="sm-icon">ℹ️</span> Ilova haqida
       </div>
+      <div class="sm-item hidden" id="smAdmin">
+        <span class="sm-icon">🔑</span> Admin
+      </div>
       <div class="sm-divider"></div>
       <div class="sm-item sm-logout" id="smLogout">
         <span class="sm-icon">🚪</span> Chiqish
@@ -869,6 +896,15 @@
     </div>
     <div id="listeningQuizWrap"></div>
     <div id="listeningRevealWrap" class="hidden"></div>
+  </div>
+
+  <!-- ADMIN EKRANI -->
+  <div id="adminScreen" class="hidden">
+    <div class="admin-search-box">
+      <input type="text" id="adminCodeInput" class="admin-input" placeholder="Kod (masalan 377FAEC7)">
+      <button class="admin-search-btn" id="adminSearchBtn">Qidirish</button>
+    </div>
+    <div id="adminResultWrap"></div>
   </div>
 
   <!-- JOURNEY MAP SCREEN -->
@@ -1077,6 +1113,7 @@ const categoryScreen = document.getElementById('categoryScreen');
 const grammarScreen = document.getElementById('grammarScreen');
 const readingScreen = document.getElementById('readingScreen');
 const listeningScreen = document.getElementById('listeningScreen');
+const adminScreen = document.getElementById('adminScreen');
 const journeyScreen = document.getElementById('journeyScreen');
 const quizScreen = document.getElementById('quizScreen');
 const levelRow = document.getElementById('levelRow');
@@ -1393,7 +1430,7 @@ async function showLessonListScreen() {
   grammarScreen.classList.add('hidden');
   readingScreen.classList.add('hidden');
   listeningScreen.classList.add('hidden');
-  backBtn.classList.add('hidden');
+  adminScreen.classList.add('hidden');
   progressWrap.classList.add('hidden');
   scoreRow.classList.add('hidden');
   chatFab.classList.remove('show');
@@ -2221,12 +2258,22 @@ async function loadCoins() {
   if (!currentUser) { currentCoins = 0; currentTier = 'free'; updateCoinBadge(); return; }
   try {
     const { data, error } = await withRetry(
-      () => supabaseClient.from('profiles').select('coins, subscription_tier').eq('id', currentUser.id).single(),
+      () => supabaseClient.from('profiles').select('coins, subscription_tier, subscription_expires_at').eq('id', currentUser.id).single(),
       'profilni yuklash'
     );
     if (error) throw error;
     currentCoins = data?.coins || 0;
-    currentTier = data?.subscription_tier || 'free';
+    const rawTier = data?.subscription_tier || 'free';
+    const expiresAt = data?.subscription_expires_at;
+
+    // Obuna muddati o'tgan bo'lsa — avtomatik "free" deb hisoblaymiz
+    if (rawTier !== 'free' && expiresAt && new Date(expiresAt) < new Date()) {
+      currentTier = 'free';
+      // Bazani ham yangilaymiz, shunda keyingi safar ham togri korsatiladi
+      supabaseClient.from('profiles').update({ subscription_tier: 'free' }).eq('id', currentUser.id).then(() => {});
+    } else {
+      currentTier = rawTier;
+    }
   } catch (err) {
     currentCoins = 0;
     currentTier = 'free';
@@ -2681,11 +2728,14 @@ hamburgerBtn.addEventListener('click', openSideMenu);
 sideMenuClose.addEventListener('click', closeSideMenu);
 sideMenuOverlay.addEventListener('click', (e) => { if (e.target === sideMenuOverlay) closeSideMenu(); });
 
+const ADMIN_EMAIL = 'sayitkulovadkhamjon@gmail.com';
+
 function updateSideMenuInfo() {
   const smNameEl = document.getElementById('smName');
   const smCoinsEl = document.getElementById('smCoins');
   const smCommunity = document.getElementById('smCommunity');
   const smPremiumBadge = document.getElementById('smPremiumBadge');
+  const smAdmin = document.getElementById('smAdmin');
   if (currentUser) {
     smNameEl.textContent = currentUser.user_metadata?.full_name || currentUser.email.split('@')[0];
     smCoinsEl.textContent = '🪙 ' + currentCoins + ' coin';
@@ -2693,6 +2743,7 @@ function updateSideMenuInfo() {
     smLogin.classList.add('hidden');
     smCommunity.classList.toggle('hidden', currentTier !== 'pro');
     smPremiumBadge.classList.toggle('hidden', currentTier !== 'pro');
+    smAdmin.classList.toggle('hidden', currentUser.email !== ADMIN_EMAIL);
   } else {
     smNameEl.textContent = 'Mehmon';
     smCoinsEl.textContent = "Kirib, coin yig'ishni boshlang";
@@ -2700,12 +2751,109 @@ function updateSideMenuInfo() {
     smLogin.classList.remove('hidden');
     smCommunity.classList.add('hidden');
     smPremiumBadge.classList.add('hidden');
+    smAdmin.classList.add('hidden');
   }
 }
 
 document.getElementById('smCommunity').addEventListener('click', () => {
   closeSideMenu();
   window.open('https://t.me/+uxiq7NHz-ohmNmM9', '_blank');
+});
+
+/* ================== ADMIN PANEL ================== */
+document.getElementById('smAdmin').addEventListener('click', () => {
+  closeSideMenu();
+  lessonListScreen.classList.add('hidden');
+  categoryScreen.classList.add('hidden');
+  journeyScreen.classList.add('hidden');
+  adminScreen.classList.remove('hidden');
+  backBtn.classList.remove('hidden');
+  headerEyebrow.textContent = '🔑 ADMIN';
+  headerTitle.textContent = "Obunachini boshqarish";
+  document.getElementById('adminResultWrap').innerHTML = '';
+  document.getElementById('adminCodeInput').value = '';
+});
+
+async function adminSearchUser() {
+  const codeRaw = document.getElementById('adminCodeInput').value.trim().toUpperCase().replace(/^NP-?/, '');
+  const resultWrap = document.getElementById('adminResultWrap');
+  if (!codeRaw) return;
+  resultWrap.innerHTML = '<div class="loading-msg">Qidirilmoqda...</div>';
+
+  const { data: allProfiles, error } = await withRetry(
+    () => supabaseClient.from('profiles').select('*'),
+    'foydalanuvchilarni yuklash'
+  );
+
+  if (error) {
+    resultWrap.innerHTML = `<div class="empty-msg">Ulanishda muammo bo'ldi 😕</div>`;
+    return;
+  }
+
+  const data = (allProfiles || []).filter(p => p.id.toUpperCase().startsWith(codeRaw));
+
+  if (data.length === 0) {
+    resultWrap.innerHTML = `<div class="empty-msg">Hech kim topilmadi. Kodni tekshiring.</div>`;
+    return;
+  }
+
+  resultWrap.innerHTML = data.map(p => {
+    const expiryText = p.subscription_expires_at
+      ? new Date(p.subscription_expires_at).toLocaleDateString('uz-UZ')
+      : '—';
+    return `
+      <div class="admin-card">
+        <div class="ac-name">${escapeHtml(p.full_name || 'Ism yoq')}</div>
+        <div class="ac-email">ID: ${escapeHtml(p.id)}</div>
+        <div class="ac-row"><span>Joriy tarif</span><b>${escapeHtml(p.subscription_tier || 'free')}</b></div>
+        <div class="ac-row"><span>Tugash sanasi</span><b>${expiryText}</b></div>
+        <div class="ac-row"><span>Coin</span><b>${p.coins || 0}</b></div>
+        <div class="admin-actions">
+          <button class="admin-btn-standard" data-action="standard" data-id="${p.id}">Standard (150k)</button>
+          <button class="admin-btn-pro" data-action="pro" data-id="${p.id}">💎 Pro (250k)</button>
+        </div>
+        <div class="admin-actions">
+          <button class="admin-btn-free" data-action="free" data-id="${p.id}" style="flex:1;">Bekor qilish (Free)</button>
+        </div>
+        <div class="admin-success hidden" id="success-${p.id}"></div>
+      </div>`;
+  }).join('');
+
+  resultWrap.querySelectorAll('[data-action]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const id = btn.dataset.id;
+      const action = btn.dataset.action;
+      btn.disabled = true;
+      btn.textContent = 'Bajarilmoqda...';
+
+      const updatePayload = action === 'free'
+        ? { subscription_tier: 'free', subscription_expires_at: null }
+        : { subscription_tier: action, subscription_expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() };
+
+      const { error: updErr } = await withRetry(
+        () => supabaseClient.from('profiles').update(updatePayload).eq('id', id),
+        'obunani yangilash'
+      );
+
+      const successEl = document.getElementById(`success-${id}`);
+      if (updErr) {
+        successEl.textContent = "Xato yuz berdi, qaytadan urinib ko'ring.";
+        successEl.style.background = 'rgba(195,74,54,0.1)';
+        successEl.style.borderColor = 'var(--bad)';
+        successEl.style.color = 'var(--bad)';
+      } else {
+        successEl.textContent = `✓ Muvaffaqiyatli yangilandi: ${action === 'free' ? 'Bekor qilindi' : action}`;
+      }
+      successEl.classList.remove('hidden');
+      btn.disabled = false;
+      btn.textContent = action === 'standard' ? 'Standard (150k)' : action === 'pro' ? '💎 Pro (250k)' : 'Bekor qilish (Free)';
+    });
+  });
+}
+
+document.getElementById('adminSearchBtn').addEventListener('click', adminSearchUser);
+document.getElementById('adminCodeInput').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') adminSearchUser();
 });
 
 smLogout.addEventListener('click', () => {
