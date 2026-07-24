@@ -481,6 +481,7 @@
     display: block; width: 100%; background: var(--shu); color: #fff; border: none; border-radius: 14px;
     padding: 15px; font-size: 14.5px; font-weight: 900; cursor: pointer; margin: 6px 0 20px;
   }
+  .reading-complete-btn:disabled { background: #d8d2c5; color: #a8a396; cursor: default; }
 
   .reading-watermark { position: fixed; inset: 0; pointer-events: none; z-index: 60; overflow: hidden; }
   .reading-watermark span {
@@ -1470,6 +1471,7 @@ function renderLevelContent() {
 }
 
 async function showLessonListScreen() {
+  if (grammarUnlockTimer) { clearInterval(grammarUnlockTimer); grammarUnlockTimer = null; }
   quizScreen.classList.add('hidden');
   journeyScreen.classList.add('hidden');
   categoryScreen.classList.add('hidden');
@@ -1776,6 +1778,8 @@ document.getElementById('nextBtn').addEventListener('click', () => {
 });
 
 /* ================== GRAMMATIKA DARSI (video + doska) ================== */
+let grammarUnlockTimer = null;
+
 async function openGrammarLesson(lesson) {
   lessonListScreen.classList.add('hidden');
   categoryScreen.classList.add('hidden');
@@ -1784,6 +1788,23 @@ async function openGrammarLesson(lesson) {
   backBtn.classList.remove('hidden');
   headerEyebrow.textContent = `${lesson.jlpt_level || ''} レベル · ${getDisplayNum(lesson)}課`;
   headerTitle.textContent = lesson.title;
+
+  // Tugmani 60 soniyaga qulflaymiz - video/qollanmani korish uchun minimal vaqt
+  const btn = document.getElementById('grammarCompleteBtn');
+  btn.disabled = true;
+  let secondsLeft = 60;
+  btn.textContent = `🔒 Video va qo'llanmani ko'ring (${secondsLeft}s)`;
+  if (grammarUnlockTimer) clearInterval(grammarUnlockTimer);
+  grammarUnlockTimer = setInterval(() => {
+    secondsLeft--;
+    if (secondsLeft <= 0) {
+      clearInterval(grammarUnlockTimer);
+      btn.disabled = false;
+      btn.textContent = '✓ Darsni tugatdim';
+    } else {
+      btn.textContent = `🔒 Video va qo'llanmani ko'ring (${secondsLeft}s)`;
+    }
+  }, 1000);
 
   document.getElementById('grammarGuideFrame').srcdoc = '<div style="font-family:sans-serif;padding:40px;text-align:center;color:#8a8070;">Yuklanmoqda...</div>';
 
@@ -1802,6 +1823,7 @@ async function openGrammarLesson(lesson) {
 }
 
 document.getElementById('grammarCompleteBtn').addEventListener('click', async () => {
+  if (document.getElementById('grammarCompleteBtn').disabled) return;
   goodCount = 1; badCount = 0; // grammatika darsida alohida test hisoblanmaydi, dars tugatilgani belgilanadi
   await saveLessonCompletion();
   showLessonListScreen();
@@ -1838,6 +1860,10 @@ async function openReadingLesson(lesson) {
   backBtn.classList.remove('hidden');
   headerEyebrow.textContent = `${lesson.jlpt_level || ''} レベル · ${getDisplayNum(lesson)}課`;
   headerTitle.textContent = lesson.title;
+
+  // Har yangi darsda "korilgan bolimlar" royxatini tozalaymiz
+  readingVisitedSections = new Set(['raccText']); // Matn boshida ochiq turadi
+  updateReadingCompleteBtnState();
 
   document.getElementById('readingPassageWrap').innerHTML = '<div class="loading-msg">Yuklanmoqda...</div>';
   document.getElementById('readingSummaryJp').textContent = '';
@@ -1986,12 +2012,30 @@ document.getElementById('readingModeKanaBtn').addEventListener('click', () => {
   applyReadingKanaMode();
 });
 
+let readingVisitedSections = new Set();
+const READING_REQUIRED_SECTIONS = ['raccText', 'raccSummary', 'raccQuiz', 'raccVocab'];
+
+function updateReadingCompleteBtnState() {
+  const btn = document.getElementById('readingCompleteBtn');
+  if (!btn) return;
+  const allVisited = READING_REQUIRED_SECTIONS.every(id => readingVisitedSections.has(id));
+  btn.disabled = !allVisited;
+  const remaining = READING_REQUIRED_SECTIONS.length - readingVisitedSections.size;
+  btn.textContent = allVisited
+    ? "✓ Darsni tugatdim"
+    : `🔒 Avval barcha bo'limlarni ko'ring (${remaining} qoldi)`;
+}
+
 document.querySelectorAll('#readingScreen [data-racc-head]').forEach(head => {
   head.addEventListener('click', () => {
     const acc = head.parentElement;
     const wasOpen = acc.classList.contains('open');
     document.querySelectorAll('#readingScreen .racc').forEach(a => a.classList.remove('open'));
-    if (!wasOpen) acc.classList.add('open');
+    if (!wasOpen) {
+      acc.classList.add('open');
+      readingVisitedSections.add(acc.id);
+      updateReadingCompleteBtnState();
+    }
   });
 });
 
@@ -2013,6 +2057,8 @@ function renderReadingWatermark() {
 }
 
 document.getElementById('readingCompleteBtn').addEventListener('click', async () => {
+  const allVisited = READING_REQUIRED_SECTIONS.every(id => readingVisitedSections.has(id));
+  if (!allVisited) return;
   goodCount = 1; badCount = 0;
   await saveLessonCompletion();
   showLessonListScreen();
