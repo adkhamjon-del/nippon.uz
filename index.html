@@ -2805,8 +2805,8 @@ async function adminSearchUser() {
       <div class="admin-card">
         <div class="ac-name">${escapeHtml(p.full_name || 'Ism yoq')}</div>
         <div class="ac-email">ID: ${escapeHtml(p.id)}</div>
-        <div class="ac-row"><span>Joriy tarif</span><b>${escapeHtml(p.subscription_tier || 'free')}</b></div>
-        <div class="ac-row"><span>Tugash sanasi</span><b>${expiryText}</b></div>
+        <div class="ac-row"><span>Joriy tarif</span><b id="tier-${p.id}">${escapeHtml(p.subscription_tier || 'free')}</b></div>
+        <div class="ac-row"><span>Tugash sanasi</span><b id="expiry-${p.id}">${expiryText}</b></div>
         <div class="ac-row"><span>Coin</span><b>${p.coins || 0}</b></div>
         <div class="admin-actions">
           <button class="admin-btn-standard" data-action="standard" data-id="${p.id}">Standard (150k)</button>
@@ -2843,6 +2843,15 @@ async function adminSearchUser() {
         successEl.style.color = 'var(--bad)';
       } else {
         successEl.textContent = `✓ Muvaffaqiyatli yangilandi: ${action === 'free' ? 'Bekor qilindi' : action}`;
+        // Ekrandagi "Joriy tarif" va "Tugash sanasi" qatorlarini ham yangilaymiz
+        const tierEl = document.getElementById(`tier-${id}`);
+        const expiryEl = document.getElementById(`expiry-${id}`);
+        if (tierEl) tierEl.textContent = updatePayload.subscription_tier;
+        if (expiryEl) {
+          expiryEl.textContent = updatePayload.subscription_expires_at
+            ? new Date(updatePayload.subscription_expires_at).toLocaleDateString('uz-UZ')
+            : '—';
+        }
       }
       successEl.classList.remove('hidden');
       btn.disabled = false;
