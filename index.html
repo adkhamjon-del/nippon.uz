@@ -434,6 +434,7 @@
 
   .rp-num { font-size: 10px; color: #b8b2a0; margin-bottom: 6px; }
   .rp-jp { font-family: 'Noto Serif JP', serif; font-size: 17px; line-height: 2.1; color: var(--sumi); }
+  .kana-hidden { display: none !important; }
   .rp-jp.kana-hidden { display: none; }
   .rp-en { margin-top: 9px; padding-top: 9px; border-top: 1px dashed var(--line); font-size: 12.5px; line-height: 1.5; color: #8a8f9c; font-style: italic; }
   .rp-uz { margin-top: 9px; padding-top: 9px; border-top: 1px dashed var(--line); font-size: 13.5px; line-height: 1.5; color: #2f7a52; position: relative; }
@@ -2185,9 +2186,20 @@ function showListeningDone() {
     if (answerKeyHtml) html += `<div class="lr-block-label">🔍 Javoblar</div><div class="lr-answer-key">${answerKeyHtml}</div>`;
 
     // Furigana (ruby) bor bolsa - HTML sifatida; bolmasa - oddiy matn (xavfsiz escape qilingan)
-    const scriptDisplay = lesson.script_furigana ? lesson.script_furigana : escapeHtml(lesson.script || '');
+    const scriptFuriganaDisplay = lesson.script_furigana ? lesson.script_furigana : escapeHtml(lesson.script || '');
+    const scriptKanaDisplay = lesson.script_kana ? escapeHtml(lesson.script_kana) : null;
+    const kanaToggleHtml = scriptKanaDisplay ? `
+      <div class="reading-kana-toggle" id="listeningKanaToggle">
+        <button class="active" data-lkmode="kanji">漢字 + かな</button>
+        <button data-lkmode="kana">かな (kanjisiz)</button>
+      </div>` : '';
 
-    if (lesson.script) html += `<div class="lr-block-label">🇯🇵 Matn</div><div class="lr-script">${scriptDisplay}</div>`;
+    if (lesson.script) {
+      html += `<div class="lr-block-label">🇯🇵 Matn</div>
+        ${kanaToggleHtml}
+        <div class="lr-script" data-lscript-kanji>${scriptFuriganaDisplay}</div>
+        ${scriptKanaDisplay ? `<div class="lr-script kana-hidden" data-lscript-kana>${scriptKanaDisplay}</div>` : ''}`;
+    }
     if (lesson.translation) html += `<div class="lr-block-label">🇺🇿 Tarjima</div><div class="lr-translation">${escapeHtml(lesson.translation)}</div>`;
     if (lesson.listening_explanation) html += `<div class="lr-block-label">💡 Tushuntirish</div><div class="lr-explanation">${escapeHtml(lesson.listening_explanation)}</div>`;
 
@@ -2197,7 +2209,8 @@ function showListeningDone() {
     }
     if (lesson.script) {
       html += `<div class="lr-block-label">🗣️ Shadowing — Takrorlang</div>
-        <div class="lr-shadow-text">${scriptDisplay}</div>
+        <div class="lr-shadow-text" data-lscript-kanji>${scriptFuriganaDisplay}</div>
+        ${scriptKanaDisplay ? `<div class="lr-shadow-text kana-hidden" data-lscript-kana>${scriptKanaDisplay}</div>` : ''}
         <div class="lr-shadow-btn" id="listeningShadowBtn">🔊 Eshitish</div>
         <div class="lr-shadow-hint">Audio tugashi bilan ovoz chiqarib takrorlang</div>`;
     }
@@ -2218,6 +2231,19 @@ function showListeningDone() {
       player.currentTime = 0;
       player.play();
     });
+
+    const kanaToggle = document.getElementById('listeningKanaToggle');
+    if (kanaToggle) {
+      kanaToggle.querySelectorAll('button').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const mode = btn.dataset.lkmode;
+          kanaToggle.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          revealWrap.querySelectorAll('[data-lscript-kanji]').forEach(el => el.classList.toggle('kana-hidden', mode === 'kana'));
+          revealWrap.querySelectorAll('[data-lscript-kana]').forEach(el => el.classList.toggle('kana-hidden', mode !== 'kana'));
+        });
+      });
+    }
   });
 
   document.getElementById('listeningCompleteBtn').addEventListener('click', async () => {
