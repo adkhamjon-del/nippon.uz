@@ -407,13 +407,16 @@
   /* KATEGORIYA EKRANI */
   .cat-screen-header { margin-bottom: 18px; }
   .cat-screen-header .journey-back { color: var(--ai-blue); font-weight: 700; margin-bottom: 12px; }
-  .cat-title-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .cat-title-row { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
   .cat-screen-title { font-family: 'Noto Serif JP', serif; font-weight: 900; font-size: 20px; }
-  .notebook-icon-btn {
-    flex-shrink: 0; width: 38px; height: 38px; border-radius: 10px;
-    background: var(--washi); border: 1.5px solid var(--kin, #9c7a35);
-    font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  .notebook-tag-btn {
+    flex-shrink: 0; display: inline-flex; align-items: center; gap: 5px;
+    font-family: 'Kalam', cursive; font-weight: 700; font-size: 14.5px; color: #6b4a1f;
+    background: #fdf6e8; border: 1px solid #d9c9a0; border-left: 3px solid var(--kin, #9c7a35);
+    padding: 6px 12px 6px 9px; border-radius: 3px 9px 9px 3px; cursor: pointer;
+    box-shadow: 1px 2px 5px rgba(120,90,20,0.18); transform: rotate(-1.2deg);
   }
+  .notebook-tag-btn:active { transform: rotate(-1.2deg) scale(0.97); }
 
   /* YON DAFTARCHA EKRANI */
   .notebook-paper {
@@ -451,6 +454,18 @@
   }
   .notebook-divider { border: none; border-top: 1.5px dashed #c9b98a; margin: 22px 0; }
   .notebook-empty { text-align: center; padding: 50px 20px; color: #9a8a60; font-family: 'Caveat', cursive; font-size: 20px; }
+  .notebook-footer-brand {
+    display: flex; align-items: center; justify-content: center; gap: 7px; margin-top: 22px;
+    padding-top: 12px; border-top: 1px dashed #c9b98a; font-family: 'Kalam', cursive;
+    font-size: 12px; color: #9a8560; letter-spacing: 0.02em;
+  }
+  .notebook-footer-brand .nb-hanko {
+    width: 16px; height: 16px; border-radius: 3px; background: #b8503f; color: #fff;
+    font-size: 9px; display: flex; align-items: center; justify-content: center; font-family: 'Noto Serif JP', serif;
+  }
+  .notebook-tap-zone { position: absolute; top: 0; bottom: 0; width: 30%; z-index: 2; cursor: pointer; }
+  .notebook-tap-zone.left { left: 0; }
+  .notebook-tap-zone.right { right: 0; }
 
   /* YON DAFTARCHA MODAL (varaqlanadigan) */
   .notebook-overlay {
@@ -467,7 +482,7 @@
   }
   .notebook-swiper { overflow: hidden; border-radius: 8px; touch-action: pan-y; }
   .notebook-track { display: flex; }
-  .notebook-page { min-width: 100%; max-height: 72vh; overflow-y: auto; box-sizing: border-box; }
+  .notebook-page { min-width: 100%; max-height: 72vh; overflow-y: auto; box-sizing: border-box; position: relative; }
   .notebook-dots { display: flex; justify-content: center; gap: 6px; margin-top: 14px; }
   .notebook-dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.45); transition: all .2s ease; cursor: pointer; }
   .notebook-dot.active { background: #fff; width: 20px; border-radius: 4px; }
@@ -933,7 +948,7 @@
       <div class="journey-back" id="catBackBtn">← Ortga</div>
       <div class="cat-title-row">
         <div class="cat-screen-title" id="catScreenTitle"></div>
-        <button class="notebook-icon-btn hidden" id="notebookLink" title="Yon daftarcha">📔</button>
+        <button class="notebook-tag-btn hidden" id="notebookLink">✏️ <span>Yon daftarcha</span></button>
       </div>
     </div>
     <div id="catScreenContent"></div>
@@ -1447,11 +1462,14 @@ async function openNotebookModal(level) {
 
   track.innerHTML = notebookPages.map((entry, idx) => `
     <div class="notebook-page">
+      <div class="notebook-tap-zone left" data-tap="prev"></div>
+      <div class="notebook-tap-zone right" data-tap="next"></div>
       <div class="notebook-paper">
         <div class="notebook-spiral">${'<span></span>'.repeat(10)}</div>
         ${idx === 0 ? `<div class="notebook-tab">📎 QO'SHIMCHA MA'LUMOT</div>` : ''}
         <div class="notebook-entry-title">${escapeHtml(entry.title)}</div>
         <div class="notebook-entry-body">${entry.content_html}</div>
+        <div class="notebook-footer-brand"><span class="nb-hanko">学</span> Nippon.uz 🌸🕌</div>
       </div>
     </div>`).join('');
 
@@ -1460,6 +1478,13 @@ async function openNotebookModal(level) {
 
   document.querySelectorAll('#notebookDots .notebook-dot').forEach(dot => {
     dot.addEventListener('click', () => goToNotebookPage(parseInt(dot.dataset.page)));
+  });
+
+  document.querySelectorAll('.notebook-tap-zone').forEach(zone => {
+    zone.addEventListener('click', () => {
+      if (zone.dataset.tap === 'next') goToNotebookPage(notebookCurrentPage + 1);
+      else goToNotebookPage(notebookCurrentPage - 1);
+    });
   });
 
   renderNotebookTrack(false);
