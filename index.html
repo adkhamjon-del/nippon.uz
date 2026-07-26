@@ -6,7 +6,7 @@
 <title>Nippon.uz — Yapon tili kursi</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600;900&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600;900&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=Caveat:wght@600;700&display=swap');
 
   :root {
     --sumi: #211f2e;
@@ -408,6 +408,48 @@
   .cat-screen-header { margin-bottom: 18px; }
   .cat-screen-header .journey-back { color: var(--ai-blue); font-weight: 700; margin-bottom: 12px; }
   .cat-screen-title { font-family: 'Noto Serif JP', serif; font-weight: 900; font-size: 20px; }
+  .notebook-link {
+    display: inline-flex; align-items: center; gap: 5px; margin-top: 8px;
+    font-family: 'Caveat', cursive; font-weight: 700; font-size: 19px; color: var(--kin, #9c7a35);
+    cursor: pointer; border-bottom: 2px dashed var(--kin, #9c7a35); padding-bottom: 2px;
+  }
+
+  /* YON DAFTARCHA EKRANI */
+  .notebook-paper {
+    background: #f5ecd8; border-radius: 4px; padding: 30px 22px 30px 46px; position: relative;
+    box-shadow: 0 2px 14px rgba(120,90,40,0.15);
+    background-image: repeating-linear-gradient(#f5ecd8 0px, #f5ecd8 27px, rgba(180,150,100,0.15) 28px);
+    min-height: 400px;
+  }
+  .notebook-spiral {
+    position: absolute; left: 12px; top: 0; bottom: 0; width: 20px;
+    display: flex; flex-direction: column; justify-content: space-evenly; align-items: center;
+  }
+  .notebook-spiral span {
+    width: 13px; height: 13px; border-radius: 50%; background: #d8cba8;
+    box-shadow: inset 0 0 0 3px #f5ecd8, 0 1px 2px rgba(0,0,0,0.15);
+  }
+  .notebook-tab {
+    position: absolute; top: -14px; left: 46px; background: var(--kin, #9c7a35); color: #fff;
+    font-size: 10px; font-weight: 800; letter-spacing: 0.04em; padding: 6px 14px 6px;
+    border-radius: 4px 4px 0 0; box-shadow: 0 -1px 4px rgba(0,0,0,0.15); transform: rotate(-1.5deg);
+  }
+  .notebook-entry-title {
+    font-family: 'Caveat', cursive; font-weight: 700; font-size: 26px; color: #4a3820; margin-bottom: 10px;
+  }
+  .notebook-entry-body { font-size: 13.5px; line-height: 1.85; color: #4a3f30; }
+  .notebook-entry-body b { color: #7a4a1f; }
+  .notebook-sticker {
+    background: #fff3b8; border-radius: 3px; padding: 12px 14px; margin: 12px 4px;
+    box-shadow: 2px 3px 8px rgba(120,90,20,0.2); transform: rotate(-1deg); font-size: 12.5px; line-height: 1.6;
+  }
+  .notebook-sticker .ns-label { font-family: 'Caveat', cursive; font-weight: 700; font-size: 15px; color: #7a5a10; }
+  .notebook-compare {
+    background: rgba(155,232,155,0.15); border: 1.5px dashed #5a8a4a; border-radius: 6px;
+    padding: 10px 14px; margin: 12px 0; font-size: 12.5px; color: #3a5a2a; line-height: 1.6;
+  }
+  .notebook-divider { border: none; border-top: 1.5px dashed #c9b98a; margin: 22px 0; }
+  .notebook-empty { text-align: center; padding: 50px 20px; color: #9a8a60; font-family: 'Caveat', cursive; font-size: 20px; }
 
   /* GRAMMATIKA DARSI EKRANI */
   .grammar-video-wrap { position: relative; width: 100%; padding-top: 56.25%; border-radius: 16px; overflow: hidden; margin-bottom: 16px; background: #000; }
@@ -869,8 +911,17 @@
     <div class="cat-screen-header">
       <div class="journey-back" id="catBackBtn">← Ortga</div>
       <div class="cat-screen-title" id="catScreenTitle"></div>
+      <div class="notebook-link hidden" id="notebookLink">📝 <span>Yon daftarcha</span></div>
     </div>
     <div id="catScreenContent"></div>
+  </div>
+
+  <!-- YON DAFTARCHA EKRANI -->
+  <div id="notebookScreen" class="hidden">
+    <div class="cat-screen-header">
+      <div class="journey-back" id="notebookBackBtn">← Ortga</div>
+    </div>
+    <div id="notebookContentWrap"></div>
   </div>
 
   <!-- GRAMMATIKA DARSI EKRANI (video + doska qollanma) -->
@@ -1162,6 +1213,7 @@ const readingScreen = document.getElementById('readingScreen');
 const listeningScreen = document.getElementById('listeningScreen');
 const adminScreen = document.getElementById('adminScreen');
 const infoScreen = document.getElementById('infoScreen');
+const notebookScreen = document.getElementById('notebookScreen');
 const termsScreen = document.getElementById('termsScreen');
 const journeyScreen = document.getElementById('journeyScreen');
 const quizScreen = document.getElementById('quizScreen');
@@ -1269,6 +1321,9 @@ function openCategoryScreen(cat) {
   const meta = CATEGORY_META[cat];
 
   document.getElementById('catScreenTitle').textContent = `${meta.icon} ${meta.label} — ${selectedLevel}`;
+  const notebookLink = document.getElementById('notebookLink');
+  notebookLink.classList.toggle('hidden', cat !== 'grammar');
+  notebookLink.onclick = () => openNotebookScreen(selectedLevel);
 
   const days = {};
   levelLessons.forEach(l => {
@@ -1331,6 +1386,45 @@ document.getElementById('catBackBtn').addEventListener('click', () => {
   lastOpenedCategory = null;
   categoryScreen.classList.add('hidden');
   lessonListScreen.classList.remove('hidden');
+});
+
+/* ================== YON DAFTARCHA ================== */
+async function openNotebookScreen(level) {
+  categoryScreen.classList.add('hidden');
+  notebookScreen.classList.remove('hidden');
+  document.getElementById('notebookContentWrap').innerHTML = '<div class="loading-msg">Yuklanmoqda...</div>';
+
+  const { data, error } = await withRetry(
+    () => supabaseClient.from('notebook_entries').select('*').eq('jlpt_level', level).order('sort_order', { ascending: true }),
+    'daftarchani yuklash'
+  );
+
+  if (error || !data || data.length === 0) {
+    document.getElementById('notebookContentWrap').innerHTML = `
+      <div class="notebook-paper">
+        <div class="notebook-spiral">${'<span></span>'.repeat(10)}</div>
+        <div class="notebook-tab">📎 QO'SHIMCHA MA'LUMOT</div>
+        <div class="notebook-empty">Hozircha bu daraja uchun<br>daftarcha bo'sh — tez orada to'ldiriladi 🌱</div>
+      </div>`;
+    return;
+  }
+
+  let html = '';
+  data.forEach((entry, idx) => {
+    html += `
+      <div class="notebook-paper" style="margin-bottom:18px;">
+        <div class="notebook-spiral">${'<span></span>'.repeat(10)}</div>
+        ${idx === 0 ? `<div class="notebook-tab">📎 QO'SHIMCHA MA'LUMOT</div>` : ''}
+        <div class="notebook-entry-title">${escapeHtml(entry.title)}</div>
+        <div class="notebook-entry-body">${entry.content_html}</div>
+      </div>`;
+  });
+  document.getElementById('notebookContentWrap').innerHTML = html;
+}
+
+document.getElementById('notebookBackBtn').addEventListener('click', () => {
+  notebookScreen.classList.add('hidden');
+  categoryScreen.classList.remove('hidden');
 });
 
 function renderLevelTabs() {
@@ -1482,6 +1576,7 @@ async function showLessonListScreen() {
   listeningScreen.classList.add('hidden');
   adminScreen.classList.add('hidden');
   infoScreen.classList.add('hidden');
+  notebookScreen.classList.add('hidden');
   progressWrap.classList.add('hidden');
   scoreRow.classList.add('hidden');
   chatFab.classList.remove('show');
