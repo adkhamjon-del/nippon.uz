@@ -6,7 +6,7 @@
 <title>Nippon.uz — Yapon tili kursi</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600;900&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=Caveat:wght@600;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600;900&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=Caveat:wght@600;700&family=Kalam:wght@400;700&family=Patrick+Hand&family=Shadows+Into+Light&display=swap');
 
   :root {
     --sumi: #211f2e;
@@ -418,53 +418,85 @@
   }
   .notebook-tag-btn:active { transform: rotate(-1.2deg) scale(0.97); }
 
-  /* YON DAFTARCHA EKRANI */
-  .notebook-paper {
-    background: #f5ecd8; border-radius: 4px; padding: 30px 22px 30px 46px; position: relative;
-    box-shadow: 0 2px 14px rgba(120,90,40,0.15);
-    background-image: repeating-linear-gradient(#f5ecd8 0px, #f5ecd8 27px, rgba(180,150,100,0.15) 28px);
-    min-height: 400px;
+  /* YON DAFTARCHA EKRANI (aniq dizayn spetsifikatsiyasi) */
+  :root {
+    --nb-paper: #f4ecd8; --nb-paper-dark: #e9dfc4; --nb-ink: #3b2f22; --nb-ink-dim: #7a6a52;
+    --nb-ring: #b9a67c; --nb-tab: #e7593c; --nb-tab-dark: #c94a30;
+    --nb-teal: #2f7d6b; --nb-teal-dark: #1f5a4c; --nb-gold: #b8862f; --nb-line: #d8c9a8;
   }
-  .notebook-spiral {
-    position: absolute; left: 12px; top: 0; bottom: 0; width: 20px;
-    display: flex; flex-direction: column; justify-content: space-evenly; align-items: center;
+  .notebook {
+    position: relative; overflow: hidden;
+    padding: 32px 22px 30px 56px;
+    background: repeating-linear-gradient(to bottom, transparent 0px, transparent 33px, var(--nb-line) 34px, var(--nb-line) 35px), var(--nb-paper);
+    border-radius: 6px; box-shadow: 0 2px 14px rgba(120,90,40,0.15); min-height: 420px;
   }
-  .notebook-spiral span {
-    width: 13px; height: 13px; border-radius: 50%; background: #d8cba8;
-    box-shadow: inset 0 0 0 3px #f5ecd8, 0 1px 2px rgba(0,0,0,0.15);
+  .notebook::before {
+    content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 34px;
+    background: var(--nb-paper-dark); border-right: 2px dashed var(--nb-ring);
   }
-  .notebook-tab {
-    position: absolute; top: -14px; left: 46px; background: var(--kin, #9c7a35); color: #fff;
-    font-size: 10px; font-weight: 800; letter-spacing: 0.04em; padding: 6px 14px 6px;
-    border-radius: 4px 4px 0 0; box-shadow: 0 -1px 4px rgba(0,0,0,0.15); transform: rotate(-1.5deg);
+  .nb-ring {
+    position: absolute; left: 10px; width: 16px; height: 16px;
+    border: 3px solid var(--nb-ring); border-radius: 50%; background: #2a2118;
+  }
+  .badge-tab {
+    position: absolute; top: 18px; right: 0; background: var(--nb-tab); color: #fff8ec;
+    font-family: 'Kalam', cursive; font-weight: 700; font-size: 12.5px;
+    padding: 6px 14px 6px 13px; border-radius: 6px 0 0 6px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.25); transform: rotate(1deg); z-index: 3; white-space: nowrap;
+  }
+  .brand-mini {
+    display: flex; align-items: center; gap: 6px; font-family: 'Kalam', cursive;
+    color: var(--nb-gold); font-size: 13px; margin-bottom: 8px; position: relative; z-index: 2;
+  }
+  .brand-mini .mark {
+    width: 19px; height: 19px; border-radius: 50%; border: 1.5px solid var(--nb-gold);
+    display: flex; align-items: center; justify-content: center; font-size: 10px; flex-shrink: 0;
+  }
+  .nb-header { text-align: center; margin: 8px 0 22px; padding-bottom: 18px; border-bottom: 3px double var(--nb-ring); }
+  .nb-header-tag {
+    display: inline-block; background: var(--nb-teal); color: #fff8ec; font-family: 'Kalam', cursive;
+    font-size: 12.5px; padding: 4px 13px; border-radius: 20px; margin-bottom: 9px;
+  }
+  .nb-header h1 { font-family: 'Shadows Into Light', cursive; color: var(--nb-ink); font-size: 32px; margin: 4px 0 6px; font-weight: 400; }
+  .nb-header .nb-sub { color: var(--nb-ink-dim); font-size: 14px; font-style: italic; line-height: 1.5; }
+  .nb-note-line {
+    text-align: left; color: var(--nb-ink-dim); font-size: 13.5px; line-height: 1.6;
+    background: rgba(255,255,255,0.4); border: 1px dashed var(--nb-ring); border-radius: 8px;
+    padding: 11px 14px; margin-bottom: 20px;
+  }
+  .nb-toc { display: flex; flex-wrap: wrap; gap: 7px; justify-content: center; margin-bottom: 6px; }
+  .nb-toc-item {
+    background: var(--nb-paper-dark); border: 1px solid var(--nb-ring); border-radius: 16px;
+    padding: 5px 11px; font-size: 12.5px; color: var(--nb-ink); cursor: pointer;
   }
   .notebook-entry-title {
-    font-family: 'Caveat', cursive; font-weight: 700; font-size: 26px; color: #4a3820; margin-bottom: 10px;
+    font-family: 'Caveat', cursive; font-weight: 700; font-size: 26px; color: var(--nb-ink);
+    margin-bottom: 10px; position: relative; z-index: 2;
   }
-  .notebook-entry-body { font-size: 13.5px; line-height: 1.85; color: #4a3f30; }
-  .notebook-entry-body b { color: #7a4a1f; }
+  .notebook-entry-body { font-size: 13.5px; line-height: 1.85; color: var(--nb-ink); position: relative; z-index: 2; }
+  .notebook-entry-body b { color: var(--nb-gold); }
   .notebook-sticker {
     background: #fff3b8; border-radius: 3px; padding: 12px 14px; margin: 12px 4px;
     box-shadow: 2px 3px 8px rgba(120,90,20,0.2); transform: rotate(-1deg); font-size: 12.5px; line-height: 1.6;
   }
   .notebook-sticker .ns-label { font-family: 'Caveat', cursive; font-weight: 700; font-size: 15px; color: #7a5a10; }
   .notebook-compare {
-    background: rgba(155,232,155,0.15); border: 1.5px dashed #5a8a4a; border-radius: 6px;
-    padding: 10px 14px; margin: 12px 0; font-size: 12.5px; color: #3a5a2a; line-height: 1.6;
+    background: rgba(47,125,107,0.1); border: 1.5px dashed var(--nb-teal); border-radius: 6px;
+    padding: 10px 14px; margin: 12px 0; font-size: 12.5px; color: var(--nb-teal-dark); line-height: 1.6;
   }
-  .notebook-divider { border: none; border-top: 1.5px dashed #c9b98a; margin: 22px 0; }
-  .notebook-empty { text-align: center; padding: 50px 20px; color: #9a8a60; font-family: 'Caveat', cursive; font-size: 20px; }
+  .notebook-divider { border: none; border-top: 1.5px dashed var(--nb-line); margin: 22px 0; }
+  .notebook-empty { text-align: center; padding: 50px 20px; color: var(--nb-ink-dim); font-family: 'Caveat', cursive; font-size: 20px; position: relative; z-index: 2; }
   .notebook-footer-brand {
     display: flex; align-items: center; justify-content: center; gap: 7px; margin-top: 22px;
-    padding-top: 12px; border-top: 1px dashed #c9b98a; font-family: 'Kalam', cursive;
-    font-size: 12px; color: #9a8560; letter-spacing: 0.02em;
+    padding-top: 12px; border-top: 1px dashed var(--nb-line); font-family: 'Kalam', cursive;
+    font-size: 12px; color: var(--nb-ink-dim); letter-spacing: 0.02em; position: relative; z-index: 2;
   }
   .notebook-footer-brand .nb-hanko {
-    width: 16px; height: 16px; border-radius: 3px; background: #b8503f; color: #fff;
+    width: 16px; height: 16px; border-radius: 3px; background: var(--nb-tab-dark); color: #fff;
     font-size: 9px; display: flex; align-items: center; justify-content: center; font-family: 'Noto Serif JP', serif;
   }
   .notebook-tap-zone { position: absolute; top: 0; bottom: 0; width: 30%; z-index: 2; cursor: pointer; }
-  .notebook-tap-zone.left { left: 0; }
+  .notebook-tap-zone.left { left: 34px; }
   .notebook-tap-zone.right { right: 0; }
 
   /* YON DAFTARCHA MODAL (varaqlanadigan) */
@@ -948,7 +980,7 @@
       <div class="journey-back" id="catBackBtn">← Ortga</div>
       <div class="cat-title-row">
         <div class="cat-screen-title" id="catScreenTitle"></div>
-        <button class="notebook-tag-btn hidden" id="notebookLink">✏️ <span>Yon daftarcha</span></button>
+        <button class="notebook-tag-btn hidden" id="notebookLink">📝 <span>Yon daftarcha</span></button>
       </div>
     </div>
     <div id="catScreenContent"></div>
@@ -1430,6 +1462,7 @@ document.getElementById('catBackBtn').addEventListener('click', () => {
 
 /* ================== YON DAFTARCHA (varaqlanadigan modal) ================== */
 let notebookPages = [];
+let notebookTotalPages = 1;
 let notebookCurrentPage = 0;
 
 async function openNotebookModal(level) {
@@ -1447,12 +1480,17 @@ async function openNotebookModal(level) {
   notebookPages = (!error && data) ? data : [];
   notebookCurrentPage = 0;
 
+  const ringsHtml = [40, 110, 180, 250, 320, 390].map(top => `<div class="nb-ring" style="top:${top}px;"></div>`).join('');
+  const badgeHtml = `<div class="badge-tab">📎 QO'SHIMCHA MA'LUMOT</div>`;
+  const brandHtml = `<div class="brand-mini"><span class="mark">学</span> Nippon.uz</div>`;
+  const footerHtml = `<div class="notebook-footer-brand"><span class="nb-hanko">学</span> Nippon.uz 🌸🕌</div>`;
+
   if (notebookPages.length === 0) {
+    notebookTotalPages = 1;
     track.innerHTML = `
       <div class="notebook-page">
-        <div class="notebook-paper">
-          <div class="notebook-spiral">${'<span></span>'.repeat(10)}</div>
-          <div class="notebook-tab">📎 QO'SHIMCHA MA'LUMOT</div>
+        <div class="notebook">
+          ${ringsHtml}${badgeHtml}${brandHtml}
           <div class="notebook-empty">Hozircha bu daraja uchun<br>daftarcha bo'sh — tez orada to'ldiriladi 🌱</div>
         </div>
       </div>`;
@@ -1460,20 +1498,43 @@ async function openNotebookModal(level) {
     return;
   }
 
-  track.innerHTML = notebookPages.map((entry, idx) => `
+  const romanCircles = ['①','②','③','④','⑤','⑥','⑦','⑧','⑨','⑩'];
+  const tocHtml = notebookPages.map((e, i) => `<div class="nb-toc-item" data-toc="${i}">${romanCircles[i] || (i+1)} ${escapeHtml(e.title)}</div>`).join('');
+
+  // 1-sahifa: muqova (TOC bilan) + qolgan sahifalar: mavzular
+  let pagesHtml = `
+    <div class="notebook-page">
+      <div class="notebook-tap-zone right" data-tap="next"></div>
+      <div class="notebook">
+        ${ringsHtml}${badgeHtml}${brandHtml}
+        <div class="nb-header">
+          <div class="nb-header-tag">${escapeHtml(level)} · Erkin mavzu</div>
+          <h1>Yon daftarcha</h1>
+          <div class="nb-sub">Bu — rasmiy dars emas, balki lug'at-qo'llanma: kerak bo'lganda ochib qarab turadigan sahifa</div>
+        </div>
+        <div class="nb-note-line">Quyidagi mavzulardan birini tanlang, yoki keyingi sahifaga o'tish uchun o'ngga suring.</div>
+        <div class="nb-toc">${tocHtml}</div>
+      </div>
+    </div>`;
+
+  pagesHtml += notebookPages.map((entry, idx) => `
     <div class="notebook-page">
       <div class="notebook-tap-zone left" data-tap="prev"></div>
       <div class="notebook-tap-zone right" data-tap="next"></div>
-      <div class="notebook-paper">
-        <div class="notebook-spiral">${'<span></span>'.repeat(10)}</div>
-        ${idx === 0 ? `<div class="notebook-tab">📎 QO'SHIMCHA MA'LUMOT</div>` : ''}
+      <div class="notebook">
+        ${ringsHtml}${badgeHtml}${brandHtml}
         <div class="notebook-entry-title">${escapeHtml(entry.title)}</div>
         <div class="notebook-entry-body">${entry.content_html}</div>
-        <div class="notebook-footer-brand"><span class="nb-hanko">学</span> Nippon.uz 🌸🕌</div>
+        ${footerHtml}
       </div>
     </div>`).join('');
 
-  document.getElementById('notebookDots').innerHTML = notebookPages.map((_, i) =>
+  track.innerHTML = pagesHtml;
+
+  // Dots: 1 (muqova) + entries soni
+  const totalPages = notebookPages.length + 1;
+  notebookTotalPages = totalPages;
+  document.getElementById('notebookDots').innerHTML = Array.from({ length: totalPages }, (_, i) =>
     `<div class="notebook-dot" data-page="${i}"></div>`).join('');
 
   document.querySelectorAll('#notebookDots .notebook-dot').forEach(dot => {
@@ -1485,6 +1546,10 @@ async function openNotebookModal(level) {
       if (zone.dataset.tap === 'next') goToNotebookPage(notebookCurrentPage + 1);
       else goToNotebookPage(notebookCurrentPage - 1);
     });
+  });
+
+  document.querySelectorAll('.nb-toc-item').forEach(item => {
+    item.addEventListener('click', () => goToNotebookPage(parseInt(item.dataset.toc) + 1));
   });
 
   renderNotebookTrack(false);
@@ -1501,7 +1566,7 @@ function renderNotebookTrack(animate = true) {
 }
 
 function goToNotebookPage(idx) {
-  notebookCurrentPage = Math.max(0, Math.min(notebookPages.length - 1, idx));
+  notebookCurrentPage = Math.max(0, Math.min(notebookTotalPages - 1, idx));
   renderNotebookTrack(true);
 }
 
@@ -1511,7 +1576,7 @@ function setupNotebookSwipe() {
   let startX = 0, deltaX = 0, dragging = false;
 
   swiper.onpointerdown = (e) => {
-    if (notebookPages.length <= 1) return;
+    if (notebookTotalPages <= 1) return;
     dragging = true;
     startX = e.clientX;
     track.style.transition = 'none';
@@ -1525,7 +1590,7 @@ function setupNotebookSwipe() {
     if (!dragging) return;
     dragging = false;
     const threshold = swiper.offsetWidth * 0.16;
-    if (deltaX < -threshold && notebookCurrentPage < notebookPages.length - 1) {
+    if (deltaX < -threshold && notebookCurrentPage < notebookTotalPages - 1) {
       notebookCurrentPage++;
     } else if (deltaX > threshold && notebookCurrentPage > 0) {
       notebookCurrentPage--;
