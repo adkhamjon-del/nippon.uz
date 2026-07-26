@@ -388,6 +388,8 @@
   .grid-node.current { border-color: var(--ai-blue); box-shadow: 0 0 0 3px var(--ai-blue-soft); color: var(--ai-blue); }
   .grid-node.locked { opacity: 0.45; cursor: default; }
   .grid-node.sub-locked { border-color: var(--kin, #9c7a35); background: rgba(156,122,53,0.06); color: var(--kin, #9c7a35); }
+  .grid-node.nb-review-node { border-color: var(--ai-blue); background: var(--ai-blue-soft); }
+  .grid-node.nb-test-node { border-color: #8a4fc9; background: rgba(138,79,201,0.08); }
 
   /* ---------- HOME: CATEGORY LIST ---------- */
   .cat-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; }
@@ -637,6 +639,20 @@
   .listening-complete-btn {
     display: block; width: 100%; background: var(--shu); color: #fff; border: none; border-radius: 14px;
     padding: 15px; font-size: 14.5px; font-weight: 900; cursor: pointer; margin-top: 16px;
+  }
+
+  /* HAFTALIK TEST (7-kun) */
+  .gt-progress { font-size: 11px; color: #a89e91; font-weight: 700; margin-bottom: 8px; }
+  .gt-text { font-size: 15.5px; font-weight: 700; margin-bottom: 14px; color: var(--sumi); }
+  .gt-result-card { text-align: center; padding: 34px 22px; }
+  .gt-result-pct { font-size: 46px; font-weight: 900; margin-bottom: 6px; }
+  .gt-result-pct.gt-low { color: var(--bad, #c0483a); }
+  .gt-result-pct.gt-mid { color: #c98a1f; }
+  .gt-result-pct.gt-high { color: var(--ok, #2f7d6b); }
+  .gt-result-label { font-size: 13px; color: #8a8070; margin-bottom: 18px; }
+  .gt-congrats {
+    background: linear-gradient(135deg, #fff3b8, #ffe1a8); border-radius: 14px; padding: 16px;
+    font-family: 'Noto Serif JP', serif; font-weight: 900; font-size: 18px; color: #7a5a10; margin-bottom: 16px;
   }
 
   /* ADMIN PANEL */
@@ -1007,6 +1023,11 @@
     <button class="grammar-complete-btn" id="grammarCompleteBtn">✓ Darsni tugatdim</button>
   </div>
 
+  <!-- HAFTALIK TEST EKRANI (7-kun) -->
+  <div id="grammarTestScreen" class="hidden">
+    <div id="grammarTestQuizWrap"></div>
+  </div>
+
   <!-- OQISH DARSI EKRANI -->
   <div id="readingScreen" class="hidden" oncontextmenu="return false" ondragstart="return false">
 
@@ -1285,6 +1306,7 @@ const grammarScreen = document.getElementById('grammarScreen');
 const readingScreen = document.getElementById('readingScreen');
 const listeningScreen = document.getElementById('listeningScreen');
 const adminScreen = document.getElementById('adminScreen');
+const grammarTestScreen = document.getElementById('grammarTestScreen');
 const infoScreen = document.getElementById('infoScreen');
 const termsScreen = document.getElementById('termsScreen');
 const journeyScreen = document.getElementById('journeyScreen');
@@ -1424,14 +1446,23 @@ function openCategoryScreen(cat) {
     const isSubLocked = !isDone && !canAccessLesson(l);
 
     let stateCls, nodeContent;
+    const weekPos = ((i % 7) + 1); // 1-7 takrorlanuvchi (faqat vizual, DBda saqlanmaydi)
+    const isReview = l.lesson_subtype === 'review';
+    const isTest = l.lesson_subtype === 'test';
+
     if (isDone) {
       stateCls = 'done'; nodeContent = '✓';
     } else if (isSubLocked) {
       stateCls = 'sub-locked'; nodeContent = '💎';
     } else if (isProgressLocked) {
       stateCls = 'locked'; nodeContent = '🔒';
+    } else if (isReview) {
+      stateCls = 'current nb-review-node'; nodeContent = '📖';
+    } else if (isTest) {
+      stateCls = 'current nb-test-node'; nodeContent = '📝';
     } else {
-      stateCls = 'current'; nodeContent = getDisplayNum(l);
+      stateCls = 'current';
+      nodeContent = (cat === 'grammar') ? weekPos : getDisplayNum(l);
     }
 
     html += `<div class="grid-node ${stateCls}" data-lesson-id="${l.id}">${nodeContent}</div>`;
@@ -1754,6 +1785,7 @@ async function showLessonListScreen() {
   journeyScreen.classList.add('hidden');
   categoryScreen.classList.add('hidden');
   grammarScreen.classList.add('hidden');
+  grammarTestScreen.classList.add('hidden');
   readingScreen.classList.add('hidden');
   listeningScreen.classList.add('hidden');
   adminScreen.classList.add('hidden');
@@ -1864,6 +1896,10 @@ async function openLesson(lesson) {
   }
   currentLesson = lesson;
 
+  if (lesson.category === 'grammar' && lesson.lesson_subtype === 'test') {
+    await openGrammarTestLesson(lesson);
+    return;
+  }
   if (lesson.category === 'grammar') {
     await openGrammarLesson(lesson);
     return;
@@ -2068,11 +2104,15 @@ async function openGrammarLesson(lesson) {
   headerEyebrow.textContent = `${lesson.jlpt_level || ''} レベル · ${getDisplayNum(lesson)}課`;
   headerTitle.textContent = lesson.title;
 
+  const isReview = lesson.lesson_subtype === 'review';
+  document.querySelector('.grammar-video-wrap').classList.toggle('hidden', isReview);
+
   // Tugmani 60 soniyaga qulflaymiz - video/qollanmani korish uchun minimal vaqt
   const btn = document.getElementById('grammarCompleteBtn');
   btn.disabled = true;
   let secondsLeft = 60;
-  btn.textContent = `🔒 Video va qo'llanmani ko'ring (${secondsLeft}s)`;
+  const lockLabel = isReview ? "🔒 Qo'llanmani ko'ring" : "🔒 Video va qo'llanmani ko'ring";
+  btn.textContent = `${lockLabel} (${secondsLeft}s)`;
   if (grammarUnlockTimer) clearInterval(grammarUnlockTimer);
   grammarUnlockTimer = setInterval(() => {
     secondsLeft--;
@@ -2081,7 +2121,7 @@ async function openGrammarLesson(lesson) {
       btn.disabled = false;
       btn.textContent = '✓ Darsni tugatdim';
     } else {
-      btn.textContent = `🔒 Video va qo'llanmani ko'ring (${secondsLeft}s)`;
+      btn.textContent = `${lockLabel} (${secondsLeft}s)`;
     }
   }, 1000);
 
@@ -2097,8 +2137,16 @@ async function openGrammarLesson(lesson) {
     return;
   }
 
-  document.getElementById('grammarVideoFrame').src = `https://www.youtube.com/embed/${data.video_id}`;
-  document.getElementById('grammarGuideFrame').srcdoc = data.guide_html || '';
+  if (!isReview) {
+    document.getElementById('grammarVideoFrame').src = `https://www.youtube.com/embed/${data.video_id}`;
+  }
+
+  let guideHtml = data.guide_html || '';
+  if (isReview) {
+    const reviewBanner = `<div style="background:#2d5a72;color:#fff;text-align:center;padding:14px;font-family:sans-serif;font-weight:700;font-size:15px;">📖 Takrorlash — bilim va o'rganishning onasidir.</div>`;
+    guideHtml = reviewBanner + guideHtml;
+  }
+  document.getElementById('grammarGuideFrame').srcdoc = guideHtml;
 }
 
 document.getElementById('grammarCompleteBtn').addEventListener('click', async () => {
@@ -2107,6 +2155,95 @@ document.getElementById('grammarCompleteBtn').addEventListener('click', async ()
   await saveLessonCompletion();
   showLessonListScreen();
 });
+
+/* ================== HAFTALIK TEST (7-kun) ================== */
+let grammarTestQuestions = [];
+let grammarTestPos = 0;
+let grammarTestGood = 0;
+let grammarTestBad = 0;
+
+async function openGrammarTestLesson(lesson) {
+  lessonListScreen.classList.add('hidden');
+  categoryScreen.classList.add('hidden');
+  journeyScreen.classList.add('hidden');
+  grammarTestScreen.classList.remove('hidden');
+  backBtn.classList.remove('hidden');
+  headerEyebrow.textContent = `${lesson.jlpt_level || ''} レベル · Haftalik test`;
+  headerTitle.textContent = lesson.title;
+
+  document.getElementById('grammarTestQuizWrap').innerHTML = '<div class="loading-msg">Yuklanmoqda...</div>';
+
+  const { data, error } = await withRetry(
+    () => supabaseClient.from('grammar_test_questions').select('*').eq('lesson_id', lesson.id).order('sort_order', { ascending: true }),
+    'test savollarini yuklash'
+  );
+
+  if (error) {
+    document.getElementById('grammarTestQuizWrap').innerHTML = `<div class="empty-msg">Ulanishda muammo bo'ldi 😕<br><br><button class="retry-btn" onclick="openGrammarTestLesson(currentLesson)">↻ Qayta urinish</button></div>`;
+    return;
+  }
+
+  grammarTestQuestions = data || [];
+  grammarTestPos = 0; grammarTestGood = 0; grammarTestBad = 0;
+  renderGrammarTestQuestion();
+}
+
+function renderGrammarTestQuestion() {
+  const wrap = document.getElementById('grammarTestQuizWrap');
+  if (grammarTestPos >= grammarTestQuestions.length) {
+    showGrammarTestResult();
+    return;
+  }
+  const q = grammarTestQuestions[grammarTestPos];
+  const opts = [
+    { letter: 'a', text: q.option_a }, { letter: 'b', text: q.option_b },
+    { letter: 'c', text: q.option_c }, { letter: 'd', text: q.option_d },
+  ].filter(o => o.text);
+
+  let html = `
+    <div class="lq-card">
+      <div class="gt-progress">Savol ${grammarTestPos + 1} / ${grammarTestQuestions.length}</div>
+      <div class="gt-text">${escapeHtml(q.question)}</div>
+      <div class="lq-options">`;
+  opts.forEach(o => { html += `<button class="opt-btn" data-letter="${o.letter}">${escapeHtml(o.text)}</button>`; });
+  html += `</div></div>`;
+  wrap.innerHTML = html;
+
+  wrap.querySelectorAll('.opt-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const isCorrect = btn.dataset.letter === q.correct_answer;
+      wrap.querySelectorAll('.opt-btn').forEach(b => {
+        b.disabled = true;
+        if (b.dataset.letter === q.correct_answer) b.classList.add('correct');
+        else if (b === btn) b.classList.add('wrong');
+        else b.classList.add('dim');
+      });
+      if (isCorrect) grammarTestGood++; else grammarTestBad++;
+      setTimeout(() => { grammarTestPos++; renderGrammarTestQuestion(); }, 900);
+    });
+  });
+}
+
+function showGrammarTestResult() {
+  const wrap = document.getElementById('grammarTestQuizWrap');
+  const total = grammarTestGood + grammarTestBad;
+  const pct = total ? Math.round(grammarTestGood / total * 100) : 100;
+  const pctCls = pct < 70 ? 'gt-low' : (pct < 80 ? 'gt-mid' : 'gt-high');
+
+  wrap.innerHTML = `
+    <div class="gt-result-card">
+      ${pct >= 80 ? `<div class="gt-congrats">🎉 おめでとう!<br><span style="font-size:13px; font-weight:500;">N5 safari yo'lida bir haftani bosib o'tdingiz!</span></div>` : ''}
+      <div class="gt-result-pct ${pctCls}">${pct}%</div>
+      <div class="gt-result-label">${grammarTestGood} / ${total} to'g'ri javob</div>
+      <button class="listening-complete-btn" id="grammarTestCompleteBtn">✓ Davom etish</button>
+    </div>`;
+
+  document.getElementById('grammarTestCompleteBtn').addEventListener('click', async () => {
+    goodCount = grammarTestGood; badCount = grammarTestBad;
+    await saveLessonCompletion();
+    showLessonListScreen();
+  });
+}
 
 /* ================== OQISH DARSI ================== */
 function escapeHtml(str) {
@@ -3441,6 +3578,7 @@ function showTermsScreen() {
   journeyScreen.classList.add('hidden');
   quizScreen.classList.add('hidden');
   grammarScreen.classList.add('hidden');
+  grammarTestScreen.classList.add('hidden');
   readingScreen.classList.add('hidden');
   listeningScreen.classList.add('hidden');
   adminScreen.classList.add('hidden');
