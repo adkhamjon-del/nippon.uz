@@ -407,13 +407,16 @@
     background: var(--paper); border: 2px solid var(--line); border-radius: 14px; cursor: pointer;
   }
   .week-day-row.locked { opacity: 0.45; cursor: default; }
-  .week-day-label { flex: 1; font-weight: 700; font-size: 14px; color: var(--sumi); }
+  .week-day-label { flex: 1; font-weight: 700; font-size: 14px; color: var(--sumi); min-width: 0; }
   .week-day-label .wd-num {
     display: inline-flex; align-items: center; justify-content: center;
     width: 20px; height: 20px; border-radius: 50%; background: var(--ai-blue-soft);
     color: var(--ai-blue); font-size: 11px; margin-right: 8px;
   }
-  .week-day-label .wd-sub { display: block; font-size: 11px; font-weight: 500; color: #8a8070; margin-top: 2px; }
+  .week-day-label .wd-sub {
+    display: block; font-size: 11.5px; font-weight: 500; color: #8a8070; margin-top: 2px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%;
+  }
   .week-day-node {
     width: 52px; height: 52px; border-radius: 14px; flex-shrink: 0; aspect-ratio: unset;
   }
@@ -1451,6 +1454,14 @@ let lastOpenedCategory = null;
 const GRID_COLS = { kanji: 4, grammar: 5, reading: 4, listening: 5 };
 const WEEK_DAY_NAMES = ['', 'Dushanba', 'Seshanba', 'Chorshanba', 'Payshanba', 'Juma', 'Shanba', 'Yakshanba'];
 
+function shortTopicLabel(title) {
+  if (!title) return '';
+  const idx = title.indexOf(':');
+  let t = idx >= 0 ? title.slice(idx + 1).trim() : title.trim();
+  t = t.replace(/\s*\/\s*/g, ' \u30fb').replace(/,\s*/g, ' \u30fb');
+  return t;
+}
+
 function openCategoryScreen(cat) {
   lastOpenedCategory = cat;
   const levelLessons = allLessons.filter(l => l.jlpt_level === selectedLevel && l.category === cat);
@@ -1532,6 +1543,7 @@ function openCategoryScreen(cat) {
         let subLabel = '';
         if (item.isReview) subLabel = 'Takrorlash';
         else if (item.isTest) subLabel = 'Haftalik test';
+        else subLabel = shortTopicLabel(item.lesson.title);
         const lockedCls = item.stateCls.includes('locked') ? ' locked' : '';
         rowsHtml += `
           <div class="week-day-row${lockedCls}" data-lesson-id="${item.lesson.id}">
@@ -2271,7 +2283,11 @@ async function openGrammarLesson(lesson) {
   headerTitle.textContent = lesson.title;
 
   const isReview = lesson.lesson_subtype === 'review';
-  document.querySelector('.grammar-video-wrap').classList.toggle('hidden', isReview);
+  const videoWrapEl = document.querySelector('.grammar-video-wrap');
+  if (videoWrapEl) {
+    videoWrapEl.classList.toggle('hidden', isReview);
+    videoWrapEl.style.display = isReview ? 'none' : '';
+  }
 
   // Tugmani 60 soniyaga qulflaymiz - video/qollanmani korish uchun minimal vaqt
   const btn = document.getElementById('grammarCompleteBtn');
