@@ -385,6 +385,9 @@
     font-weight: 800; font-size: 15px; color: var(--sumi);
   }
   .grid-node.done { background: linear-gradient(160deg, #fff, var(--sakura-soft)); border-color: var(--sakura); color: var(--sakura-deep, #d1637a); }
+  .grid-node.done.node-pct-low { background: var(--bad); border-color: var(--bad); color: #fff; font-size: 12px; font-weight: 800; }
+  .grid-node.done.node-pct-mid { background: #c98a1f; border-color: #c98a1f; color: #fff; font-size: 12px; font-weight: 800; }
+  .grid-node.done.node-pct-high { background: var(--ok); border-color: var(--ok); color: #fff; font-size: 12px; font-weight: 800; }
   .grid-node.current { border-color: var(--ai-blue); box-shadow: 0 0 0 3px var(--ai-blue-soft); color: var(--ai-blue); }
   .grid-node.locked { opacity: 0.45; cursor: default; }
   .grid-node.sub-locked { border-color: var(--kin, #9c7a35); background: rgba(156,122,53,0.06); color: var(--kin, #9c7a35); }
@@ -1366,6 +1369,7 @@ function getDisplayNum(lesson) {
   return idx >= 0 ? idx + 1 : lesson.lesson_number;
 }
 let completedLessonIds = new Set();
+let completedLessonScores = new Map(); // lesson_id -> {correct, wrong}
 let selectedLevel = 'N3';
 const LEVELS = ['N5', 'N4', 'N3', 'N2', 'N1'];
 const CATEGORY_META = {
@@ -1391,12 +1395,16 @@ async function loadLessonList() {
   allLessons = data || [];
 
   completedLessonIds = new Set();
+  completedLessonScores = new Map();
   if (currentUser) {
     const { data: completions } = await withRetry(
-      () => supabaseClient.from('lesson_completions').select('lesson_id').eq('user_id', currentUser.id),
+      () => supabaseClient.from('lesson_completions').select('lesson_id, correct_count, wrong_count').eq('user_id', currentUser.id),
       'progressni yuklash'
     );
-    (completions || []).forEach(c => completedLessonIds.add(c.lesson_id));
+    (completions || []).forEach(c => {
+      completedLessonIds.add(c.lesson_id);
+      completedLessonScores.set(c.lesson_id, { correct: c.correct_count, wrong: c.wrong_count });
+    });
   }
 
   renderLevelTabs();
@@ -1450,7 +1458,14 @@ function openCategoryScreen(cat) {
     const isReview = l.lesson_subtype === 'review';
     const isTest = l.lesson_subtype === 'test';
 
-    if (isDone) {
+    if (isDone && isTest) {
+      const score = completedLessonScores.get(l.id);
+      const total = score ? (score.correct + score.wrong) : 0;
+      const pct = total ? Math.round(score.correct / total * 100) : 0;
+      const pctCls = pct < 70 ? 'node-pct-low' : (pct < 80 ? 'node-pct-mid' : 'node-pct-high');
+      stateCls = `done ${pctCls}`;
+      nodeContent = `${pct}%`;
+    } else if (isDone) {
       stateCls = 'done'; nodeContent = '✓';
     } else if (isSubLocked) {
       stateCls = 'sub-locked'; nodeContent = '💎';
