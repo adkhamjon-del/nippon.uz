@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Nippon.uz — Yapon tili kursi</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600;900&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=Caveat:wght@600;700&family=Kalam:wght@400;700&family=Patrick+Hand&family=Shadows+Into+Light&display=swap');
 
@@ -917,6 +918,88 @@
   .chat-input { flex:1; border: 1px solid var(--line); border-radius: 100px; padding: 11px 16px; font-family: inherit; font-size: 14px; background: var(--paper); }
   .chat-input:focus { outline: none; border-color: var(--ai-blue); }
   .chat-send { width:42px; height:42px; border-radius:50%; border:none; background: var(--ai-blue); color:#fff; font-size:16px; cursor:pointer; flex-shrink:0; }
+
+  /* ---------- FINAL TEST ---------- */
+  #finalTestScreen { user-select: none; -webkit-user-select: none; }
+  .ft-intro-card { background: var(--paper); border: 1px solid var(--line); border-radius: 20px; padding: 26px 22px; text-align: center; }
+  .ft-intro-emoji { font-size: 44px; margin-bottom: 8px; }
+  .ft-intro-title { font-family: 'Noto Serif JP', serif; font-weight: 900; font-size: 19px; margin-bottom: 4px; }
+  .ft-intro-sub { font-size: 12.5px; color: #8a8070; margin-bottom: 18px; }
+  .ft-warn-box { background: rgba(192,72,58,0.06); border: 1.5px solid rgba(192,72,58,0.25); border-radius: 14px; padding: 16px; text-align: left; margin-bottom: 18px; }
+  .ft-warn-title { font-weight: 900; font-size: 13px; color: var(--shu); margin-bottom: 8px; }
+  .ft-warn-list { margin: 0; padding-left: 18px; font-size: 12.5px; line-height: 1.8; color: var(--sumi); }
+  .ft-checklist { text-align: left; margin-bottom: 18px; }
+  .ft-checklist label { display: flex; align-items: flex-start; gap: 9px; font-size: 12.5px; color: var(--sumi); margin-bottom: 10px; cursor: pointer; }
+  .ft-checklist input { margin-top: 2px; flex-shrink: 0; width: 16px; height: 16px; }
+  .ft-start-btn { width: 100%; background: var(--shu); color: #fff; border: none; border-radius: 14px; padding: 15px; font-size: 14.5px; font-weight: 900; cursor: pointer; }
+  .ft-start-btn:disabled { background: #d8d2c5; color: #a8a396; cursor: default; }
+
+  .ft-brand-bar { text-align: center; font-size: 10px; letter-spacing: 0.15em; color: #a89e91; font-weight: 800; margin-bottom: 10px; }
+  .ft-timer-bar {
+    display: flex; align-items: center; justify-content: space-between; background: var(--sumi);
+    border-radius: 14px; padding: 12px 16px; margin-bottom: 10px; transition: background .3s ease;
+  }
+  .ft-timer-bar.ft-break-mode { background: var(--shu); }
+  .ft-skill-label, .ft-timer-label { color: #fff; font-weight: 800; font-size: 12.5px; letter-spacing: 0.04em; }
+  .ft-timer-clock { color: #fff; font-weight: 900; font-size: 20px; font-variant-numeric: tabular-nums; }
+  .ft-progress-track { height: 4px; background: var(--line); border-radius: 3px; overflow: hidden; margin-bottom: 16px; }
+  .ft-progress-fill { height: 100%; background: var(--shu); width: 0%; transition: width .3s ease; }
+
+  .ft-q-card { background: var(--paper); border: 1px solid var(--line); border-radius: 16px; padding: 20px; }
+  .ft-q-progress { font-size: 11px; color: #a89e91; font-weight: 700; margin-bottom: 10px; }
+  .ft-q-passage { font-family: 'Noto Serif JP', serif; font-size: 15px; line-height: 2; color: var(--sumi); background: var(--washi); border-radius: 12px; padding: 14px; margin-bottom: 14px; }
+  .ft-q-audio { width: 100%; margin-bottom: 14px; }
+  .ft-q-text { font-family: 'Noto Serif JP', serif; font-size: 16px; font-weight: 700; margin-bottom: 16px; color: var(--sumi); }
+  .ft-q-options { display: grid; gap: 10px; }
+  .ft-opt-btn {
+    background: #f7f2e7; border: 1.5px solid var(--line); border-radius: 12px; padding: 14px 16px;
+    font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer; text-align: left;
+  }
+  .ft-opt-btn.selected { border-color: var(--ai-blue); background: var(--ai-blue-soft); }
+  .ft-q-nav { display: flex; margin-top: 18px; }
+  .ft-next-btn { flex: 1; background: var(--sumi); color: #fff; border: none; border-radius: 12px; padding: 14px; font-size: 14px; font-weight: 800; cursor: pointer; }
+  .ft-next-btn:disabled { background: #d8d2c5; color: #a8a396; cursor: default; }
+
+  .ft-break-overlay {
+    position: fixed; inset: 0; background: var(--doppi, #1f2d4d); z-index: 250;
+    display: none; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; color: #fff;
+  }
+  .ft-break-overlay.show { display: flex; }
+  .ft-break-emoji { font-size: 50px; margin-bottom: 14px; }
+  .ft-break-title { font-family: 'Noto Serif JP', serif; font-size: 20px; font-weight: 900; margin-bottom: 8px; }
+  .ft-break-sub { font-size: 13px; opacity: 0.8; margin-bottom: 20px; }
+  .ft-break-timer { font-size: 44px; font-weight: 900; font-variant-numeric: tabular-nums; color: var(--sakura); margin-bottom: 24px; }
+  .ft-break-continue { background: #fff; color: var(--doppi, #1f2d4d); border: none; border-radius: 100px; padding: 13px 26px; font-size: 13px; font-weight: 800; cursor: pointer; }
+
+  .ft-watermark { position: fixed; inset: 0; pointer-events: none; z-index: 60; overflow: hidden; }
+  .ft-watermark span { position: absolute; font-size: 10px; color: rgba(28,43,74,0.08); transform: rotate(-30deg); white-space: nowrap; }
+
+  .ft-result-card { text-align: center; padding: 20px 4px; }
+  .ft-result-badge { font-size: 50px; margin-bottom: 10px; }
+  .ft-result-status { font-family: 'Noto Serif JP', serif; font-size: 26px; font-weight: 900; margin-bottom: 4px; }
+  .ft-result-status.passed { color: var(--ok); }
+  .ft-result-status.failed { color: var(--bad); }
+  .ft-result-caption { font-size: 12.5px; color: #8a8070; margin-bottom: 22px; }
+  .ft-skill-breakdown { display: grid; gap: 10px; margin-bottom: 22px; }
+  .ft-skill-row { display: flex; align-items: center; justify-content: space-between; background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px; }
+  .ft-skill-row .fsr-name { font-weight: 700; font-size: 13.5px; }
+  .ft-skill-row .fsr-pct { font-weight: 900; font-size: 15px; }
+  .ft-weak-box { background: rgba(192,72,58,0.06); border: 1.5px dashed rgba(192,72,58,0.3); border-radius: 14px; padding: 16px; margin-bottom: 18px; text-align: left; }
+  .ft-weak-box .fwb-title { font-weight: 900; font-size: 13px; color: var(--shu); margin-bottom: 4px; }
+  .ft-weak-box .fwb-detail { font-size: 12.5px; color: var(--sumi); line-height: 1.6; }
+  .ft-retry-note { background: var(--washi); border-radius: 12px; padding: 14px; font-size: 12.5px; color: var(--sumi); margin-bottom: 18px; }
+  .ft-cert-cta-btn { display: block; width: 100%; background: linear-gradient(135deg,#b8860b,#e8c15a); color: #2a1f0a; border: none; border-radius: 14px; padding: 15px; font-size: 14.5px; font-weight: 900; cursor: pointer; margin-bottom: 10px; }
+  .ft-done-btn { display: block; width: 100%; background: var(--paper); border: 1px solid var(--line); color: var(--sumi); border-radius: 14px; padding: 14px; font-size: 13.5px; font-weight: 800; cursor: pointer; }
+
+  .ft-cert-canvas { width: 100%; height: auto; border-radius: 12px; box-shadow: 0 8px 30px -12px rgba(0,0,0,0.3); margin-bottom: 16px; display: block; }
+  .ft-cert-actions { display: flex; flex-direction: column; gap: 10px; }
+  .ft-cert-download-btn { background: var(--shu); color: #fff; border: none; border-radius: 14px; padding: 15px; font-size: 14.5px; font-weight: 900; cursor: pointer; }
+  .ft-cert-done-btn { background: var(--paper); border: 1px solid var(--line); color: var(--sumi); border-radius: 14px; padding: 14px; font-size: 13.5px; font-weight: 800; cursor: pointer; }
+
+  .ft-verify-card { background: var(--paper); border: 1px solid var(--line); border-radius: 20px; padding: 24px; text-align: center; }
+  .ft-verify-ok { color: var(--ok); font-weight: 900; font-size: 15px; margin-bottom: 14px; }
+  .ft-verify-name { font-family: 'Noto Serif JP', serif; font-size: 20px; font-weight: 900; margin-bottom: 4px; }
+  .ft-verify-date { font-size: 12.5px; color: #8a8070; margin-bottom: 18px; }
 </style>
 </head>
 <body>
@@ -1150,6 +1233,68 @@
       <div class="rail-line"></div>
       <div class="loading-msg">Yuklanmoqda...</div>
     </div>
+  </div>
+
+  <!-- FINAL TEST — OGOHLANTIRISH EKRANI -->
+  <div id="ftIntroScreen" class="hidden">
+    <div class="ft-intro-card">
+      <div class="ft-intro-emoji">🎓</div>
+      <div class="ft-intro-title">Nippon.uz N5 Final Assessment</div>
+      <div class="ft-intro-sub">Bu — N5 darajasini yakunlovchi yagona imtihon</div>
+      <div class="ft-warn-box">
+        <div class="ft-warn-title">⚠️ Diqqat — bu BIR MARTALIK imkoniyat</div>
+        <ul class="ft-warn-list">
+          <li>Jami <b>80 ta savol</b>, <b>85 daqiqa</b> (tanaffuslar bilan)</li>
+          <li>Kanji → Grammatika → O'qish → Tinglash, ketma-ket</li>
+          <li>Har bo'lim orasida 5 daqiqalik tanaffus (soat davom sanaydi)</li>
+          <li>Boshlagach, <b>orqaga qaytib bo'lmaydi</b></li>
+          <li>Yiqilsangiz — <b>7 kundan keyin</b> qayta urinish mumkin</li>
+        </ul>
+      </div>
+      <div class="ft-checklist" id="ftChecklist"></div>
+      <button class="ft-start-btn" id="ftStartBtn" disabled>Tayyorman — Boshlash</button>
+    </div>
+  </div>
+
+  <!-- FINAL TEST — ASOSIY EKRAN -->
+  <div id="finalTestScreen" class="hidden" oncontextmenu="return false" ondragstart="return false">
+    <div class="ft-brand-bar">NIPPON.UZ — RASMIY FINAL TEST</div>
+    <div class="ft-timer-bar" id="ftTimerBar">
+      <div class="ft-timer-label" id="ftSkillLabel">🈷️ KANJI</div>
+      <div class="ft-timer-clock" id="ftClock">85:00</div>
+    </div>
+    <div class="ft-progress-track"><div class="ft-progress-fill" id="ftProgressFill"></div></div>
+
+    <div id="ftQuestionWrap"></div>
+
+    <div class="ft-break-overlay" id="ftBreakOverlay">
+      <div class="ft-break-emoji">☕</div>
+      <div class="ft-break-title">休憩 — 5 daqiqa tanaffus oling</div>
+      <div class="ft-break-sub">Keyingi bo'lim: <span id="ftBreakNextSkill">—</span></div>
+      <div class="ft-break-timer" id="ftBreakTimer">5:00</div>
+      <button class="ft-break-continue" id="ftBreakContinueBtn">Davom etish →</button>
+    </div>
+
+    <div class="ft-watermark" id="ftWatermark"></div>
+  </div>
+
+  <!-- FINAL TEST — NATIJA EKRANI -->
+  <div id="ftResultScreen" class="hidden">
+    <div id="ftResultWrap"></div>
+  </div>
+
+  <!-- FINAL TEST — SERTIFIKAT EKRANI -->
+  <div id="ftCertScreen" class="hidden">
+    <canvas id="ftCertCanvas" width="1000" height="700" class="ft-cert-canvas"></canvas>
+    <div class="ft-cert-actions">
+      <button class="ft-cert-download-btn" id="ftCertDownloadBtn">⬇️ Sertifikatni yuklab olish (PNG)</button>
+      <button class="ft-cert-done-btn" id="ftCertDoneBtn">Darslarga qaytish</button>
+    </div>
+  </div>
+
+  <!-- SERTIFIKAT TEKSHIRISH (public, QR orqali ochiladi) -->
+  <div id="ftVerifyScreen" class="hidden">
+    <div id="ftVerifyWrap"></div>
   </div>
 
   <!-- QUIZ SCREEN -->
@@ -1442,6 +1587,7 @@ async function loadLessonList() {
       completedLessonScores.set(c.lesson_id, { correct: c.correct_count, wrong: c.wrong_count });
     });
   }
+  await loadFinalTestStatus();
 
   renderLevelTabs();
   renderLevelContent();
@@ -1952,6 +2098,8 @@ function renderLevelContent() {
   });
   html += `</div>`;
 
+  html += renderFinalTestCard();
+
   html += `
     <div class="journey-cta" id="journeyCta">
       <div class="jc-emoji">🚄</div>
@@ -1969,6 +2117,16 @@ function renderLevelContent() {
       openCategoryScreen(card.dataset.cat);
     });
   });
+  const ftCta = document.getElementById('ftEntryCta');
+  if (ftCta) ftCta.addEventListener('click', () => {
+    if (finalTestStatus && finalTestStatus.passed === true) {
+      renderFtCertificate(finalTestStatus);
+    } else if (finalTestStatus && finalTestStatus.status === 'in_progress') {
+      startFinalTest();
+    } else {
+      openFinalTestIntro();
+    }
+  });
   const jcta = document.getElementById('journeyCta');
   if (jcta) jcta.addEventListener('click', showJourneyScreen);
 }
@@ -1985,6 +2143,11 @@ async function showLessonListScreen() {
   adminScreen.classList.add('hidden');
   infoScreen.classList.add('hidden');
   document.getElementById('notebookOverlay').classList.remove('open');
+  document.getElementById('ftIntroScreen').classList.add('hidden');
+  document.getElementById('finalTestScreen').classList.add('hidden');
+  document.getElementById('ftResultScreen').classList.add('hidden');
+  document.getElementById('ftCertScreen').classList.add('hidden');
+  if (ftTimerInterval) { clearInterval(ftTimerInterval); ftTimerInterval = null; }
   progressWrap.classList.add('hidden');
   scoreRow.classList.add('hidden');
   chatFab.classList.remove('show');
@@ -3055,7 +3218,8 @@ function tierMeets(requiredTier) {
 
 function canAccessLesson(lesson) {
   if (isLessonFree(lesson)) return true;
-  if (lesson.jlpt_level === 'N5' || lesson.jlpt_level === 'N4') return tierMeets('standard');
+  if (lesson.jlpt_level === 'N5') return tierMeets('standard');
+  if (lesson.jlpt_level === 'N4') return tierMeets('standard') && !!(finalTestStatus && finalTestStatus.passed === true);
   return tierMeets('pro'); // N3, N2, N1
 }
 
@@ -3065,6 +3229,14 @@ function requiredTierLabel(lesson) {
 }
 
 function showPaywall(lesson) {
+  // N4: agar obuna yetarli, lekin Goukaku bolmasa - alohida xabar
+  if (lesson.jlpt_level === 'N4' && tierMeets('standard') && !(finalTestStatus && finalTestStatus.passed === true)) {
+    alert("🔒 N4 darslari — N5 Final Test'dan o'tgandan (Goukaku) so'ng ochiladi. Avval N5'ning barcha darslarini tugating va Final Assessment'dan o'ting.");
+    selectedLevel = 'N5';
+    showLessonListScreen();
+    return;
+  }
+
   const tier = requiredTierLabel(lesson);
   const overlay = document.getElementById('paywallOverlay');
   const headingEl = document.getElementById('paywallHeading');
@@ -3815,7 +3987,526 @@ async function proceedAfterAuth() {
   await loadLessonList();
 }
 
+/* ================== FINAL TEST (N5 Assessment) ================== */
+const FT_SKILL_ORDER = ['kanji', 'grammar', 'reading', 'listening'];
+const FT_SKILL_COUNTS = { kanji: 20, grammar: 20, reading: 15, listening: 25 };
+const FT_SKILL_LABELS = { kanji: '\ud83c\uddef\ud83c\uddf5 KANJI', grammar: "\u270f\ufe0f GRAMMATIKA", reading: "\ud83d\udcd6 O'QISH", listening: '\ud83c\udfa7 TINGLASH' };
+const FT_TOTAL_SECONDS = 85 * 60;
+const FT_BREAK_SECONDS = 5 * 60;
+
+let finalTestStatus = null;
+let ftQuestions = [];
+let ftAttempt = null;
+let ftTimerInterval = null;
+let ftSecondsRemaining = FT_TOTAL_SECONDS;
+let ftCurrentIndex = 0;
+let ftAnswers = {};
+
+function ftSkillForIndex(idx) {
+  let acc = 0;
+  for (const s of FT_SKILL_ORDER) {
+    acc += FT_SKILL_COUNTS[s];
+    if (idx < acc) return s;
+  }
+  return FT_SKILL_ORDER[FT_SKILL_ORDER.length - 1];
+}
+function ftIsFirstOfSkill(idx) {
+  let acc = 0;
+  for (const s of FT_SKILL_ORDER) {
+    if (idx === acc) return true;
+    acc += FT_SKILL_COUNTS[s];
+  }
+  return false;
+}
+
+function isN5FullyComplete() {
+  const n5Lessons = allLessons.filter(l => l.jlpt_level === 'N5');
+  if (n5Lessons.length === 0) return false;
+  return n5Lessons.every(l => completedLessonIds.has(l.id));
+}
+
+async function loadFinalTestStatus() {
+  if (!currentUser) { finalTestStatus = null; return; }
+  const { data } = await withRetry(
+    () => supabaseClient.from('final_test_attempts').select('*').eq('user_id', currentUser.id).eq('jlpt_level', 'N5').maybeSingle(),
+    'final test holatini yuklash'
+  );
+  finalTestStatus = data || null;
+}
+
+function ftRetryDate(completedAt) {
+  const d = new Date(completedAt);
+  d.setDate(d.getDate() + 7);
+  return d;
+}
+
+function renderFinalTestCard() {
+  if (selectedLevel !== 'N5') return '';
+  const n5Ready = isN5FullyComplete();
+
+  if (finalTestStatus && finalTestStatus.status === 'in_progress') {
+    return `<div class="journey-cta" id="ftEntryCta" style="background:linear-gradient(135deg,#8a4fc9,#b06fe0); margin-bottom:14px;">
+      <div class="jc-emoji">\ud83c\udf93</div>
+      <div><div class="jc-title">Final Test davom etmoqda</div><div class="jc-sub">Qoldirgan joyingizdan davom eting</div></div>
+    </div>`;
+  }
+  if (finalTestStatus && finalTestStatus.passed === true) {
+    return `<div class="journey-cta" id="ftEntryCta" style="background:linear-gradient(135deg,#b8860b,#e8c15a); color:#2a1f0a; margin-bottom:14px;">
+      <div class="jc-emoji">\ud83c\udfc5</div>
+      <div><div class="jc-title">Sertifikatingizni ko'ring</div><div class="jc-sub">N5 \u2014 muvaffaqiyatli yakunlandi</div></div>
+    </div>`;
+  }
+  if (finalTestStatus && finalTestStatus.passed === false) {
+    const retryDate = ftRetryDate(finalTestStatus.completed_at);
+    const canRetry = new Date() >= retryDate;
+    if (canRetry) {
+      return `<div class="journey-cta" id="ftEntryCta" style="margin-bottom:14px;">
+        <div class="jc-emoji">\ud83c\udf93</div>
+        <div><div class="jc-title">Final Test \u2014 qayta urinish</div><div class="jc-sub">Endi qayta topshirishingiz mumkin</div></div>
+      </div>`;
+    } else {
+      const daysLeft = Math.ceil((retryDate - new Date()) / (1000*60*60*24));
+      return `<div class="journey-cta" style="opacity:0.5; cursor:default; margin-bottom:14px;">
+        <div class="jc-emoji">\ud83d\udd12</div>
+        <div><div class="jc-title">Final Test qulflangan</div><div class="jc-sub">${daysLeft} kundan keyin qayta urinish mumkin</div></div>
+      </div>`;
+    }
+  }
+  if (n5Ready) {
+    return `<div class="journey-cta" id="ftEntryCta" style="background:linear-gradient(135deg,var(--shu),#d1637a); margin-bottom:14px;">
+      <div class="jc-emoji">\ud83c\udf93</div>
+      <div><div class="jc-title">N5 Final Assessment</div><div class="jc-sub">Barcha darslar tugadi \u2014 testga tayyorsiz!</div></div>
+    </div>`;
+  }
+  return `<div class="journey-cta" style="opacity:0.5; cursor:default; margin-bottom:14px;">
+    <div class="jc-emoji">\ud83d\udd12</div>
+    <div><div class="jc-title">N5 Final Assessment</div><div class="jc-sub">Avval barcha darslarni tugating</div></div>
+  </div>`;
+}
+
+/* ---------- INTRO / OGOHLANTIRISH ---------- */
+function openFinalTestIntro() {
+  lessonListScreen.classList.add('hidden');
+  document.getElementById('ftIntroScreen').classList.remove('hidden');
+  backBtn.classList.remove('hidden');
+  headerEyebrow.textContent = '\ud83c\udf93 FINAL ASSESSMENT';
+  headerTitle.textContent = 'N5';
+
+  const checks = [
+    "Men tinch, chalg'itmaydigan joydaman",
+    "Menda kamida 85 daqiqa bo'sh vaqtim bor",
+    "Bu \u2014 bir martalik imkoniyat ekanini tushunaman"
+  ];
+  document.getElementById('ftChecklist').innerHTML = checks.map((c, i) =>
+    `<label><input type="checkbox" data-ftcheck="${i}"> ${c}</label>`).join('');
+
+  const startBtn = document.getElementById('ftStartBtn');
+  startBtn.disabled = true;
+  document.querySelectorAll('[data-ftcheck]').forEach(cb => {
+    cb.addEventListener('change', () => {
+      const all = document.querySelectorAll('[data-ftcheck]');
+      startBtn.disabled = ![...all].every(c => c.checked);
+    });
+  });
+}
+
+document.getElementById('ftStartBtn').addEventListener('click', startFinalTest);
+
+/* ---------- TEST BOSHLASH / DAVOM ETTIRISH ---------- */
+async function startFinalTest() {
+  lessonListScreen.classList.add('hidden');
+  document.getElementById('ftIntroScreen').classList.add('hidden');
+  document.getElementById('finalTestScreen').classList.remove('hidden');
+  headerEyebrow.textContent = '';
+  headerTitle.textContent = '';
+  document.getElementById('ftQuestionWrap').innerHTML = '<div class="loading-msg">Yuklanmoqda...</div>';
+
+  const { data: qData } = await withRetry(
+    () => supabaseClient.from('final_test_questions').select('*').eq('jlpt_level', 'N5').order('sort_order', { ascending: true }),
+    'final test savollarini yuklash'
+  );
+  ftQuestions = FT_SKILL_ORDER.flatMap(s => (qData || []).filter(q => q.skill === s));
+
+  let attempt = finalTestStatus;
+  if (!attempt || attempt.status !== 'in_progress') {
+    const { data: newAttempt } = await withRetry(
+      () => supabaseClient.from('final_test_attempts').upsert({
+        user_id: currentUser.id, jlpt_level: 'N5', status: 'in_progress',
+        started_at: new Date().toISOString(), seconds_elapsed: 0, current_index: 0, answers: {}
+      }, { onConflict: 'user_id,jlpt_level' }).select().single(),
+      'final testni boshlash'
+    );
+    attempt = newAttempt;
+  }
+  ftAttempt = attempt;
+  ftCurrentIndex = attempt.current_index || 0;
+  ftAnswers = attempt.answers || {};
+  ftSecondsRemaining = Math.max(0, FT_TOTAL_SECONDS - (attempt.seconds_elapsed || 0));
+
+  renderFtWatermark();
+  startFtTimer();
+  renderFtQuestion();
+}
+
+/* ---------- TAYMER ---------- */
+function startFtTimer() {
+  if (ftTimerInterval) clearInterval(ftTimerInterval);
+  updateFtClock();
+  ftTimerInterval = setInterval(() => {
+    ftSecondsRemaining--;
+    updateFtClock();
+    if (ftSecondsRemaining <= 0) {
+      clearInterval(ftTimerInterval);
+      finishFinalTest(true);
+      return;
+    }
+    if (ftSecondsRemaining % 10 === 0) saveFtProgress();
+  }, 1000);
+}
+
+function updateFtClock() {
+  const m = Math.floor(Math.max(0,ftSecondsRemaining) / 60);
+  const s = Math.max(0,ftSecondsRemaining) % 60;
+  const clockEl = document.getElementById('ftClock');
+  if (clockEl) clockEl.textContent = `${m}:${String(s).padStart(2,'0')}`;
+}
+
+async function saveFtProgress() {
+  if (!ftAttempt) return;
+  const elapsed = FT_TOTAL_SECONDS - ftSecondsRemaining;
+  await supabaseClient.from('final_test_attempts').update({
+    seconds_elapsed: elapsed, current_index: ftCurrentIndex, answers: ftAnswers
+  }).eq('id', ftAttempt.id);
+}
+
+/* ---------- SAVOL RENDER ---------- */
+function renderFtQuestion() {
+  if (ftCurrentIndex >= ftQuestions.length) {
+    finishFinalTest(false);
+    return;
+  }
+
+  if (ftIsFirstOfSkill(ftCurrentIndex) && ftCurrentIndex !== 0) {
+    showFtBreak();
+    return;
+  }
+
+  const q = ftQuestions[ftCurrentIndex];
+  const skill = ftSkillForIndex(ftCurrentIndex);
+  document.getElementById('ftSkillLabel').textContent = FT_SKILL_LABELS[skill];
+
+  const skillStartIdx = FT_SKILL_ORDER.slice(0, FT_SKILL_ORDER.indexOf(skill)).reduce((a,s) => a + FT_SKILL_COUNTS[s], 0);
+  const posInSkill = ftCurrentIndex - skillStartIdx + 1;
+
+  document.getElementById('ftProgressFill').style.width = (ftCurrentIndex / ftQuestions.length * 100) + '%';
+
+  let html = `<div class="ft-q-card"><div class="ft-q-progress">${FT_SKILL_LABELS[skill]} \u2014 ${posInSkill}/${FT_SKILL_COUNTS[skill]} (Umumiy: ${ftCurrentIndex+1}/${ftQuestions.length})</div>`;
+
+  if (skill === 'reading' && q.passage_html) {
+    html += `<div class="ft-q-passage">${q.passage_html}</div>`;
+  }
+  if (skill === 'listening' && q.audio_url) {
+    html += `<audio class="ft-q-audio" controls src="${q.audio_url}"></audio>`;
+  }
+
+  html += `<div class="ft-q-text">${escapeHtml(q.question_jp)}</div><div class="ft-q-options">`;
+  const opts = [['a', q.option_a], ['b', q.option_b], ['c', q.option_c], ['d', q.option_d]].filter(o => o[1]);
+  const savedAnswer = ftAnswers[q.id];
+  opts.forEach(([letter, text]) => {
+    const sel = savedAnswer === letter ? ' selected' : '';
+    html += `<button class="ft-opt-btn${sel}" data-letter="${letter}">${escapeHtml(text)}</button>`;
+  });
+  html += `</div><div class="ft-q-nav"><button class="ft-next-btn" id="ftNextBtn" ${savedAnswer ? '' : 'disabled'}>${ftCurrentIndex === ftQuestions.length - 1 ? "Testni yakunlash" : "Keyingisi \u2192"}</button></div></div>`;
+
+  document.getElementById('ftQuestionWrap').innerHTML = html;
+
+  document.querySelectorAll('.ft-opt-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.ft-opt-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      ftAnswers[q.id] = btn.dataset.letter;
+      document.getElementById('ftNextBtn').disabled = false;
+    });
+  });
+  document.getElementById('ftNextBtn').addEventListener('click', () => {
+    ftCurrentIndex++;
+    saveFtProgress();
+    renderFtQuestion();
+  });
+}
+
+/* ---------- TANAFFUS ---------- */
+function showFtBreak() {
+  const skill = ftSkillForIndex(ftCurrentIndex);
+  document.getElementById('ftBreakNextSkill').textContent = FT_SKILL_LABELS[skill];
+  document.getElementById('ftTimerBar').classList.add('ft-break-mode');
+  const overlay = document.getElementById('ftBreakOverlay');
+  overlay.classList.add('show');
+
+  let breakLeft = FT_BREAK_SECONDS;
+  document.getElementById('ftBreakTimer').textContent = '5:00';
+  const breakInterval = setInterval(() => {
+    breakLeft--;
+    const m = Math.floor(breakLeft/60), s = breakLeft%60;
+    document.getElementById('ftBreakTimer').textContent = `${m}:${String(s).padStart(2,'0')}`;
+    if (breakLeft <= 0) { clearInterval(breakInterval); endFtBreak(); }
+  }, 1000);
+
+  document.getElementById('ftBreakContinueBtn').onclick = () => {
+    clearInterval(breakInterval);
+    endFtBreak();
+  };
+}
+
+function endFtBreak() {
+  document.getElementById('ftBreakOverlay').classList.remove('show');
+  document.getElementById('ftTimerBar').classList.remove('ft-break-mode');
+  renderFtQuestion();
+}
+
+/* ---------- YAKUNLASH / BAHOLASH ---------- */
+async function finishFinalTest(timeUp) {
+  if (ftTimerInterval) clearInterval(ftTimerInterval);
+
+  const scores = { kanji: {c:0,t:0}, grammar: {c:0,t:0}, reading: {c:0,t:0}, listening: {c:0,t:0} };
+  ftQuestions.forEach(q => {
+    scores[q.skill].t++;
+    if (ftAnswers[q.id] === q.correct_answer) scores[q.skill].c++;
+  });
+
+  const totalCorrect = Object.values(scores).reduce((a,s) => a + s.c, 0);
+  const totalQ = ftQuestions.length;
+  const overallPct = totalQ ? Math.round(totalCorrect / totalQ * 100) : 0;
+
+  const knowledgeCorrect = scores.kanji.c + scores.grammar.c + scores.reading.c;
+  const knowledgeTotal = scores.kanji.t + scores.grammar.t + scores.reading.t;
+  const knowledgePct = knowledgeTotal ? (knowledgeCorrect / knowledgeTotal * 100) : 0;
+  const listeningPct = scores.listening.t ? (scores.listening.c / scores.listening.t * 100) : 0;
+
+  const passed = knowledgePct >= 32 && listeningPct >= 32 && overallPct >= 44;
+
+  const certificateId = passed ? ('NP-' + currentUser.id.slice(0,8).toUpperCase() + '-' + Date.now().toString(36).toUpperCase()) : null;
+
+  const updatePayload = {
+    status: 'completed', completed_at: new Date().toISOString(),
+    kanji_correct: scores.kanji.c, grammar_correct: scores.grammar.c,
+    reading_correct: scores.reading.c, listening_correct: scores.listening.c,
+    overall_pct: overallPct, passed, answers: ftAnswers,
+    full_name: currentUser.user_metadata?.full_name || currentUser.email,
+  };
+  if (certificateId) updatePayload.certificate_id = certificateId;
+
+  const { data: finalRow } = await withRetry(
+    () => supabaseClient.from('final_test_attempts').update(updatePayload).eq('id', ftAttempt.id).select().single(),
+    'natijani saqlash'
+  );
+  finalTestStatus = finalRow || { ...ftAttempt, ...updatePayload };
+
+  renderFtResult(scores, overallPct, passed, timeUp);
+}
+
+/* ---------- NATIJA EKRANI ---------- */
+function renderFtResult(scores, overallPct, passed, timeUp) {
+  document.getElementById('finalTestScreen').classList.add('hidden');
+  document.getElementById('ftResultScreen').classList.remove('hidden');
+  backBtn.classList.add('hidden');
+  headerEyebrow.textContent = '\ud83c\udf93 NATIJA';
+  headerTitle.textContent = 'N5 Final Assessment';
+
+  const skillPct = s => scores[s].t ? Math.round(scores[s].c/scores[s].t*100) : 0;
+  const skillLabels = { kanji: '\ud83c\uddef\ud83c\uddf5 Kanji', grammar: '\u270f\ufe0f Grammatika', reading: "\ud83d\udcd6 O'qish", listening: '\ud83c\udfa7 Tinglash' };
+  let weakestSkill = FT_SKILL_ORDER.reduce((a,b) => skillPct(a) <= skillPct(b) ? a : b);
+
+  let html = `<div class="ft-result-card">`;
+  if (timeUp) html += `<div style="font-size:12px;color:#a89e91;margin-bottom:10px;">\u23f1\ufe0f Vaqt tugadi, test avtomatik yakunlandi</div>`;
+  html += `<div class="ft-result-badge">${passed ? '\ud83c\udf89' : '\ud83d\udcaa'}</div>`;
+  html += `<div class="ft-result-status ${passed ? 'passed' : 'failed'}">${passed ? '\u5408\u683c Goukaku' : '\u4e0d\u5408\u683c Fugoukaku'}</div>`;
+  html += `<div class="ft-result-caption">Nippon.uz N5 Final Assessment \u2014 ${passed ? 'Kurs talablari bajarildi' : 'Hali yetarli emas'}</div>`;
+
+  html += `<div class="ft-skill-breakdown">`;
+  FT_SKILL_ORDER.forEach(s => {
+    const p = skillPct(s);
+    const color = p < 70 ? 'var(--bad)' : (p < 80 ? '#c98a1f' : 'var(--ok)');
+    html += `<div class="ft-skill-row"><span class="fsr-name">${skillLabels[s]}</span><span class="fsr-pct" style="color:${color};">${p}%</span></div>`;
+  });
+  html += `<div class="ft-skill-row"><span class="fsr-name">Umumiy</span><span class="fsr-pct">${overallPct}%</span></div>`;
+  html += `</div>`;
+
+  if (!passed) {
+    const retryDate = ftRetryDate(new Date().toISOString());
+    html += `<div class="ft-weak-box">
+      <div class="fwb-title">Eng zaif skill: ${skillLabels[weakestSkill]} (${skillPct(weakestSkill)}%)</div>
+      <div class="fwb-detail">Tavsiya: ${skillLabels[weakestSkill]} bo'limini qayta ko'rib chiqing.</div>
+    </div>`;
+    html += `<div class="ft-retry-note">\ud83d\udd04 Qayta urinish: ${retryDate.toLocaleDateString('uz-UZ')} dan keyin mumkin</div>`;
+    html += `<button class="ft-done-btn" id="ftBackToLessonsBtn">Darslarga qaytish</button>`;
+  } else {
+    html += `<button class="ft-cert-cta-btn" id="ftViewCertBtn">\ud83c\udfc5 Sertifikatni ko'rish</button>`;
+    html += `<button class="ft-done-btn" id="ftBackToLessonsBtn">Darslarga qaytish</button>`;
+  }
+  html += `</div>`;
+
+  document.getElementById('ftResultWrap').innerHTML = html;
+
+  const backBtn2 = document.getElementById('ftBackToLessonsBtn');
+  if (backBtn2) backBtn2.addEventListener('click', () => { document.getElementById('ftResultScreen').classList.add('hidden'); showLessonListScreen(); });
+  const certBtn = document.getElementById('ftViewCertBtn');
+  if (certBtn) certBtn.addEventListener('click', () => renderFtCertificate(finalTestStatus));
+}
+
+/* ---------- SERTIFIKAT (Canvas + QR) ---------- */
+async function renderFtCertificate(attempt) {
+  lessonListScreen.classList.add('hidden');
+  document.getElementById('ftResultScreen').classList.add('hidden');
+  document.getElementById('ftCertScreen').classList.remove('hidden');
+  headerEyebrow.textContent = '\ud83c\udfc5 SERTIFIKAT';
+  headerTitle.textContent = '';
+
+  const canvas = document.getElementById('ftCertCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+
+  ctx.fillStyle = '#f7f4f2';
+  ctx.fillRect(0, 0, W, H);
+
+  ctx.strokeStyle = '#9c7a35';
+  ctx.lineWidth = 3;
+  ctx.strokeRect(24, 24, W-48, H-48);
+  ctx.strokeStyle = '#c0483a';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(34, 34, W-68, H-68);
+
+  ctx.fillStyle = '#c0483a';
+  ctx.fillRect(W/2 - 35, 50, 70, 70);
+  ctx.fillStyle = '#fff';
+  ctx.font = '900 40px "Noto Serif JP", serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('\u5b66', W/2, 100);
+
+  ctx.fillStyle = '#211f2e';
+  ctx.font = '900 22px "Zen Kaku Gothic New", sans-serif';
+  ctx.fillText('NIPPON ACADEMY', W/2, 165);
+  ctx.font = '400 13px "Zen Kaku Gothic New", sans-serif';
+  ctx.fillStyle = '#8a8070';
+  ctx.fillText('Yapon tili \u2014 N5 darajasi sertifikati', W/2, 190);
+
+  ctx.fillStyle = '#1f2d4d';
+  ctx.font = '900 38px "Noto Serif JP", serif';
+  ctx.fillText(attempt.full_name || '\u2014', W/2, 290);
+
+  ctx.font = '400 14px "Zen Kaku Gothic New", sans-serif';
+  ctx.fillStyle = '#4a4438';
+  ctx.fillText("Nippon.uz N5 kursini muvaffaqiyatli yakunladi", W/2, 325);
+  ctx.fillText('\u5408\u683c GOUKAKU', W/2, 355);
+
+  const skillLabels = { kanji: 'Kanji', grammar: 'Grammatika', reading: "O'qish", listening: 'Tinglash' };
+  const scoresArr = FT_SKILL_ORDER.map(s => {
+    const c = attempt[s + '_correct'] || 0;
+    const t = FT_SKILL_COUNTS[s];
+    return { s, pct: t ? Math.round(c/t*100) : 0 };
+  });
+  let sx = W/2 - 300;
+  scoresArr.forEach(({s, pct}) => {
+    ctx.font = '700 13px sans-serif';
+    ctx.fillStyle = '#8a8070';
+    ctx.fillText(skillLabels[s], sx + 75, 405);
+    ctx.font = '900 22px sans-serif';
+    ctx.fillStyle = '#211f2e';
+    ctx.fillText(pct + '%', sx + 75, 432);
+    sx += 150;
+  });
+
+  ctx.font = '400 13px sans-serif';
+  ctx.fillStyle = '#8a8070';
+  const dateStr = new Date(attempt.completed_at).toLocaleDateString('uz-UZ', { day: 'numeric', month: 'long', year: 'numeric' });
+  ctx.fillText(dateStr, W/2, 480);
+
+  ctx.font = '30px sans-serif';
+  ctx.fillText('\ud83c\udf38', 90, H - 60);
+  ctx.fillText('\ud83c\udf38', W - 90, H - 60);
+
+  const verifyUrl = `${window.location.origin}${window.location.pathname}?verify=${attempt.certificate_id}`;
+  try {
+    const qrDataUrl = await QRCode.toDataURL(verifyUrl, { width: 110, margin: 1 });
+    const qrImg = new Image();
+    await new Promise(res => { qrImg.onload = res; qrImg.src = qrDataUrl; });
+    ctx.drawImage(qrImg, W - 160, H - 190, 110, 110);
+    ctx.font = '10px sans-serif';
+    ctx.fillStyle = '#a89e91';
+    ctx.fillText('Tekshirish uchun skanerlang', W - 105, H - 65);
+  } catch (e) { console.warn('QR generation failed', e); }
+
+  ctx.textAlign = 'left';
+  ctx.font = '10px sans-serif';
+  ctx.fillStyle = '#c9c1b6';
+  ctx.fillText('ID: ' + attempt.certificate_id, 45, H - 40);
+
+  document.getElementById('ftCertDownloadBtn').onclick = () => {
+    const link = document.createElement('a');
+    link.download = `nippon-uz-sertifikat-N5-${(attempt.full_name||'').replace(/\s+/g,'-')}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  };
+  document.getElementById('ftCertDoneBtn').addEventListener('click', () => {
+    document.getElementById('ftCertScreen').classList.add('hidden');
+    showLessonListScreen();
+  });
+}
+
+function renderFtWatermark() {
+  const wm = document.getElementById('ftWatermark');
+  if (!wm) return;
+  wm.innerHTML = '';
+  const name = currentUser ? (currentUser.user_metadata?.full_name || currentUser.email.split('@')[0]) : 'mehmon';
+  const label = `${name} \u00b7 nippon.uz \u00b7 ${new Date().toISOString().slice(0,10)}`;
+  for (let r = 0; r < 12; r++) for (let c = 0; c < 2; c++) {
+    const s = document.createElement('span');
+    s.textContent = label;
+    s.style.top = (r*90-20)+'px'; s.style.left=(c*220-40)+'px';
+    wm.appendChild(s);
+  }
+}
+
+/* ---------- SERTIFIKAT TEKSHIRISH (QR orqali, public) ---------- */
+async function checkVerifyUrlParam() {
+  const params = new URLSearchParams(window.location.search);
+  const certId = params.get('verify');
+  if (!certId) return false;
+
+  document.getElementById('ftVerifyScreen').classList.remove('hidden');
+  document.getElementById('ftVerifyWrap').innerHTML = '<div class="loading-msg">Tekshirilmoqda...</div>';
+
+  const { data, error } = await withRetry(
+    () => supabaseClient.from('final_test_attempts').select('*').eq('certificate_id', certId).maybeSingle(),
+    'sertifikatni tekshirish'
+  );
+
+  if (error || !data) {
+    document.getElementById('ftVerifyWrap').innerHTML = `<div class="ft-verify-card"><div style="font-size:40px;">\u274c</div><div style="font-weight:800;margin-top:10px;">Sertifikat topilmadi</div></div>`;
+    return true;
+  }
+
+  const skillLabels = { kanji: 'Kanji', grammar: 'Grammatika', reading: "O'qish", listening: 'Tinglash' };
+  let rowsHtml = FT_SKILL_ORDER.map(s => {
+    const c = data[s+'_correct']||0, t = FT_SKILL_COUNTS[s];
+    const pct = t ? Math.round(c/t*100) : 0;
+    return `<div class="ft-skill-row"><span class="fsr-name">${skillLabels[s]}</span><span class="fsr-pct">${pct}%</span></div>`;
+  }).join('');
+
+  document.getElementById('ftVerifyWrap').innerHTML = `
+    <div class="ft-verify-card">
+      <div class="ft-verify-ok">\u2705 Tasdiqlangan sertifikat</div>
+      <div class="ft-verify-name">${escapeHtml(data.full_name || '\u2014')}</div>
+      <div class="ft-verify-date">N5 \u2014 ${new Date(data.completed_at).toLocaleDateString('uz-UZ')}</div>
+      <div class="ft-skill-breakdown">${rowsHtml}</div>
+      <div style="font-size:11px;color:#a89e91;margin-top:10px;">Nippon.uz orqali tasdiqlangan</div>
+    </div>`;
+  return true;
+}
+
 async function initApp() {
+  const isVerifyPage = await checkVerifyUrlParam();
+  if (isVerifyPage) return;
   await initAuth();
   if (!currentUser) {
     showAuthGate();
