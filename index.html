@@ -1482,7 +1482,7 @@ function openCategoryScreen(cat) {
   const levelLessons = allLessons.filter(l => l.jlpt_level === selectedLevel && l.category === cat);
   const meta = CATEGORY_META[cat];
 
-  document.getElementById('catScreenTitle').textContent = `${meta.icon} ${meta.label} — ${selectedLevel}`;
+  document.getElementById('catScreenTitle').textContent = `${meta.icon} ${meta.label} \u2014 ${selectedLevel}`;
   const notebookLink = document.getElementById('notebookLink');
   notebookLink.classList.toggle('hidden', cat !== 'grammar');
   notebookLink.onclick = () => openNotebookModal(selectedLevel);
@@ -1524,15 +1524,15 @@ function openCategoryScreen(cat) {
       stateCls = `done ${pctCls}`;
       nodeContent = `${pct}%`;
     } else if (isDone) {
-      stateCls = 'done'; nodeContent = '✓';
+      stateCls = 'done'; nodeContent = '\u2713';
     } else if (isSubLocked) {
-      stateCls = 'sub-locked'; nodeContent = '💎';
+      stateCls = 'sub-locked'; nodeContent = '\ud83d\udc8e';
     } else if (isProgressLocked) {
-      stateCls = 'locked'; nodeContent = '🔒';
+      stateCls = 'locked'; nodeContent = '\ud83d\udd12';
     } else if (isReview) {
-      stateCls = 'current nb-review-node'; nodeContent = '📖';
+      stateCls = 'current nb-review-node'; nodeContent = '\ud83d\udcd6';
     } else if (isTest) {
-      stateCls = 'current nb-test-node'; nodeContent = '📝';
+      stateCls = 'current nb-test-node'; nodeContent = '\ud83d\udcdd';
     } else {
       stateCls = 'current';
       nodeContent = (cat === 'grammar') ? weekPos : getDisplayNum(l);
@@ -1578,9 +1578,9 @@ function openCategoryScreen(cat) {
         <div class="week-track" id="weekTrack">${pagesHtml}</div>
       </div>
       <div class="week-nav">
-        <button class="week-nav-btn" id="weekPrevBtn">← Oldingi hafta</button>
+        <button class="week-nav-btn" id="weekPrevBtn">\u2190 Oldingi hafta</button>
         <div class="week-dots" id="weekDots"></div>
-        <button class="week-nav-btn" id="weekNextBtn">Keyingi hafta →</button>
+        <button class="week-nav-btn" id="weekNextBtn">Keyingi hafta \u2192</button>
       </div>`;
 
     document.querySelectorAll('.week-day-row').forEach(row => {
@@ -1645,7 +1645,7 @@ function setupWeekSwiper(totalWeeks) {
     dotsWrap.querySelectorAll('.week-dot').forEach((d, i) => {
       d.className = 'week-dot' + (i === current ? ' active' : '');
     });
-    headerLabel.textContent = `Grammatika — ${selectedLevel}ning ${current + 1}-hafta darslari`;
+    headerLabel.textContent = `Grammatika \u2014 ${selectedLevel}ning ${current + 1}-hafta darslari`;
     btnPrev.disabled = current === 0;
     btnNext.disabled = current === totalWeeks - 1;
   }
@@ -1683,6 +1683,7 @@ function setupWeekSwiper(totalWeeks) {
 
   render();
 }
+
 
 /* ================== YON DAFTARCHA (varaqlanadigan modal) ================== */
 let notebookPages = [];
@@ -2298,22 +2299,7 @@ async function openGrammarLesson(lesson) {
   headerTitle.textContent = lesson.title;
 
   const isReview = lesson.lesson_subtype === 'review';
-  const videoWrapEl = document.querySelector('.grammar-video-wrap');
-  if (videoWrapEl) {
-    if (isReview) {
-      videoWrapEl.setAttribute(
-        'style',
-        'display:none !important; height:0 !important; min-height:0 !important; ' +
-        'padding:0 !important; margin:0 !important; overflow:hidden !important; ' +
-        'visibility:hidden !important; opacity:0 !important;'
-      );
-      const vf = document.getElementById('grammarVideoFrame');
-      if (vf) vf.src = 'about:blank';
-    } else {
-      videoWrapEl.removeAttribute('style');
-      videoWrapEl.classList.remove('hidden');
-    }
-  }
+  document.querySelector('.grammar-video-wrap').classList.toggle('hidden', isReview);
 
   // Tugmani 60 soniyaga qulflaymiz - video/qollanmani korish uchun minimal vaqt
   const btn = document.getElementById('grammarCompleteBtn');
@@ -2350,6 +2336,10 @@ async function openGrammarLesson(lesson) {
   }
 
   let guideHtml = data.guide_html || '';
+  if (isReview) {
+    const reviewBanner = `<div style="background:#2d5a72;color:#fff;text-align:center;padding:14px;font-family:sans-serif;font-weight:700;font-size:15px;">📖 Takrorlash — bilim va o'rganishning onasidir.</div>`;
+    guideHtml = reviewBanner + guideHtml;
+  }
   document.getElementById('grammarGuideFrame').srcdoc = guideHtml;
 }
 
