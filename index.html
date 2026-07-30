@@ -1655,14 +1655,19 @@ function openCategoryScreen(cat) {
     const isDone = completedLessonIds.has(l.id);
     const prevInDay = idxInDay === 0 ? true : completedLessonIds.has(dayLessons[idxInDay - 1].id);
     const isProgressLocked = !prevDayDone || !prevInDay;
-    const isSubLocked = !isDone && !canAccessLesson(l);
+    const hasAccess = canAccessLesson(l); // bepul (1-3 dars) YOKI joriy obuna yetarli
+    const isSubLocked = !hasAccess; // tugatilgan bolsa ham, obuna tugagan bolsa qulflanadi
 
     let stateCls, nodeContent;
     const weekPos = ((i % 7) + 1); // 1-7 takrorlanuvchi (faqat vizual, DBda saqlanmaydi)
     const isReview = l.lesson_subtype === 'review';
     const isTest = l.lesson_subtype === 'test';
 
-    if (isDone && isTest) {
+    if (isSubLocked) {
+      // Obuna joriy holatda yetarli emas - hatto avval tugatilgan bolsa ham qulflangan korinadi.
+      // (lesson_completions yozuvi bazada saqlanib qoladi - qayta tolasa avtomatik ✓ ga qaytadi)
+      stateCls = 'sub-locked'; nodeContent = '\ud83d\udc8e';
+    } else if (isDone && isTest) {
       const score = completedLessonScores.get(l.id);
       const total = score ? (score.correct + score.wrong) : 0;
       const pct = total ? Math.round(score.correct / total * 100) : 0;
@@ -1671,8 +1676,6 @@ function openCategoryScreen(cat) {
       nodeContent = `${pct}%`;
     } else if (isDone) {
       stateCls = 'done'; nodeContent = '\u2713';
-    } else if (isSubLocked) {
-      stateCls = 'sub-locked'; nodeContent = '\ud83d\udc8e';
     } else if (isProgressLocked) {
       stateCls = 'locked'; nodeContent = '\ud83d\udd12';
     } else if (isReview) {
@@ -2202,10 +2205,12 @@ function renderJourneyMap() {
     </div>`;
 
   kanjiLessons.forEach((l, idx) => {
-    const isDone = completedLessonIds.has(l.id);
+    const rawDone = completedLessonIds.has(l.id);
+    const hasAccess = canAccessLesson(l);
+    const isDone = rawDone && hasAccess; // obuna tugagan bolsa, tugatilgan bolsa ham qulflangan korinadi
     const prevDone = idx === 0 ? true : completedLessonIds.has(kanjiLessons[idx-1].id);
-    const isCurrent = !isDone && prevDone;
-    const isLocked = !isDone && !prevDone;
+    const isCurrent = !isDone && hasAccess && prevDone;
+    const isLocked = !isDone && (!hasAccess || !prevDone);
     const side = idx % 2 === 0 ? 'right' : '';
     const nodeCls = isDone ? 'done' : (isCurrent ? 'current' : 'locked');
     const badgeCls = isDone ? 'done' : (isCurrent ? 'current' : 'locked');
