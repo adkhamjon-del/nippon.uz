@@ -4025,7 +4025,8 @@ async function proceedAfterAuth() {
 
 /* ================== FINAL TEST (N5 Assessment) ================== */
 const FT_SKILL_ORDER = ['kanji', 'grammar', 'reading', 'listening'];
-const FT_SKILL_COUNTS = { kanji: 20, grammar: 20, reading: 15, listening: 25 };
+const FT_SKILL_COUNTS = { kanji: 20, grammar: 20, reading: 15, listening: 25 }; // faqat ogohlantirish ekranida "taxminiy" korsatish uchun
+let ftActualSkillCounts = { kanji: 0, grammar: 0, reading: 0, listening: 0 }; // HAQIQIY son - bazadan yuklangach hisoblanadi
 const FT_SKILL_LABELS = { kanji: '\ud83c\uddef\ud83c\uddf5 KANJI', grammar: "\u270f\ufe0f GRAMMATIKA", reading: "\ud83d\udcd6 O'QISH", listening: '\ud83c\udfa7 TINGLASH' };
 const FT_TOTAL_SECONDS = 85 * 60;
 const FT_BREAK_SECONDS = 5 * 60;
@@ -4047,7 +4048,7 @@ let ftListeningAFilled = {};
 function ftSkillForIndex(idx) {
   let acc = 0;
   for (const s of FT_SKILL_ORDER) {
-    acc += FT_SKILL_COUNTS[s];
+    acc += ftActualSkillCounts[s];
     if (idx < acc) return s;
   }
   return FT_SKILL_ORDER[FT_SKILL_ORDER.length - 1];
@@ -4055,8 +4056,8 @@ function ftSkillForIndex(idx) {
 function ftIsFirstOfSkill(idx) {
   let acc = 0;
   for (const s of FT_SKILL_ORDER) {
-    if (idx === acc) return true;
-    acc += FT_SKILL_COUNTS[s];
+    if (idx === acc && ftActualSkillCounts[s] > 0) return true;
+    acc += ftActualSkillCounts[s];
   }
   return false;
 }
@@ -4168,6 +4169,7 @@ async function startFinalTest() {
     'final test savollarini yuklash'
   );
   ftQuestions = FT_SKILL_ORDER.flatMap(s => (qData || []).filter(q => q.skill === s));
+  FT_SKILL_ORDER.forEach(s => { ftActualSkillCounts[s] = ftQuestions.filter(q => q.skill === s).length; });
 
   let attempt = finalTestStatus;
   if (!attempt || attempt.status !== 'in_progress') {
@@ -4247,12 +4249,12 @@ function renderFtQuestion() {
   const q = ftQuestions[ftCurrentIndex];
   document.getElementById('ftSkillLabel').textContent = FT_SKILL_LABELS[skill];
 
-  const skillStartIdx = FT_SKILL_ORDER.slice(0, FT_SKILL_ORDER.indexOf(skill)).reduce((a,s) => a + FT_SKILL_COUNTS[s], 0);
+  const skillStartIdx = FT_SKILL_ORDER.slice(0, FT_SKILL_ORDER.indexOf(skill)).reduce((a,s) => a + ftActualSkillCounts[s], 0);
   const posInSkill = ftCurrentIndex - skillStartIdx + 1;
 
   document.getElementById('ftProgressFill').style.width = (ftCurrentIndex / ftQuestions.length * 100) + '%';
 
-  let html = `<div class="ft-q-card"><div class="ft-q-progress">${FT_SKILL_LABELS[skill]} \u2014 ${posInSkill}/${FT_SKILL_COUNTS[skill]} (Umumiy: ${ftCurrentIndex+1}/${ftQuestions.length})</div>`;
+  let html = `<div class="ft-q-card"><div class="ft-q-progress">${FT_SKILL_LABELS[skill]} \u2014 ${posInSkill}/${ftActualSkillCounts[skill]} (Umumiy: ${ftCurrentIndex+1}/${ftQuestions.length})</div>`;
 
   if (skill === 'reading' && q.passage_html) {
     html += `<div class="ft-q-passage">${q.passage_html}</div>`;
@@ -4294,7 +4296,7 @@ function renderFtListeningFlow() {
   document.getElementById('ftProgressFill').style.width = (ftCurrentIndex / ftQuestions.length * 100) + '%';
 
   if (!ftListeningGroups) {
-    const listeningStartIdx = FT_SKILL_COUNTS.kanji + FT_SKILL_COUNTS.grammar + FT_SKILL_COUNTS.reading;
+    const listeningStartIdx = ftActualSkillCounts.kanji + ftActualSkillCounts.grammar + ftActualSkillCounts.reading;
     const listeningQs = ftQuestions.filter(q => q.skill === 'listening');
     ftListeningGroups = {
       A: listeningQs.filter(q => q.passage_group === 'A').sort((a,b) => (a.blank_number||0) - (b.blank_number||0)),
@@ -4544,6 +4546,8 @@ async function finishFinalTest(timeUp) {
     status: 'completed', completed_at: new Date().toISOString(),
     kanji_correct: scores.kanji.c, grammar_correct: scores.grammar.c,
     reading_correct: scores.reading.c, listening_correct: scores.listening.c,
+    kanji_total: scores.kanji.t, grammar_total: scores.grammar.t,
+    reading_total: scores.reading.t, listening_total: scores.listening.t,
     overall_pct: overallPct, passed, answers: ftAnswers,
     full_name: currentUser.user_metadata?.full_name || currentUser.email,
   };
@@ -4655,7 +4659,7 @@ async function renderFtCertificate(attempt) {
   const skillLabels = { kanji: 'Kanji', grammar: 'Grammatika', reading: "O'qish", listening: 'Tinglash' };
   const scoresArr = FT_SKILL_ORDER.map(s => {
     const c = attempt[s + '_correct'] || 0;
-    const t = FT_SKILL_COUNTS[s];
+    const t = attempt[s + '_total'] || 0;
     return { s, pct: t ? Math.round(c/t*100) : 0 };
   });
   let sx = W/2 - 300;
@@ -4741,7 +4745,7 @@ async function checkVerifyUrlParam() {
 
   const skillLabels = { kanji: 'Kanji', grammar: 'Grammatika', reading: "O'qish", listening: 'Tinglash' };
   let rowsHtml = FT_SKILL_ORDER.map(s => {
-    const c = data[s+'_correct']||0, t = FT_SKILL_COUNTS[s];
+    const c = data[s+'_correct']||0, t = data[s+'_total']||0;
     const pct = t ? Math.round(c/t*100) : 0;
     return `<div class="ft-skill-row"><span class="fsr-name">${skillLabels[s]}</span><span class="fsr-pct">${pct}%</span></div>`;
   }).join('');
