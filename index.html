@@ -4045,6 +4045,7 @@ let ftListeningPartIdx = 0;
 let ftListeningSubPos = 0;
 let ftListeningAFilled = {};
 let ftCurrentAudioUrl = null;
+let ftLastReadingPassage = null;
 
 function ftSkillForIndex(idx) {
   let acc = 0;
@@ -4192,6 +4193,7 @@ async function startFinalTest() {
   ftListeningSubPos = 0;
   ftListeningAFilled = {};
   ftCurrentAudioUrl = null;
+  ftLastReadingPassage = null;
 
   renderFtWatermark();
   startFtTimer();
@@ -4258,8 +4260,11 @@ function renderFtQuestion() {
 
   let html = `<div class="ft-q-card"><div class="ft-q-progress">${FT_SKILL_LABELS[skill]} \u2014 ${posInSkill}/${ftActualSkillCounts[skill]} (Umumiy: ${ftCurrentIndex+1}/${ftQuestions.length})</div>`;
 
-  if (skill === 'reading' && q.passage_html) {
-    html += `<div class="ft-q-passage">${q.passage_html}</div>`;
+  if (skill === 'reading') {
+    if (q.passage_html) { ftLastReadingPassage = q.passage_html; }
+    if (ftLastReadingPassage) {
+      html += `<div class="ft-q-passage">${ftLastReadingPassage}</div>`;
+    }
   }
   if (skill === 'listening' && q.audio_url) {
     html += `<audio class="ft-q-audio" controls src="${q.audio_url}"></audio>`;
