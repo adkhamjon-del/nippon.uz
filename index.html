@@ -1000,6 +1000,37 @@
   .ft-verify-ok { color: var(--ok); font-weight: 900; font-size: 15px; margin-bottom: 14px; }
   .ft-verify-name { font-family: 'Noto Serif JP', serif; font-size: 20px; font-weight: 900; margin-bottom: 4px; }
   .ft-verify-date { font-size: 12.5px; color: #8a8070; margin-bottom: 18px; }
+
+  /* ---------- FINAL TEST — TINGLASH (A/B/C qismlari) ---------- */
+  .ft-listen-audio { width: 100%; margin-bottom: 14px; }
+  .ft-listen-part-label { display: inline-block; background: var(--doppi, #1f2d4d); color: #fff; font-size: 10.5px; font-weight: 800; letter-spacing: 0.06em; padding: 4px 12px; border-radius: 20px; margin-bottom: 10px; }
+
+  .ft-passage-a { font-family: 'Noto Serif JP', serif; font-size: 16px; line-height: 2.3; color: var(--sumi); }
+  .ft-blank {
+    display: inline-block; min-width: 46px; text-align: center; background: var(--ai-blue-soft);
+    color: var(--ai-blue); border: 1.5px dashed var(--ai-blue); border-radius: 6px; padding: 1px 8px;
+    margin: 0 2px; cursor: pointer; font-weight: 800; font-size: 13px; position: relative;
+  }
+  .ft-blank.filled { background: rgba(47,125,107,0.1); border: 1.5px solid var(--ok); color: #2f7d6b; cursor: default; }
+  .ft-blank-popup {
+    position: fixed; z-index: 220; background: #fff; border: 1px solid var(--line); border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2); padding: 8px; display: grid; gap: 6px; min-width: 160px;
+  }
+  .ft-blank-popup button {
+    background: var(--washi); border: 1px solid var(--line); border-radius: 8px; padding: 9px 12px;
+    font-size: 13px; font-family: inherit; cursor: pointer; text-align: left;
+  }
+  .ft-blank-popup-backdrop { position: fixed; inset: 0; z-index: 210; background: transparent; }
+  .ft-a-progress { text-align: center; font-size: 12px; color: #8a8070; margin-top: 16px; font-weight: 700; }
+
+  .ft-reveal-btn {
+    display: block; width: 100%; background: var(--paper); border: 1px solid var(--line); border-radius: 12px;
+    padding: 12px; font-size: 12.5px; font-weight: 800; cursor: pointer; margin-top: 14px; color: var(--ai-blue);
+  }
+  .ft-reveal-panel { background: var(--washi); border-radius: 12px; padding: 16px; margin-top: 12px; }
+  .ft-reveal-panel .frp-label { font-size: 10px; font-weight: 800; color: #8a8070; text-transform: uppercase; margin-bottom: 6px; }
+  .ft-reveal-panel .frp-jp { font-family: 'Noto Serif JP', serif; font-size: 14.5px; line-height: 1.9; color: var(--sumi); margin-bottom: 12px; }
+  .ft-reveal-panel .frp-uz { font-size: 13px; line-height: 1.7; color: #2f7d6b; }
 </style>
 </head>
 <body>
@@ -4006,6 +4037,11 @@ let ftTimerInterval = null;
 let ftSecondsRemaining = FT_TOTAL_SECONDS;
 let ftCurrentIndex = 0;
 let ftAnswers = {};
+let ftListeningGroups = null;
+const ftListeningPartOrder = ['A', 'B1', 'B2', 'C'];
+let ftListeningPartIdx = 0;
+let ftListeningSubPos = 0;
+let ftListeningAFilled = {};
 
 function ftSkillForIndex(idx) {
   let acc = 0;
@@ -4147,6 +4183,10 @@ async function startFinalTest() {
   ftCurrentIndex = attempt.current_index || 0;
   ftAnswers = attempt.answers || {};
   ftSecondsRemaining = Math.max(0, FT_TOTAL_SECONDS - (attempt.seconds_elapsed || 0));
+  ftListeningGroups = null;
+  ftListeningPartIdx = 0;
+  ftListeningSubPos = 0;
+  ftListeningAFilled = {};
 
   renderFtWatermark();
   startFtTimer();
@@ -4196,8 +4236,13 @@ function renderFtQuestion() {
     return;
   }
 
-  const q = ftQuestions[ftCurrentIndex];
   const skill = ftSkillForIndex(ftCurrentIndex);
+  if (skill === 'listening') {
+    renderFtListeningFlow();
+    return;
+  }
+
+  const q = ftQuestions[ftCurrentIndex];
   document.getElementById('ftSkillLabel').textContent = FT_SKILL_LABELS[skill];
 
   const skillStartIdx = FT_SKILL_ORDER.slice(0, FT_SKILL_ORDER.indexOf(skill)).reduce((a,s) => a + FT_SKILL_COUNTS[s], 0);
@@ -4241,6 +4286,206 @@ function renderFtQuestion() {
 }
 
 /* ---------- TANAFFUS ---------- */
+/* ---------- TINGLASH — A/B/C QISMLARI ---------- */
+function renderFtListeningFlow() {
+  document.getElementById('ftSkillLabel').textContent = FT_SKILL_LABELS.listening;
+  document.getElementById('ftProgressFill').style.width = (ftCurrentIndex / ftQuestions.length * 100) + '%';
+
+  if (!ftListeningGroups) {
+    const listeningStartIdx = FT_SKILL_COUNTS.kanji + FT_SKILL_COUNTS.grammar + FT_SKILL_COUNTS.reading;
+    const listeningQs = ftQuestions.filter(q => q.skill === 'listening');
+    ftListeningGroups = {
+      A: listeningQs.filter(q => q.passage_group === 'A').sort((a,b) => (a.blank_number||0) - (b.blank_number||0)),
+      B1: listeningQs.filter(q => q.passage_group === 'B1'),
+      B2: listeningQs.filter(q => q.passage_group === 'B2'),
+      C: listeningQs.filter(q => q.passage_group === 'C'),
+    };
+    ftListeningGroups.A.forEach(q => { if (ftAnswers[q.id]) ftListeningAFilled[q.blank_number] = ftAnswers[q.id]; });
+
+    // Davom ettirish: oldin qancha tinglash savoli otilganini hisoblab, togri qismga qaytamiz
+    let offset = ftCurrentIndex - listeningStartIdx;
+    let partIdx = 0;
+    for (const p of ftListeningPartOrder) {
+      const size = ftListeningGroups[p].length;
+      if (offset < size) { ftListeningPartIdx = partIdx; ftListeningSubPos = (p === 'A') ? 0 : offset; break; }
+      offset -= size;
+      partIdx++;
+      ftListeningPartIdx = partIdx;
+    }
+  }
+
+  const part = ftListeningPartOrder[ftListeningPartIdx];
+  if (!part) {
+    ftCurrentIndex = ftQuestions.length;
+    saveFtProgress();
+    finishFinalTest(false);
+    return;
+  }
+
+  if (part === 'A') renderFtListeningPartA();
+  else renderFtListeningPartBC(part);
+}
+
+function renderFtListeningPartA() {
+  const qs = ftListeningGroups.A;
+  if (qs.length === 0) { ftListeningPartIdx++; renderFtListeningFlow(); return; }
+  const audioUrl = qs[0].audio_url;
+  const passageText = qs[0].passage_text || '';
+
+  const circleNums = ['\u2460','\u2461','\u2462','\u2463','\u2464','\u2465','\u2466','\u2467','\u2468','\u2469'];
+  let html = passageText;
+  circleNums.forEach((circ, i) => {
+    const blankNum = i + 1;
+    const q = qs.find(x => x.blank_number === blankNum);
+    if (!q) return;
+    const filledLetter = ftListeningAFilled[blankNum];
+    let replacement;
+    if (filledLetter) {
+      const optMap = { a: q.option_a, b: q.option_b, c: q.option_c, d: q.option_d };
+      replacement = `<span class="ft-blank filled">${escapeHtml(optMap[filledLetter] || '')}</span>`;
+    } else {
+      replacement = `<span class="ft-blank" data-blank="${blankNum}">${circ}</span>`;
+    }
+    html = html.split(circ).join(replacement);
+  });
+
+  const filledCount = qs.filter(q => ftListeningAFilled[q.blank_number]).length;
+  const allFilled = filledCount === qs.length;
+  const globalStart = ftCurrentIndex + 1;
+  const globalEnd = ftCurrentIndex + qs.length;
+
+  document.getElementById('ftQuestionWrap').innerHTML = `
+    <div class="ft-q-card">
+      <div class="ft-listen-part-label">A-QISM \u2014 Matnni to'ldirish</div>
+      <div class="ft-q-progress">Tinglash \u2014 A qism (Umumiy: ${globalStart}-${globalEnd}/${ftQuestions.length})</div>
+      <audio class="ft-listen-audio" controls src="${audioUrl || ''}"></audio>
+      <div class="ft-passage-a" id="ftPassageA">${html}</div>
+      <div class="ft-a-progress">${filledCount} / ${qs.length} bo'sh joy to'ldirildi</div>
+      <div class="ft-q-nav"><button class="ft-next-btn" id="ftPartANextBtn" ${allFilled ? '' : 'disabled'}>Keyingisi \u2192</button></div>
+    </div>`;
+
+  document.querySelectorAll('.ft-blank[data-blank]').forEach(blankEl => {
+    blankEl.addEventListener('click', (e) => showFtBlankPopup(e, blankEl, qs));
+  });
+
+  document.getElementById('ftPartANextBtn').addEventListener('click', () => {
+    ftCurrentIndex += qs.length;
+    ftListeningPartIdx++;
+    saveFtProgress();
+    renderFtListeningFlow();
+  });
+}
+
+function showFtBlankPopup(e, blankEl, qs) {
+  const blankNum = parseInt(blankEl.dataset.blank);
+  const q = qs.find(x => x.blank_number === blankNum);
+  if (!q) return;
+
+  document.querySelectorAll('.ft-blank-popup, .ft-blank-popup-backdrop').forEach(el => el.remove());
+
+  const backdrop = document.createElement('div');
+  backdrop.className = 'ft-blank-popup-backdrop';
+  document.body.appendChild(backdrop);
+
+  const rect = blankEl.getBoundingClientRect();
+  const popup = document.createElement('div');
+  popup.className = 'ft-blank-popup';
+  popup.style.top = (rect.bottom + 6) + 'px';
+  popup.style.left = Math.max(10, Math.min(window.innerWidth - 180, rect.left)) + 'px';
+
+  const opts = [['a', q.option_a], ['b', q.option_b], ['c', q.option_c], ['d', q.option_d]].filter(o => o[1]);
+  opts.forEach(([letter, text]) => {
+    const btn = document.createElement('button');
+    btn.textContent = text;
+    btn.addEventListener('click', () => {
+      ftListeningAFilled[blankNum] = letter;
+      ftAnswers[q.id] = letter;
+      backdrop.remove(); popup.remove();
+      saveFtProgress();
+      renderFtListeningPartA();
+    });
+    popup.appendChild(btn);
+  });
+
+  document.body.appendChild(popup);
+  backdrop.addEventListener('click', () => { backdrop.remove(); popup.remove(); });
+}
+
+function renderFtListeningPartBC(part) {
+  const qs = ftListeningGroups[part];
+  if (qs.length === 0) { ftListeningPartIdx++; renderFtListeningFlow(); return; }
+
+  if (ftListeningSubPos >= qs.length) {
+    renderFtListeningReveal(part, qs);
+    return;
+  }
+
+  const q = qs[ftListeningSubPos];
+  const partLabel = part === 'B1' ? "B-QISM \u2014 1-hikoya" : (part === 'B2' ? "B-QISM \u2014 2-hikoya" : "C-QISM \u2014 Dialog");
+  const globalPos = ftCurrentIndex + ftListeningSubPos;
+
+  let html = `
+    <div class="ft-q-card">
+      <div class="ft-listen-part-label">${partLabel}</div>
+      <div class="ft-q-progress">Tinglash \u2014 ${part} (${ftListeningSubPos+1}/${qs.length}) \u2014 Umumiy: ${globalPos+1}/${ftQuestions.length}</div>`;
+  if (ftListeningSubPos === 0) {
+    html += `<audio class="ft-listen-audio" controls src="${q.audio_url || ''}"></audio>`;
+  }
+  html += `<div class="ft-q-text">${escapeHtml(q.question_jp)}</div><div class="ft-q-options">`;
+  const opts = [['a', q.option_a], ['b', q.option_b], ['c', q.option_c], ['d', q.option_d]].filter(o => o[1]);
+  const saved = ftAnswers[q.id];
+  opts.forEach(([letter, text]) => {
+    const sel = saved === letter ? ' selected' : '';
+    html += `<button class="ft-opt-btn${sel}" data-letter="${letter}">${escapeHtml(text)}</button>`;
+  });
+  html += `</div><div class="ft-q-nav"><button class="ft-next-btn" id="ftBcNextBtn" ${saved ? '' : 'disabled'}>Keyingisi \u2192</button></div></div>`;
+
+  document.getElementById('ftQuestionWrap').innerHTML = html;
+
+  document.querySelectorAll('.ft-opt-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.ft-opt-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      ftAnswers[q.id] = btn.dataset.letter;
+      document.getElementById('ftBcNextBtn').disabled = false;
+    });
+  });
+  document.getElementById('ftBcNextBtn').addEventListener('click', () => {
+    ftListeningSubPos++;
+    saveFtProgress();
+    renderFtListeningPartBC(part);
+  });
+}
+
+function renderFtListeningReveal(part, qs) {
+  const scriptText = qs[0].passage_text || '';
+  const translationText = qs[0].passage_translation || '';
+  document.getElementById('ftQuestionWrap').innerHTML = `
+    <div class="ft-q-card">
+      <div class="ft-listen-part-label">${part} \u2014 Yakunlandi</div>
+      <button class="ft-reveal-btn" id="ftRevealScriptBtn">\ud83d\udcc4 Matn va tarjimani ko'rish</button>
+      <div id="ftRevealPanelWrap"></div>
+      <div class="ft-q-nav" style="margin-top:14px;"><button class="ft-next-btn" id="ftPartBcNextGroupBtn">Keyingi qismga o'tish \u2192</button></div>
+    </div>`;
+
+  document.getElementById('ftRevealScriptBtn').addEventListener('click', () => {
+    document.getElementById('ftRevealPanelWrap').innerHTML = `
+      <div class="ft-reveal-panel">
+        <div class="frp-label">\ud83c\uddef\ud83c\uddf5 Matn</div><div class="frp-jp">${escapeHtml(scriptText)}</div>
+        <div class="frp-label">\ud83c\uddfa\ud83c\uddff Tarjima</div><div class="frp-uz">${escapeHtml(translationText)}</div>
+      </div>`;
+    document.getElementById('ftRevealScriptBtn').style.display = 'none';
+  });
+
+  document.getElementById('ftPartBcNextGroupBtn').addEventListener('click', () => {
+    ftCurrentIndex += qs.length;
+    ftListeningPartIdx++;
+    ftListeningSubPos = 0;
+    saveFtProgress();
+    renderFtListeningFlow();
+  });
+}
+
 function showFtBreak() {
   const skill = ftSkillForIndex(ftCurrentIndex);
   document.getElementById('ftBreakNextSkill').textContent = FT_SKILL_LABELS[skill];
