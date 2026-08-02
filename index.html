@@ -4044,6 +4044,7 @@ const ftListeningPartOrder = ['A', 'B1', 'B2', 'C'];
 let ftListeningPartIdx = 0;
 let ftListeningSubPos = 0;
 let ftListeningAFilled = {};
+let ftCurrentAudioUrl = null;
 
 function ftSkillForIndex(idx) {
   let acc = 0;
@@ -4190,6 +4191,7 @@ async function startFinalTest() {
   ftListeningPartIdx = 0;
   ftListeningSubPos = 0;
   ftListeningAFilled = {};
+  ftCurrentAudioUrl = null;
 
   renderFtWatermark();
   startFtTimer();
@@ -4330,6 +4332,26 @@ function renderFtListeningFlow() {
   else renderFtListeningPartBC(part);
 }
 
+function ftEnsureListenShell(audioUrl, partLabelText, progressText) {
+  const wrap = document.getElementById('ftQuestionWrap');
+  const existingAudio = document.getElementById('ftListenAudioPlayer');
+  const needsRebuild = !existingAudio || ftCurrentAudioUrl !== (audioUrl || '');
+
+  if (needsRebuild) {
+    ftCurrentAudioUrl = audioUrl || '';
+    wrap.innerHTML = `
+      <div class="ft-q-card">
+        <div class="ft-listen-part-label" id="ftListenPartLabel"></div>
+        <div class="ft-q-progress" id="ftListenProgress"></div>
+        ${audioUrl ? `<audio class="ft-listen-audio" id="ftListenAudioPlayer" controls src="${audioUrl}"></audio>` : ''}
+        <div id="ftListenBody"></div>
+      </div>`;
+  }
+  document.getElementById('ftListenPartLabel').textContent = partLabelText;
+  document.getElementById('ftListenProgress').textContent = progressText;
+  return document.getElementById('ftListenBody');
+}
+
 function renderFtListeningPartA() {
   const qs = ftListeningGroups.A;
   if (qs.length === 0) { ftListeningPartIdx++; renderFtListeningFlow(); return; }
@@ -4358,15 +4380,11 @@ function renderFtListeningPartA() {
   const globalStart = ftCurrentIndex + 1;
   const globalEnd = ftCurrentIndex + qs.length;
 
-  document.getElementById('ftQuestionWrap').innerHTML = `
-    <div class="ft-q-card">
-      <div class="ft-listen-part-label">A-QISM \u2014 Matnni to'ldirish</div>
-      <div class="ft-q-progress">Tinglash \u2014 A qism (Umumiy: ${globalStart}-${globalEnd}/${ftQuestions.length})</div>
-      <audio class="ft-listen-audio" controls src="${audioUrl || ''}"></audio>
-      <div class="ft-passage-a" id="ftPassageA">${html}</div>
-      <div class="ft-a-progress">${filledCount} / ${qs.length} bo'sh joy to'ldirildi</div>
-      <div class="ft-q-nav"><button class="ft-next-btn" id="ftPartANextBtn" ${allFilled ? '' : 'disabled'}>Keyingisi \u2192</button></div>
-    </div>`;
+  const body = ftEnsureListenShell(audioUrl, "A-QISM \u2014 Matnni to'ldirish", `Tinglash \u2014 A qism (Umumiy: ${globalStart}-${globalEnd}/${ftQuestions.length})`);
+  body.innerHTML = `
+    <div class="ft-passage-a" id="ftPassageA">${html}</div>
+    <div class="ft-a-progress">${filledCount} / ${qs.length} bo'sh joy to'ldirildi</div>
+    <div class="ft-q-nav"><button class="ft-next-btn" id="ftPartANextBtn" ${allFilled ? '' : 'disabled'}>Keyingisi \u2192</button></div>`;
 
   document.querySelectorAll('.ft-blank[data-blank]').forEach(blankEl => {
     blankEl.addEventListener('click', (e) => showFtBlankPopup(e, blankEl, qs));
@@ -4406,7 +4424,7 @@ function showFtBlankPopup(e, blankEl, qs) {
       ftAnswers[q.id] = letter;
       backdrop.remove(); popup.remove();
       saveFtProgress();
-      renderFtListeningPartA();
+      renderFtListeningPartA(); // audio elementga tegilmaydi - faqat ftCurrentAudioUrl bir xil bolgani uchun body qayta yoziladi
     });
     popup.appendChild(btn);
   });
@@ -4427,24 +4445,19 @@ function renderFtListeningPartBC(part) {
   const q = qs[ftListeningSubPos];
   const partLabel = part === 'B1' ? "B-QISM \u2014 1-hikoya" : (part === 'B2' ? "B-QISM \u2014 2-hikoya" : "C-QISM \u2014 Dialog");
   const globalPos = ftCurrentIndex + ftListeningSubPos;
+  const groupAudioUrl = qs[0].audio_url; // butun guruh uchun BITTA audio - har doim shu qatordan olinadi
 
-  let html = `
-    <div class="ft-q-card">
-      <div class="ft-listen-part-label">${partLabel}</div>
-      <div class="ft-q-progress">Tinglash \u2014 ${part} (${ftListeningSubPos+1}/${qs.length}) \u2014 Umumiy: ${globalPos+1}/${ftQuestions.length}</div>`;
-  if (ftListeningSubPos === 0) {
-    html += `<audio class="ft-listen-audio" controls src="${q.audio_url || ''}"></audio>`;
-  }
-  html += `<div class="ft-q-text">${escapeHtml(q.question_jp)}</div><div class="ft-q-options">`;
+  const body = ftEnsureListenShell(groupAudioUrl, partLabel, `Tinglash \u2014 ${part} (${ftListeningSubPos+1}/${qs.length}) \u2014 Umumiy: ${globalPos+1}/${ftQuestions.length}`);
+
+  let html = `<div class="ft-q-text">${escapeHtml(q.question_jp)}</div><div class="ft-q-options">`;
   const opts = [['a', q.option_a], ['b', q.option_b], ['c', q.option_c], ['d', q.option_d]].filter(o => o[1]);
   const saved = ftAnswers[q.id];
   opts.forEach(([letter, text]) => {
     const sel = saved === letter ? ' selected' : '';
     html += `<button class="ft-opt-btn${sel}" data-letter="${letter}">${escapeHtml(text)}</button>`;
   });
-  html += `</div><div class="ft-q-nav"><button class="ft-next-btn" id="ftBcNextBtn" ${saved ? '' : 'disabled'}>Keyingisi \u2192</button></div></div>`;
-
-  document.getElementById('ftQuestionWrap').innerHTML = html;
+  html += `</div><div class="ft-q-nav"><button class="ft-next-btn" id="ftBcNextBtn" ${saved ? '' : 'disabled'}>Keyingisi \u2192</button></div>`;
+  body.innerHTML = html;
 
   document.querySelectorAll('.ft-opt-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -4457,20 +4470,21 @@ function renderFtListeningPartBC(part) {
   document.getElementById('ftBcNextBtn').addEventListener('click', () => {
     ftListeningSubPos++;
     saveFtProgress();
-    renderFtListeningPartBC(part);
+    renderFtListeningPartBC(part); // audio elementga tegilmaydi - guruh ozgarmagani uchun
   });
 }
 
 function renderFtListeningReveal(part, qs) {
   const scriptText = qs[0].passage_text || '';
   const translationText = qs[0].passage_translation || '';
-  document.getElementById('ftQuestionWrap').innerHTML = `
-    <div class="ft-q-card">
-      <div class="ft-listen-part-label">${part} \u2014 Yakunlandi</div>
-      <button class="ft-reveal-btn" id="ftRevealScriptBtn">\ud83d\udcc4 Matn va tarjimani ko'rish</button>
-      <div id="ftRevealPanelWrap"></div>
-      <div class="ft-q-nav" style="margin-top:14px;"><button class="ft-next-btn" id="ftPartBcNextGroupBtn">Keyingi qismga o'tish \u2192</button></div>
-    </div>`;
+  const groupAudioUrl = qs[0].audio_url;
+
+  const body = ftEnsureListenShell(groupAudioUrl, `${part} \u2014 Yakunlandi`, '');
+  document.getElementById('ftListenProgress').style.display = 'none';
+  body.innerHTML = `
+    <button class="ft-reveal-btn" id="ftRevealScriptBtn">\ud83d\udcc4 Matn va tarjimani ko'rish</button>
+    <div id="ftRevealPanelWrap"></div>
+    <div class="ft-q-nav" style="margin-top:14px;"><button class="ft-next-btn" id="ftPartBcNextGroupBtn">Keyingi qismga o'tish \u2192</button></div>`;
 
   document.getElementById('ftRevealScriptBtn').addEventListener('click', () => {
     document.getElementById('ftRevealPanelWrap').innerHTML = `
