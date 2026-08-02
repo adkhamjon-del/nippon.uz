@@ -4036,6 +4036,7 @@ let ftAttempt = null;
 let ftTimerInterval = null;
 let ftSecondsRemaining = FT_TOTAL_SECONDS;
 let ftCurrentIndex = 0;
+let ftSkipBreakCheck = false;
 let ftAnswers = {};
 let ftListeningGroups = null;
 const ftListeningPartOrder = ['A', 'B1', 'B2', 'C'];
@@ -4231,10 +4232,11 @@ function renderFtQuestion() {
     return;
   }
 
-  if (ftIsFirstOfSkill(ftCurrentIndex) && ftCurrentIndex !== 0) {
+  if (!ftSkipBreakCheck && ftIsFirstOfSkill(ftCurrentIndex) && ftCurrentIndex !== 0) {
     showFtBreak();
     return;
   }
+  ftSkipBreakCheck = false;
 
   const skill = ftSkillForIndex(ftCurrentIndex);
   if (skill === 'listening') {
@@ -4511,6 +4513,7 @@ function showFtBreak() {
 function endFtBreak() {
   document.getElementById('ftBreakOverlay').classList.remove('show');
   document.getElementById('ftTimerBar').classList.remove('ft-break-mode');
+  ftSkipBreakCheck = true;
   renderFtQuestion();
 }
 
