@@ -1042,6 +1042,78 @@
   .ft-reveal-panel .frp-label { font-size: 10px; font-weight: 800; color: #8a8070; text-transform: uppercase; margin-bottom: 6px; }
   .ft-reveal-panel .frp-jp { font-family: 'Noto Serif JP', serif; font-size: 14.5px; line-height: 1.9; color: var(--sumi); margin-bottom: 12px; }
   .ft-reveal-panel .frp-uz { font-size: 13px; line-height: 1.7; color: #2f7d6b; }
+  /* ===== N5 GRAMMATIKA BANKI ===== */
+  #grammarBankScreen {
+    background: radial-gradient(circle at 15% 0%, rgba(201,166,255,0.10), transparent 45%),
+                radial-gradient(circle at 90% 10%, rgba(127,208,232,0.10), transparent 45%),
+                var(--doppi);
+    margin: -16px -16px 0; padding: 16px 16px 60px; min-height: 100vh;
+  }
+  .gb-header { max-width: 640px; margin: 0 auto; text-align: center; position: relative; }
+  .gb-header .journey-back { color: #cfc9e8; text-align: left; }
+  .gb-crest {
+    width: 52px; height: 52px; margin: 6px auto 8px; border-radius: 50%;
+    background: linear-gradient(145deg, #e8c15a, #b8862f);
+    display: flex; align-items: center; justify-content: center; font-size: 24px;
+    box-shadow: 0 8px 24px rgba(232,193,90,0.35), inset 0 1px 2px rgba(255,255,255,0.4);
+    font-family: 'Noto Serif JP', serif; color: #1a1408;
+  }
+  .gb-eyebrow { font-size: 10.5px; letter-spacing: 3px; color: #e8c15a; text-transform: uppercase; font-weight: 700; margin-bottom: 4px; }
+  .gb-title { font-size: 21px; font-weight: 800; color: #fff; margin-bottom: 4px; font-family: 'Zen Kaku Gothic New', sans-serif; }
+  .gb-sub { font-size: 12px; color: #9a95b0; margin-bottom: 18px; }
+  .gb-search-box {
+    display: flex; align-items: center; gap: 10px;
+    background: rgba(255,255,255,0.05); border: 1.5px solid rgba(255,255,255,0.1);
+    border-radius: 26px; padding: 12px 18px; margin: 0 0 8px;
+    position: sticky; top: 8px; z-index: 10;
+  }
+  .gb-search-box:focus-within { border-color: #e8c15a; box-shadow: 0 0 0 4px rgba(232,193,90,0.12); background: #171d2e; }
+  .gb-search-box input { border: none; outline: none; flex: 1; font-size: 14px; background: transparent; color: #fff; font-family: inherit; }
+  .gb-search-box input::placeholder { color: #6b6680; }
+  .gb-no-result { text-align: center; color: #6b6680; font-size: 13px; padding: 30px 0; }
+  .gb-progress-wrap { margin: 6px 0 20px; }
+  .gb-progress-track { background: rgba(255,255,255,0.08); border-radius: 20px; height: 6px; overflow: hidden; }
+  .gb-progress-fill { background: linear-gradient(90deg,#e8c15a,#fff2c4); height: 100%; box-shadow: 0 0 8px rgba(232,193,90,0.6); transition: width .4s ease; }
+  .gb-progress-label { text-align: center; font-size: 11px; color: #9a95b0; margin-top: 7px; letter-spacing: 0.5px; }
+  .gb-week-header {
+    font-family: 'Noto Serif JP', serif; font-size: 14px; font-weight: 900; color: #e8c15a;
+    margin: 22px 0 10px; padding-bottom: 6px; border-bottom: 1px solid rgba(232,193,90,0.25);
+    max-width: 640px; margin-left: auto; margin-right: auto;
+  }
+  .gb-week-group:first-of-type .gb-week-header { margin-top: 0; }
+  .gb-card {
+    position: relative; overflow: hidden; max-width: 640px; margin: 0 auto 10px;
+    background: linear-gradient(160deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+    border: 1px solid rgba(255,255,255,0.09); border-radius: 14px; padding: 14px 16px 14px 18px;
+  }
+  .gb-card-glow { position: absolute; left: 0; top: 0; bottom: 0; width: 3px; opacity: 0.9; }
+  .gb-card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; gap: 10px; }
+  .gb-struct { font-family: 'Noto Serif JP', serif; font-size: 15.5px; font-weight: 900; letter-spacing: 0.3px; color: #f0eef7; }
+  .gb-struct .p, .gb-struct .p2 { text-decoration: underline; text-decoration-style: dotted; text-underline-offset: 3px; }
+  .gb-dars-tag {
+    flex-shrink: 0; display: flex; align-items: center; gap: 4px; font-size: 10.5px; font-weight: 700; color: #e8e6f0;
+    background: rgba(255,255,255,0.06); border: 1px solid; padding: 5px 10px; border-radius: 20px; cursor: pointer;
+    font-family: inherit; transition: .15s;
+  }
+  .gb-dars-tag:hover { background: rgba(255,255,255,0.14); }
+  .gb-mano { font-size: 11px; color: #9a95b0; margin-bottom: 5px; font-weight: 600; letter-spacing: 0.2px; }
+  .gb-misol { font-family: 'Noto Serif JP', serif; font-size: 15px; color: #f0eef7; line-height: 1.5; }
+  .gb-misol .p, .gb-misol .p2 { font-weight: 900; text-decoration: underline; text-decoration-style: dotted; text-underline-offset: 3px; }
+  .gb-card.locked { filter: blur(4.5px); pointer-events: none; user-select: none; }
+  .gb-card.locked .gb-dars-tag { opacity: 0.4; }
+  .gb-lock-note {
+    max-width: 640px; margin: 4px auto 0; text-align: center; font-size: 11.5px; color: #9a95b0;
+    background: rgba(255,255,255,0.04); border: 1px dashed rgba(255,255,255,0.15); border-radius: 12px; padding: 10px;
+  }
+  /* Bosh sahifadagi kirish banneri */
+  .gb-entry-card {
+    background: linear-gradient(135deg, #1c1730, #3a2f5c); border-radius: 16px; padding: 16px;
+    display: flex; align-items: center; gap: 12px; cursor: pointer; color: #fff; margin-top: 10px;
+    border: 1px solid rgba(232,193,90,0.25);
+  }
+  .gb-entry-emoji { font-size: 26px; flex-shrink: 0; }
+  .gb-entry-title { font-weight: 800; font-size: 14px; margin-bottom: 2px; }
+  .gb-entry-sub { font-size: 12px; color: #cfc9e8; }
 </style>
 </head>
 <body>
@@ -1276,6 +1348,27 @@
       <div class="rail-line"></div>
       <div class="loading-msg">Yuklanmoqda...</div>
     </div>
+  </div>
+
+  <!-- N5 GRAMMATIKA BANKI -->
+  <div id="grammarBankScreen" class="hidden">
+    <div class="gb-header">
+      <div class="journey-back" id="gbBackBtn">← Bosh sahifa</div>
+      <div class="gb-crest">学</div>
+      <div class="gb-eyebrow">Nippon.uz Academy</div>
+      <h2 class="gb-title">N5 Grammatika Banki</h2>
+      <div class="gb-sub">Barcha o'rgangan grammatikangiz — bir joyda, abadiy</div>
+      <div class="gb-search-box">
+        <span class="gb-search-icon">🕵️‍♂️</span>
+        <input type="text" id="gbSearchInput" placeholder="Grammatika qidiring... (masalan: たら, yoki 'tajriba')">
+      </div>
+      <div class="gb-progress-wrap">
+        <div class="gb-progress-track"><div class="gb-progress-fill" id="gbProgressFill"></div></div>
+        <div class="gb-progress-label" id="gbProgressLabel"></div>
+      </div>
+    </div>
+    <div id="gbCardsWrap"></div>
+    <div class="gb-no-result hidden" id="gbNoResult">😕 Hech narsa topilmadi</div>
   </div>
 
   <!-- FINAL TEST — OGOHLANTIRISH EKRANI -->
@@ -1542,6 +1635,7 @@ const grammarTestScreen = document.getElementById('grammarTestScreen');
 const infoScreen = document.getElementById('infoScreen');
 const termsScreen = document.getElementById('termsScreen');
 const journeyScreen = document.getElementById('journeyScreen');
+const grammarBankScreen = document.getElementById('grammarBankScreen');
 const quizScreen = document.getElementById('quizScreen');
 const levelRow = document.getElementById('levelRow');
 const levelContent = document.getElementById('levelContent');
@@ -1601,6 +1695,142 @@ let completedLessonIds = new Set();
 let completedLessonScores = new Map(); // lesson_id -> {correct, wrong}
 let selectedLevel = 'N3';
 const LEVELS = ['N5', 'N4', 'N3', 'N2', 'N1'];
+// N5 Grammatika Banki ma'lumotlari: w=hafta(1-5), d=dars raqami(1-25), c=rang, s=struktura(HTML), m=ma'no, e=misol(HTML)
+const N5_GRAMMAR_BANK = [
+{w:1,d:1,c:"#7fd0e8",s:`Ot<span class="p">は</span>Ot<span class="p2">です</span>`,m:"...dir/...man",e:`わたしは<span class="p"> は</span>がくせい<span class="p2">です</span>。`},
+{w:1,d:1,c:"#ff8fa3",s:`Ot<span class="p">じゃありません</span>`,m:"...emas",e:`これは ほん<span class="p">じゃありません</span>。`},
+{w:1,d:1,c:"#c9a6ff",s:`Gap<span class="p">か</span>`,m:"savol belgisi",e:`これは ほんです<span class="p">か</span>。`},
+{w:1,d:1,c:"#ffd873",s:`Ot<span class="p">も</span>`,m:"ham",e:`わたし<span class="p">も</span> がくせいです。`},
+{w:1,d:1,c:"#9be89b",s:`Ot1<span class="p">の</span>Ot2`,m:"egalik (kimning)",e:`せんせい<span class="p">の</span> かばん`},
+{w:1,d:2,c:"#ff9d5c",s:`<span class="p">これ／それ／あれ</span>`,m:"bu／shu／ana u (mustaqil)",e:`<span class="p">これ</span>は ほんです。`},
+{w:1,d:2,c:"#e8879c",s:`<span class="p">この／その／あの</span>＋Ot`,m:"bu／shu／ana u (ot bilan)",e:`<span class="p">この</span> ほんは わたしのです。`},
+{w:1,d:2,c:"#5eb0e0",s:`<span class="p">そうです</span>／か／じゃありません`,m:"shunday (javob)",e:`はい、<span class="p">そうです</span>。`},
+{w:1,d:2,c:"#6fd49a",s:`Ot1です<span class="p">か</span>、Ot2ですか`,m:"...yoki...?",e:`ほんですか、ざっしです<span class="p">か</span>。`},
+{w:1,d:3,c:"#e8c15a",s:`<span class="p">ここ／そこ／あそこ</span>`,m:"bu yer／shu yer／ana u yer",e:`<span class="p">ここ</span>は がっこうです。`},
+{w:1,d:3,c:"#ff6b6b",s:`<span class="p">こちら／そちら／あちら</span>`,m:"bu tomon (hurmat bilan)",e:`<span class="p">こちら</span>は たなかさんです。`},
+{w:1,d:3,c:"#b39ddb",s:`<span class="p">どこ／どちら</span>`,m:"qayer?",e:`がっこうは <span class="p">どこ</span>ですか。`},
+{w:1,d:3,c:"#7fd0e8",s:`Ot1<span class="p">の</span>Ot2 (kelib chiqishi)`,m:"-dan (ishlab chiqarilgan)",e:`にほん<span class="p">の</span> コンピューター`},
+{w:1,d:4,c:"#ff8fa3",s:`いま～<span class="p">時</span>～<span class="p2">分</span>です`,m:"soat...bo'ldi",e:`いま よ<span class="p">じ</span>です。`},
+{w:1,d:4,c:"#c9a6ff",s:`FE'L<span class="p">ます</span>／<span class="p2">ません</span>`,m:"qilaman／qilmayman",e:`まいにち べんきょうし<span class="p">ます</span>。`},
+{w:1,d:4,c:"#ffd873",s:`FE'L<span class="p">ました</span>／<span class="p2">ませんでした</span>`,m:"qildim／qilmadim",e:`きのう べんきょうし<span class="p">ました</span>。`},
+{w:1,d:5,c:"#9be89b",s:`Ot（joy）<span class="p">へ</span> いきます`,m:"-ga (yo'nalish)",e:`がっこう<span class="p">へ</span> いきます。`},
+{w:1,d:5,c:"#ff9d5c",s:`Ot（transport）<span class="p">で</span>`,m:"-da (vosita)",e:`でんしゃ<span class="p">で</span> いきます。`},
+{w:1,d:5,c:"#e8879c",s:`Ot（hamroh）<span class="p">と</span>`,m:"-bilan (jonli)",e:`ともだち<span class="p">と</span> いきます。`},
+{w:1,d:5,c:"#5eb0e0",s:`<span class="p">いつ</span>`,m:"qachon?",e:`<span class="p">いつ</span> にほんへ いきますか。`},
+{w:1,d:5,c:"#6fd49a",s:`Gap<span class="p">よ</span>`,m:"ta'kid",e:`これは たかいです<span class="p">よ</span>。`},
+{w:2,d:6,c:"#e8c15a",s:`Ot<span class="p">を</span> FE'L`,m:"-ni (nishon)",e:`ジュース<span class="p">を</span> のみます。`},
+{w:2,d:6,c:"#ff6b6b",s:`Ot<span class="p">を</span>します`,m:"faoliyat qilish",e:`サッカー<span class="p">を</span> します。`},
+{w:2,d:6,c:"#b39ddb",s:`<span class="p">なに</span>／<span class="p2">なん</span>`,m:"nima? (tovushga qarab)",e:`それは <span class="p2">なん</span>ですか。`},
+{w:2,d:6,c:"#7fd0e8",s:`Ot（joy）<span class="p">で</span> FE'L`,m:"-da (harakat joyi)",e:`えき<span class="p">で</span> かいます。`},
+{w:2,d:6,c:"#ff8fa3",s:`FE'L<span class="p">ませんか</span>／<span class="p2">ましょう</span>`,m:"taklif qilish",e:`いっしょに いき<span class="p">ませんか</span>。`},
+{w:2,d:6,c:"#c9a6ff",s:`<span class="p">お</span>～`,m:"hurmat old qo'shimchasi",e:`<span class="p">お</span>ちゃを のみます。`},
+{w:2,d:7,c:"#ffd873",s:`Ot（vosita）<span class="p">で</span>`,m:"-bilan (asbob)",e:`ペン<span class="p">で</span> かきます。`},
+{w:2,d:7,c:"#9be89b",s:`～<span class="p">語</span>で何ですか`,m:"...tilida nima?",e:`これは にほんご<span class="p">で</span>なんですか。`},
+{w:2,d:7,c:"#ff9d5c",s:`Ot（kishi）<span class="p">に</span> あげます`,m:"kimgadir bermoq",e:`ともだち<span class="p">に</span> ほんを あげます。`},
+{w:2,d:7,c:"#e8879c",s:`Ot（kishi）<span class="p">に</span> もらいます`,m:"kimdandir olmoq",e:`ともだち<span class="p">に</span> ほんを もらいます。`},
+{w:2,d:7,c:"#5eb0e0",s:`<span class="p">もう</span>～ました`,m:"allaqachon qildim",e:`<span class="p">もう</span> しゅくだいを しました。`},
+{w:2,d:8,c:"#6fd49a",s:`い-sifat／な-sifat<span class="p">です</span>`,m:"tasdiq shakli",e:`やさしい<span class="p">です</span>。`},
+{w:2,d:8,c:"#e8c15a",s:`な-sifat<span class="p">じゃありません</span>`,m:"na-sifat inkori",e:`しずか<span class="p">じゃありません</span>。`},
+{w:2,d:8,c:"#ff6b6b",s:`い-sifat<span class="p">くない</span>です`,m:"i-sifat inkori",e:`むずかし<span class="p">くない</span>です。`},
+{w:2,d:8,c:"#b39ddb",s:`<span class="p">とても</span>／<span class="p2">あまり</span>`,m:"juda／unchalik",e:`<span class="p">とても</span> やさしいです。`},
+{w:2,d:8,c:"#7fd0e8",s:`Ot<span class="p">どうですか</span>`,m:"...qanday?",e:`にほんは <span class="p">どうですか</span>。`},
+{w:2,d:8,c:"#ff8fa3",s:`<span class="p">どんな</span>＋Ot`,m:"qanday (tur)?",e:`<span class="p">どんな</span> せんせいですか。`},
+{w:2,d:8,c:"#c9a6ff",s:`Gap1<span class="p">が</span>、Gap2`,m:"lekin",e:`きびしいです<span class="p">が</span>、やさしいです。`},
+{w:2,d:8,c:"#ffd873",s:`<span class="p">どれ</span>`,m:"qaysi biri? (3+)",e:`ほんは <span class="p">どれ</span>ですか。`},
+{w:2,d:9,c:"#9be89b",s:`Ot<span class="p">が</span> すきです`,m:"-ni yoqtiraman",e:`にほんご<span class="p">が</span> すきです。`},
+{w:2,d:9,c:"#ff9d5c",s:`<span class="p">どんな</span>＋Otが すき`,m:"qanday...yoqtirasiz?",e:`<span class="p">どんな</span> スポーツが すきですか。`},
+{w:2,d:9,c:"#e8879c",s:`<span class="p">よく～ぜんぜん</span>`,m:"daraja ravishlari",e:`<span class="p">よく</span> わかります。`},
+{w:2,d:9,c:"#5eb0e0",s:`Gap1<span class="p">から</span>、Gap2`,m:"sababi",e:`じかんが ありません<span class="p">から</span>、よみません。`},
+{w:2,d:9,c:"#6fd49a",s:`<span class="p">どうして</span>`,m:"nima uchun?",e:`<span class="p">どうして</span> よみませんか。`},
+{w:2,d:10,c:"#e8c15a",s:`Ot<span class="p">あります</span>／<span class="p2">います</span>`,m:"bor (jonsiz／jonli)",e:`いぬが <span class="p2">います</span>。`},
+{w:2,d:10,c:"#ff6b6b",s:`joy<span class="p">に</span> Otが あります`,m:"joyda nima bor",e:`きょうしつに つくえが あります。`},
+{w:2,d:10,c:"#b39ddb",s:`Ot<span class="p">は</span> joyにあります`,m:"narsa qayerda",e:`ほんしゃは タシケントに あります。`},
+{w:2,d:10,c:"#7fd0e8",s:`<span class="p">うえ／した／となり</span>`,m:"makon so'zlari",e:`つくえの <span class="p">うえ</span>に ペンが あります。`},
+{w:2,d:10,c:"#ff8fa3",s:`Ot1<span class="p">や</span>Ot2`,m:"va hokazo (qisman)",e:`ほん<span class="p">や</span> ペンが あります。`},
+{w:3,d:11,c:"#c9a6ff",s:`<span class="p">ひとつ～とお</span>`,m:"1-10 sanash",e:`りんごを <span class="p">みっつ</span> かいました。`},
+{w:3,d:11,c:"#ffd873",s:`<span class="p">いくつ</span>／なん+suffiks`,m:"nechta?",e:`みかんを <span class="p">いくつ</span> かいましたか。`},
+{w:3,d:11,c:"#9be89b",s:`<span class="p">どのくらい</span>`,m:"qancha vaqt?",e:`<span class="p">どのくらい</span> べんきょうしましたか。`},
+{w:3,d:11,c:"#ff9d5c",s:`Son<span class="p">ぐらい</span>`,m:"taxminan",e:`ひゃくにん<span class="p">ぐらい</span> います。`},
+{w:3,d:11,c:"#e8879c",s:`muddat<span class="p">に</span>～回`,m:"...da...marta",e:`いっしゅうかん<span class="p">に</span> さんかい。`},
+{w:3,d:11,c:"#5eb0e0",s:`Son<span class="p">だけ</span>`,m:"faqat",e:`ひとり<span class="p">だけ</span> います。`},
+{w:3,d:12,c:"#6fd49a",s:`です<span class="p">→でした</span>`,m:"o'tgan zamon (ot/な)",e:`やすみ<span class="p">でした</span>。`},
+{w:3,d:12,c:"#e8c15a",s:`い-sifat<span class="p">かった</span>です`,m:"o'tgan zamon (い)",e:`さむ<span class="p">かった</span>です。`},
+{w:3,d:12,c:"#ff6b6b",s:`OT1は OT2<span class="p">より</span>`,m:"-dan ko'ra",e:`にほんごは えいご<span class="p">より</span> むずかしい。`},
+{w:3,d:12,c:"#b39ddb",s:`OT1と OT2と<span class="p">どちらが</span>`,m:"qaysi biri? (2ta)",e:`<span class="p">どちらが</span> むずかしいですか。`},
+{w:3,d:12,c:"#7fd0e8",s:`OTの<span class="p">ほうが</span>`,m:"...tomoni",e:`にほんごの<span class="p">ほうが</span> むずかしいです。`},
+{w:3,d:12,c:"#ff8fa3",s:`<span class="p">いちばん</span>`,m:"eng (guruhdan)",e:`<span class="p">いちばん</span> たのしいです。`},
+{w:3,d:13,c:"#c9a6ff",s:`Ot<span class="p">が</span> ほしいです`,m:"-ni xohlayman",e:`くつ<span class="p">が</span> ほしいです。`},
+{w:3,d:13,c:"#ffd873",s:`FE'L（ます→）<span class="p">たい</span>です`,m:"-gim keladi",e:`いき<span class="p">たい</span>です。`},
+{w:3,d:13,c:"#9be89b",s:`joyへ maqsad<span class="p">に</span> いきます`,m:"maqsad bilan borish",e:`かいもの<span class="p">に</span> いきます。`},
+{w:3,d:13,c:"#ff9d5c",s:`Ot（transport）<span class="p">に</span>のります／<span class="p2">を</span>おります`,m:"kirish／chiqish",e:`でんしゃ<span class="p">に</span> のります。`},
+{w:3,d:13,c:"#e8879c",s:`<span class="p">どこか</span>／<span class="p2">なにか</span>`,m:"qayerdir／nimadir",e:`<span class="p">なにか</span> たべたいです。`},
+{w:3,d:13,c:"#5eb0e0",s:`<span class="p">ご</span>～`,m:"rasmiy hurmat prefiksi",e:`<span class="p">ご</span>ちゅうもん`},
+{w:3,d:14,c:"#6fd49a",s:`I／II／III <span class="p">guruh</span>`,m:"fe'l turlari",e:`かきます (I) ／ たべます (II)`},
+{w:3,d:14,c:"#e8c15a",s:`FE'L<span class="p">て</span>-shakl`,m:"poydevor shakl",e:`かい<span class="p">て</span>、のん<span class="p">で</span>`},
+{w:3,d:14,c:"#ff6b6b",s:`FE'L<span class="p">て</span>ください`,m:"iltimos qiling",e:`あけ<span class="p">て</span>ください。`},
+{w:3,d:14,c:"#b39ddb",s:`FE'L<span class="p">て</span>います`,m:"hozir qilyapti",e:`べんきょうし<span class="p">て</span>います。`},
+{w:3,d:14,c:"#7fd0e8",s:`FE'L<span class="p">ましょうか</span>`,m:"yordam taklifi",e:`てつだい<span class="p">ましょうか</span>。`},
+{w:3,d:14,c:"#ff8fa3",s:`Ot<span class="p">が</span> FE'L (tabiat)`,m:"tabiat hodisasi",e:`あめ<span class="p">が</span> ふっています。`},
+{w:3,d:15,c:"#c9a6ff",s:`FE'L<span class="p">て</span>もいいです`,m:"ruxsat",e:`あけ<span class="p">てもいいです</span>か。`},
+{w:3,d:15,c:"#ffd873",s:`FE'L<span class="p">て</span>はいけません`,m:"taqiq",e:`すっ<span class="p">てはいけません</span>。`},
+{w:3,d:15,c:"#9be89b",s:`FE'L<span class="p">て</span>います (holat)`,m:"doimiy holat",e:`けっこんし<span class="p">て</span>います。`},
+{w:3,d:15,c:"#ff9d5c",s:`<span class="p">しりません</span>`,m:"bilmayman (istisno)",e:`<span class="p">しりません</span>。`},
+{w:4,d:16,c:"#e8879c",s:`FE'L<span class="p">て</span>、FE'L<span class="p">て</span>`,m:"harakatlarni sanash",e:`おき<span class="p">て</span>、たべます。`},
+{w:4,d:16,c:"#5eb0e0",s:`い-sifat<span class="p">くて</span>`,m:"sifat sanash",e:`やす<span class="p">くて</span>、べんりです。`},
+{w:4,d:16,c:"#6fd49a",s:`な-sifat／Ot<span class="p">で</span>`,m:"ot/な-sifat sanash",e:`しんせつ<span class="p">で</span>、やさしいです。`},
+{w:4,d:16,c:"#e8c15a",s:`FE'L<span class="p">てから</span>`,m:"tugagach",e:`し<span class="p">てから</span>、ねます。`},
+{w:4,d:16,c:"#ff6b6b",s:`OT1は OT2<span class="p">が</span> SIFAT`,m:"xususiyat tasviri",e:`あたま<span class="p">が</span> いいです。`},
+{w:4,d:16,c:"#b39ddb",s:`<span class="p">どうやって</span>`,m:"qanday qilib?",e:`<span class="p">どうやって</span> いきますか。`},
+{w:4,d:16,c:"#7fd0e8",s:`<span class="p">どの</span>＋Ot`,m:"qaysi (ko'pdan)",e:`<span class="p">どの</span> ほんですか。`},
+{w:4,d:17,c:"#ff8fa3",s:`FE'L<span class="p">ない</span>-shakl`,m:"inkor asosi",e:`いか<span class="p">ない</span>／こ<span class="p">ない</span>`},
+{w:4,d:17,c:"#c9a6ff",s:`ない<span class="p">でください</span>`,m:"qilmang",e:`とら<span class="p">ないでください</span>。`},
+{w:4,d:17,c:"#ffd873",s:`ない→なけれ<span class="p">ばなりません</span>`,m:"qilish shart",e:`し<span class="p">なければなりません</span>。`},
+{w:4,d:17,c:"#9be89b",s:`なく<span class="p">てもいいです</span>`,m:"qilmasa ham bo'ladi",e:`いか<span class="p">なくてもいいです</span>。`},
+{w:4,d:17,c:"#ff9d5c",s:`Ot（to'ldiruvchi）<span class="p">は</span>`,m:"qarama-qarshilik",e:`にほんご<span class="p">は</span> べんきょうします。`},
+{w:4,d:17,c:"#e8879c",s:`vaqt<span class="p">までに</span>`,m:"belgilangan muddatgacha",e:`あした<span class="p">までに</span> ださないと。`},
+{w:4,d:18,c:"#5eb0e0",s:`FE'L<span class="p">辞書形</span>`,m:"lug'at shakli",e:`のむ／たべる／する`},
+{w:4,d:18,c:"#6fd49a",s:`辞書形<span class="p">ことができます</span>`,m:"qila olish",e:`およぐ<span class="p">ことができます</span>。`},
+{w:4,d:18,c:"#e8c15a",s:`しゅみは～<span class="p">こと</span>です`,m:"sevimli mashg'ulot",e:`しゅみは <span class="p">ねること</span>です。`},
+{w:4,d:18,c:"#ff6b6b",s:`辞書形<span class="p">まえに</span>`,m:"...dan oldin",e:`ねる<span class="p">まえに</span>、みがきます。`},
+{w:4,d:18,c:"#b39ddb",s:`<span class="p">なかなか</span>＋inkor`,m:"oson emas",e:`<span class="p">なかなか</span> おきません。`},
+{w:4,d:18,c:"#7fd0e8",s:`<span class="p">ぜひ</span>`,m:"albatta (kuchli tilak)",e:`<span class="p">ぜひ</span> きてください。`},
+{w:4,d:19,c:"#ff8fa3",s:`て→<span class="p">た</span>-shakl`,m:"o'tgan zamon poydevori",e:`かい<span class="p">た</span>／のん<span class="p">だ</span>`},
+{w:4,d:19,c:"#c9a6ff",s:`た<span class="p">ことがあります</span>`,m:"tajriba (-ganman)",e:`いった<span class="p">ことがあります</span>。`},
+{w:4,d:19,c:"#ffd873",s:`た<span class="p">り</span>、た<span class="p">り</span>します`,m:"goh...goh...",e:`よんだ<span class="p">り</span>、みたりします。`},
+{w:4,d:19,c:"#9be89b",s:`い→く／な→に<span class="p">なります</span>`,m:"holat o'zgarishi",e:`じょうず<span class="p">に</span> なりました。`},
+{w:4,d:19,c:"#ff9d5c",s:`<span class="p">そうですね</span>`,m:"hamfikrlik",e:`<span class="p">そうですね</span>。`},
+{w:4,d:20,c:"#e8879c",s:`です<span class="p">→だ</span>`,m:"oddiy nutq (普通形)",e:`ほん<span class="p">だ</span>。`},
+{w:4,d:20,c:"#5eb0e0",s:`でした<span class="p">→だった</span>`,m:"oddiy o'tgan zamon",e:`やすみ<span class="p">だった</span>。`},
+{w:4,d:20,c:"#6fd49a",s:`Gap<span class="p">よ／ね／わ</span>`,m:"suhbat zarrachalari",e:`おいしい<span class="p">よ</span>！`},
+{w:5,d:21,c:"#e8c15a",s:`普通形<span class="p">と思います</span>`,m:"deb o'ylayman",e:`あめが ふる<span class="p">と思います</span>。`},
+{w:5,d:21,c:"#ff6b6b",s:`"gap"<span class="p">と言います</span>`,m:"dedi",e:`たのしい<span class="p">と言いました</span>。`},
+{w:5,d:21,c:"#b39ddb",s:`普通形<span class="p">でしょう?</span>`,m:"shunday emasmi?",e:`べんり<span class="p">でしょう?</span>`},
+{w:5,d:21,c:"#7fd0e8",s:`joy<span class="p">で</span> Otがあります`,m:"voqea-hodisa",e:`こうえん<span class="p">で</span> まつりが あります。`},
+{w:5,d:21,c:"#ff8fa3",s:`Ot<span class="p">でも</span> FE'L`,m:"...yoki shunga o'xshash",e:`おちゃ<span class="p">でも</span> のみませんか。`},
+{w:5,d:21,c:"#c9a6ff",s:`ない<span class="p">と</span>…`,m:"qilmasam... (qisqartma)",e:`ださ<span class="p">ないと</span>…`},
+{w:5,d:22,c:"#ffd873",s:`Aniqlovchi＋<span class="p">Ot</span>`,m:"...gan/...digan otni tasvirlash",e:`であった<span class="p">ひと</span>`},
+{w:5,d:22,c:"#9be89b",s:`な-sifat<span class="p">な</span>＋Ot`,m:"na-sifat aniqlovchisi",e:`しんせつ<span class="p">な</span> ひと`},
+{w:5,d:22,c:"#ff9d5c",s:`Ot1<span class="p">の</span>とき (aniqlovchi)`,m:"ot aniqlovchisi",e:`がくせい<span class="p">の</span>とき`},
+{w:5,d:22,c:"#e8879c",s:`Aniqlovchi ichida<span class="p">が</span>`,m:"は emas が",e:`アイシャさん<span class="p">が</span> すきなばしょ`},
+{w:5,d:22,c:"#5eb0e0",s:`辞書形＋<span class="p">時間／約束／用事</span>`,m:"vaqt/va'da/ish",e:`あう<span class="p">じかん</span>があります。`},
+{w:5,d:23,c:"#6fd49a",s:`辞書形<span class="p">とき</span> (tugallanmagan)`,m:"harakatdan oldin",e:`でる<span class="p">とき</span>、けしました。`},
+{w:5,d:23,c:"#e8c15a",s:`た-shakl<span class="p">とき</span> (tugallangan)`,m:"harakatdan keyin",e:`でた<span class="p">とき</span>、ふっていました。`},
+{w:5,d:23,c:"#ff6b6b",s:`辞書形<span class="p">と</span>、〜`,m:"avtomatik natija",e:`はるに なる<span class="p">と</span>、さきます。`},
+{w:5,d:23,c:"#b39ddb",s:`Ot<span class="p">が</span> SIFAT (manzara)`,m:"atrof-muhit tasviri",e:`うみ<span class="p">が</span> きれいです。`},
+{w:5,d:23,c:"#7fd0e8",s:`joy<span class="p">を</span> FE'L (harakat)`,m:"kesib o'tish/burilish",e:`はし<span class="p">を</span> わたります。`},
+{w:5,d:24,c:"#ff8fa3",s:`Ot<span class="p">くれます</span>`,m:"boshqa → men",e:`てがみを <span class="p">くれました</span>。`},
+{w:5,d:24,c:"#c9a6ff",s:`て<span class="p">あげます</span>`,m:"birov uchun qilaman",e:`おしえて<span class="p">あげます</span>。`},
+{w:5,d:24,c:"#ffd873",s:`て<span class="p">もらいます</span>`,m:"birovdan foyda oldim",e:`てつだって<span class="p">もらいました</span>。`},
+{w:5,d:24,c:"#9be89b",s:`て<span class="p">くれます</span>`,m:"birov men uchun qildi",e:`てつだって<span class="p">くれました</span>。`},
+{w:5,d:24,c:"#ff9d5c",s:`So'roq so'z<span class="p">が</span> FE'L`,m:"fe'l kesim bilan ham が",e:`だれ<span class="p">が</span> きましたか。`},
+{w:5,d:25,c:"#e8879c",s:`o'tgan zamon<span class="p">ら</span>`,m:"shart ergash gap",e:`やすかっ<span class="p">たら</span>、かいます。`},
+{w:5,d:25,c:"#5eb0e0",s:`た-shakl<span class="p">ら</span> (darhol)`,m:"darhol natija",e:`あけ<span class="p">たら</span>、おどろきました。`},
+{w:5,d:25,c:"#6fd49a",s:`{FE'L／い→くて／な→で}<span class="p">も</span>`,m:"...bo'lsa ham",e:`たっ<span class="p">ても</span>、かわりません。`},
+{w:5,d:25,c:"#e8c15a",s:`<span class="p">もし</span>～たら`,m:"agar chindan",e:`<span class="p">もし</span> あめが ふったら…`},
+{w:5,d:25,c:"#ff6b6b",s:`<span class="p">いくら</span>～ても`,m:"qanchalik bo'lmasin",e:`<span class="p">いくら</span> たいへんでも…`},
+{w:5,d:25,c:"#b39ddb",s:`ergash gap ichida<span class="p">が</span>`,m:"は emas が",e:`アイシャさん<span class="p">が</span>「はい」と言ったら`},
+];
+
 const CATEGORY_META = {
   kanji: { label: 'Kanji', icon: '漢', cls: 'kanji' },
   grammar: { label: 'Grammatika', icon: '✎', cls: 'grammar' },
@@ -2151,6 +2381,21 @@ function renderLevelContent() {
 
   html += renderFinalTestCard();
 
+  if (selectedLevel === 'N5') {
+    const gbInfo = getGrammarBankUnlockInfo();
+    if (gbInfo.visible) {
+      const gbStatusTxt = gbInfo.unlockedCount >= 132 ? "132/132 ochiq — to'liq bank sizniki! 🔓" : `🔒 ${gbInfo.unlockedCount}/132 ochilgan`;
+      html += `
+        <div class="gb-entry-card" id="gbEntryCta">
+          <div class="gb-entry-emoji">📚</div>
+          <div>
+            <div class="gb-entry-title">N5 Grammatika Banki</div>
+            <div class="gb-entry-sub">${gbStatusTxt}</div>
+          </div>
+        </div>`;
+    }
+  }
+
   html += `
     <div class="journey-cta" id="journeyCta">
       <div class="jc-emoji">🚄</div>
@@ -2168,6 +2413,8 @@ function renderLevelContent() {
       openCategoryScreen(card.dataset.cat);
     });
   });
+  const gbCta = document.getElementById('gbEntryCta');
+  if (gbCta) gbCta.addEventListener('click', openGrammarBankScreen);
   const ftCta = document.getElementById('ftEntryCta');
   if (ftCta) ftCta.addEventListener('click', () => {
     if (finalTestStatus && finalTestStatus.passed === true) {
@@ -2187,6 +2434,7 @@ async function showLessonListScreen() {
   quizScreen.classList.add('hidden');
   journeyScreen.classList.add('hidden');
   categoryScreen.classList.add('hidden');
+  grammarBankScreen.classList.add('hidden');
   grammarScreen.classList.add('hidden');
   grammarTestScreen.classList.add('hidden');
   readingScreen.classList.add('hidden');
@@ -2229,6 +2477,119 @@ document.getElementById('journeyBackBtn').addEventListener('click', () => {
   journeyScreen.classList.add('hidden');
   lessonListScreen.classList.remove('hidden');
 });
+
+/* ================== N5 GRAMMATIKA BANKI ================== */
+// N5'ning umumiy tugatilish foizini hisoblaydi (barcha 4 skill: kanji/grammar/reading/listening)
+function getN5ProgressPct() {
+  const n5Lessons = allLessons.filter(l => l.jlpt_level === 'N5');
+  if (n5Lessons.length === 0) return 0;
+  const doneCount = n5Lessons.filter(l => completedLessonIds.has(l.id)).length;
+  return Math.round((doneCount / n5Lessons.length) * 100);
+}
+
+// Bank kirish banneri qachon ko'rinishini va nechta karta ochilganini hisoblaydi.
+// VISIBLE_FROM_PCT — N5'ning oxirgi (5-)haftasi boshlanish nuqtasi sifatida ishlatiladi (~80%).
+// Kerak bo'lsa shu raqamni o'zgartirish kifoya.
+const GB_VISIBLE_FROM_PCT = 80;
+function getGrammarBankUnlockInfo() {
+  const pct = getN5ProgressPct();
+  const visible = pct >= GB_VISIBLE_FROM_PCT;
+  const unlockedCount = pct >= 100 ? 132 : Math.max(0, Math.min(132, Math.round(132 * pct / 100)));
+  return { pct, visible, unlockedCount };
+}
+
+// Bank kartasidagi "N-dars" raqamini (faqat ta'lim kunlari, 1-25) haqiqiy lesson obyektiga moslaydi.
+// Review/test kunlarini o'tkazib yuborib, faqat grammatika o'rgatuvchi darslarni sort_order bo'yicha sanaydi.
+function getGrammarBankLessonByDars(darsNum) {
+  const teachingLessons = allLessons
+    .filter(l => l.jlpt_level === 'N5' && l.category === 'grammar' && l.lesson_subtype !== 'review' && l.lesson_subtype !== 'test')
+    .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+  return teachingLessons[darsNum - 1] || null;
+}
+
+function openGrammarBankScreen() {
+  lessonListScreen.classList.add('hidden');
+  grammarBankScreen.classList.remove('hidden');
+  document.getElementById('gbSearchInput').value = '';
+  renderGrammarBankScreen();
+}
+document.getElementById('gbBackBtn').addEventListener('click', () => {
+  grammarBankScreen.classList.add('hidden');
+  lessonListScreen.classList.remove('hidden');
+});
+document.getElementById('gbSearchInput').addEventListener('input', doGrammarBankSearch);
+
+function renderGrammarBankScreen() {
+  const { pct, unlockedCount } = getGrammarBankUnlockInfo();
+  const progressLabel = document.getElementById('gbProgressLabel');
+  const progressFill = document.getElementById('gbProgressFill');
+  if (unlockedCount >= 132) {
+    progressLabel.textContent = "132 / 132 — TO'LIQ OCHILDI 🔓";
+  } else {
+    progressLabel.textContent = `🔒 ${unlockedCount} / 132 ochilgan`;
+  }
+  progressFill.style.width = Math.round((unlockedCount / 132) * 100) + '%';
+
+  const weeks = {};
+  N5_GRAMMAR_BANK.forEach((card, idx) => {
+    if (!weeks[card.w]) weeks[card.w] = [];
+    weeks[card.w].push({ ...card, globalIdx: idx });
+  });
+  const weekNums = Object.keys(weeks).map(Number).sort((a, b) => a - b);
+
+  let html = '';
+  weekNums.forEach(wk => {
+    html += `<div class="gb-week-group"><div class="gb-week-header">📖 ${wk}-hafta</div>`;
+    weeks[wk].forEach(card => {
+      const isLocked = card.globalIdx >= unlockedCount;
+      const searchStr = `${card.s} ${card.m} ${card.e} ${card.d}-dars ${card.w}-hafta`.replace(/<[^>]+>/g, '').toLowerCase();
+      html += `
+        <div class="gb-card${isLocked ? ' locked' : ''}" data-search="${searchStr.replace(/"/g, '&quot;')}">
+          <div class="gb-card-glow" style="background:${card.c};"></div>
+          <div class="gb-card-top">
+            <div class="gb-struct" style="color:${card.c};">${card.s}</div>
+            <button class="gb-dars-tag" data-dars="${card.d}" style="border-color:${card.c}55;">
+              <span>${card.d}-dars</span><span>→</span>
+            </button>
+          </div>
+          <div class="gb-mano">${card.m}</div>
+          <div class="gb-misol">${card.e}</div>
+        </div>`;
+    });
+    html += `</div>`;
+  });
+  document.getElementById('gbCardsWrap').innerHTML = html;
+
+  document.querySelectorAll('.gb-dars-tag').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const darsNum = parseInt(btn.dataset.dars, 10);
+      const lesson = getGrammarBankLessonByDars(darsNum);
+      if (lesson) {
+        grammarBankScreen.classList.add('hidden');
+        openLesson(lesson);
+      } else {
+        alert("Bu darsni hozircha topib bo'lmadi. Birozdan so'ng qayta urinib ko'ring.");
+      }
+    });
+  });
+}
+
+function doGrammarBankSearch() {
+  const q = document.getElementById('gbSearchInput').value.trim().toLowerCase();
+  const cards = document.querySelectorAll('.gb-card');
+  let visibleCount = 0;
+  cards.forEach(card => {
+    const match = card.dataset.search.indexOf(q) !== -1;
+    card.style.display = match ? '' : 'none';
+    if (match) visibleCount++;
+  });
+  document.querySelectorAll('.gb-week-group').forEach(group => {
+    const anyVisible = Array.from(group.querySelectorAll('.gb-card')).some(c => c.style.display !== 'none');
+    group.style.display = anyVisible ? '' : 'none';
+  });
+  document.getElementById('gbNoResult').classList.toggle('hidden', visibleCount !== 0);
+}
 
 function renderJourneyMap() {
   const kanjiLessons = allLessons
