@@ -4696,9 +4696,14 @@ async function renderFtCertificate(attempt) {
   const level = attempt.jlpt_level || 'N5';
 
   const playfairReady = await ensureCertFontsReady();
+  // ALWAYS start from a guaranteed-valid, correctly-sized fallback first — if the
+  // Playfair Display font-string assignment below is ever rejected by the canvas
+  // (e.g. font not truly ready), ctx.font keeps this 46px baseline instead of
+  // silently reverting to whatever tiny font was set earlier in the function.
+  const safeNameFont = 'italic 900 46px Georgia, "Times New Roman", serif';
   const nameFont = playfairReady
     ? 'italic 900 46px "Playfair Display", Georgia, serif'
-    : 'italic 900 46px Georgia, "Times New Roman", serif';
+    : safeNameFont;
 
   const fullName = attempt.full_name || '\u2014';
   const dateStr = new Date(attempt.completed_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
@@ -4732,16 +4737,34 @@ async function renderFtCertificate(attempt) {
 
   // -- QR code (fits inside the existing gold frame) --
   const verifyUrl = `${window.location.origin}${window.location.pathname}?verify=${attempt.certificate_id}`;
+  let qrDrawn = false, qrErrMsg = '';
   try {
-    const qrDataUrl = await QRCode.toDataURL(verifyUrl, { width: 190, margin: 0, color: { dark: '#1b2a4a', light: '#fffdf8' } });
+    let qrDataUrl;
+    try {
+      qrDataUrl = await QRCode.toDataURL(verifyUrl, { width: 190, margin: 1, color: { dark: '#1b2a4a', light: '#fffdf8' } });
+    } catch (e1) {
+      qrDataUrl = await QRCode.toDataURL(verifyUrl, { width: 190, margin: 1 }); // plain fallback, no custom colors
+    }
     const qrImg = new Image();
     await new Promise((res, rej) => { qrImg.onload = res; qrImg.onerror = rej; qrImg.src = qrDataUrl; });
     ctx.drawImage(qrImg, 1258, 136, 190, 190);
-  } catch (e) { console.warn('QR generation failed', e); }
+    qrDrawn = true;
+  } catch (e) {
+    console.warn('QR generation failed', e);
+    qrErrMsg = (e && (e.message || e.toString())) || 'unknown error';
+  }
+  if (!qrDrawn) {
+    // temporary on-canvas diagnostic so we can see WHY it failed from a screenshot
+    ctx.textAlign = 'left';
+    ctx.fillStyle = '#c0483a'; ctx.font = '700 12px sans-serif';
+    ctx.fillText(typeof QRCode === 'undefined' ? 'QRCode lib topilmadi' : ('QR xato: ' + qrErrMsg).slice(0, 45), 1258, 240);
+  }
 
   // -- Name --
   ctx.textAlign = 'center';
-  ctx.fillStyle = NAVY; ctx.font = nameFont;
+  ctx.fillStyle = NAVY;
+  ctx.font = safeNameFont;   // guaranteed-valid baseline at the correct size
+  ctx.font = nameFont;       // then try to upgrade to Playfair Display if it's ready
   ctx.fillText(fullName, 745, 424);
 
   // -- Score columns (icon ring + label + % [color-coded] + fraction) --
