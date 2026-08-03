@@ -929,6 +929,11 @@
   .ft-warn-title { font-weight: 900; font-size: 13px; color: var(--shu); margin-bottom: 8px; }
   .ft-warn-list { margin: 0; padding-left: 18px; font-size: 12.5px; line-height: 1.8; color: var(--sumi); }
   .ft-checklist { text-align: left; margin-bottom: 18px; }
+  .ft-name-field { text-align: left; margin-bottom: 18px; }
+  .ft-name-field label { display: block; font-size: 12.5px; font-weight: 700; color: var(--sumi); margin-bottom: 7px; }
+  .ft-name-input { width: 100%; box-sizing: border-box; border: 1.5px solid var(--line); border-radius: 12px; padding: 12px 14px; font-size: 14.5px; font-family: inherit; color: var(--sumi); background: #fff; }
+  .ft-name-input:focus { outline: none; border-color: var(--shu); }
+  .ft-name-hint { font-size: 11px; color: #a89e91; margin-top: 6px; }
   .ft-checklist label { display: flex; align-items: flex-start; gap: 9px; font-size: 12.5px; color: var(--sumi); margin-bottom: 10px; cursor: pointer; }
   .ft-checklist input { margin-top: 2px; flex-shrink: 0; width: 16px; height: 16px; }
   .ft-start-btn { width: 100%; background: var(--shu); color: #fff; border: none; border-radius: 14px; padding: 15px; font-size: 14.5px; font-weight: 900; cursor: pointer; }
@@ -1282,6 +1287,11 @@
           <li>Boshlagach, <b>orqaga qaytib bo'lmaydi</b></li>
           <li>Yiqilsangiz — <b>7 kundan keyin</b> qayta urinish mumkin</li>
         </ul>
+      </div>
+      <div class="ft-name-field">
+        <label for="ftFullNameInput">Sertifikat uchun to'liq ism-familiyangiz</label>
+        <input type="text" id="ftFullNameInput" class="ft-name-input" placeholder="Masalan: Olimqulov Jasurbek" autocomplete="name" maxlength="60">
+        <div class="ft-name-hint">Bu ism sertifikatingizda aynan shu ko'rinishda chop etiladi</div>
       </div>
       <div class="ft-checklist" id="ftChecklist"></div>
       <button class="ft-start-btn" id="ftStartBtn" disabled>Tayyorman — Boshlash</button>
@@ -4140,6 +4150,10 @@ function openFinalTestIntro() {
   headerEyebrow.textContent = '\ud83c\udf93 FINAL ASSESSMENT';
   headerTitle.textContent = 'N5';
 
+  const nameInput = document.getElementById('ftFullNameInput');
+  const prevName = (finalTestStatus && finalTestStatus.full_name) || currentUser?.user_metadata?.full_name || '';
+  nameInput.value = prevName;
+
   const checks = [
     "Men tinch, chalg'itmaydigan joydaman",
     "Menda kamida 85 daqiqa bo'sh vaqtim bor",
@@ -4149,13 +4163,17 @@ function openFinalTestIntro() {
     `<label><input type="checkbox" data-ftcheck="${i}"> ${c}</label>`).join('');
 
   const startBtn = document.getElementById('ftStartBtn');
-  startBtn.disabled = true;
+  const updateStartBtn = () => {
+    const all = document.querySelectorAll('[data-ftcheck]');
+    const allChecked = [...all].every(c => c.checked);
+    const nameOk = nameInput.value.trim().length >= 3;
+    startBtn.disabled = !(allChecked && nameOk);
+  };
+  updateStartBtn();
   document.querySelectorAll('[data-ftcheck]').forEach(cb => {
-    cb.addEventListener('change', () => {
-      const all = document.querySelectorAll('[data-ftcheck]');
-      startBtn.disabled = ![...all].every(c => c.checked);
-    });
+    cb.addEventListener('change', updateStartBtn);
   });
+  nameInput.addEventListener('input', updateStartBtn);
 }
 
 document.getElementById('ftStartBtn').addEventListener('click', startFinalTest);
@@ -4178,10 +4196,12 @@ async function startFinalTest() {
 
   let attempt = finalTestStatus;
   if (!attempt || attempt.status !== 'in_progress') {
+    const enteredName = document.getElementById('ftFullNameInput')?.value.trim() || currentUser.user_metadata?.full_name || currentUser.email;
     const { data: newAttempt } = await withRetry(
       () => supabaseClient.from('final_test_attempts').upsert({
         user_id: currentUser.id, jlpt_level: 'N5', status: 'in_progress',
-        started_at: new Date().toISOString(), seconds_elapsed: 0, current_index: 0, answers: {}
+        started_at: new Date().toISOString(), seconds_elapsed: 0, current_index: 0, answers: {},
+        full_name: enteredName
       }, { onConflict: 'user_id,jlpt_level' }).select().single(),
       'final testni boshlash'
     );
@@ -4571,7 +4591,7 @@ async function finishFinalTest(timeUp) {
     kanji_total: scores.kanji.t, grammar_total: scores.grammar.t,
     reading_total: scores.reading.t, listening_total: scores.listening.t,
     overall_pct: overallPct, passed, answers: ftAnswers,
-    full_name: currentUser.user_metadata?.full_name || currentUser.email,
+    full_name: ftAttempt.full_name || currentUser.user_metadata?.full_name || currentUser.email,
   };
   if (certificateId) updatePayload.certificate_id = certificateId;
 
@@ -4645,8 +4665,6 @@ function loadFtCertBg() {
 }
 
 // Wait (with a timeout safety-net) for the certificate's web fonts to actually be usable.
-// Returns whether "Playfair Display" (the elegant name font) is confirmed ready; if not,
-// we fall back to a normal serif so the name is never tiny/broken-looking.
 async function ensureCertFontsReady() {
   const specs = [
     'italic 900 46px "Playfair Display"',
@@ -4693,7 +4711,9 @@ async function renderFtCertificate(attempt) {
     return { s, c, t, pct: t ? Math.round(c / t * 100) : 0 };
   });
 
-  const NAVY = '#1b2a4a', GOLD = '#c9a227', GRAY = '#6b6459', GREEN = '#2f9e56';
+  const NAVY = '#1b2a4a', GOLD = '#c9a227', GRAY = '#6b6459';
+  // same red/amber/green thresholds as the result screen (<70 red, <80 amber, >=80 green)
+  const scoreColor = pct => pct < 70 ? '#c0483a' : (pct < 80 ? '#c98a1f' : '#2f7a4f');
 
   // 1) draw the REAL certificate design as-is (border, artwork, logo, titles, badges, stamp, footer — original pixels, untouched)
   const bg = await loadFtCertBg();
@@ -4724,7 +4744,7 @@ async function renderFtCertificate(attempt) {
   ctx.fillStyle = NAVY; ctx.font = nameFont;
   ctx.fillText(fullName, 745, 424);
 
-  // -- Score columns (icon ring + label + % + fraction) --
+  // -- Score columns (icon ring + label + % [color-coded] + fraction) --
   const cols = [355, 640, 920, 1205];
   scoresArr.forEach((sc, i) => {
     const cx = cols[i];
@@ -4734,7 +4754,7 @@ async function renderFtCertificate(attempt) {
     ctx.fillText(skillIcons[sc.s], cx, 640);
     ctx.fillStyle = NAVY; ctx.font = '700 20px "Zen Kaku Gothic New", sans-serif';
     ctx.fillText(skillLabels[sc.s], cx, 665);
-    ctx.fillStyle = GREEN; ctx.font = '900 30px "Zen Kaku Gothic New", sans-serif';
+    ctx.fillStyle = scoreColor(sc.pct); ctx.font = '900 30px "Zen Kaku Gothic New", sans-serif';
     ctx.fillText(sc.pct + '%', cx, 700);
     ctx.fillStyle = GRAY; ctx.font = '400 15px "Zen Kaku Gothic New", sans-serif';
     ctx.fillText(sc.c + ' / ' + sc.t, cx, 727);
@@ -4760,7 +4780,6 @@ async function renderFtCertificate(attempt) {
     showLessonListScreen();
   });
 }
-
 
 function renderFtWatermark() {
   const wm = document.getElementById('ftWatermark');
