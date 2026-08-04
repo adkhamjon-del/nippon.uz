@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="uz"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hiragana — 3D Zarik v2</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@500;700;900&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap');
+:root {
+  --sumi:#211f2e; --washi:#f7f4f2; --paper:#fff; --ai-blue:#2d5a72; --ai-blue-soft:#e4edf0;
+  --sakura:#e8879c; --sakura-soft:#fbe8ec; --shu:#c0483a; --kin:#9c7a35; --doppi:#1f2d4d; --ok:#2f7d6b; --line:#e7e2d8;
+}
+* { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+body { background:linear-gradient(180deg,#efe9e0,var(--washi)); font-family:'Zen Kaku Gothic New',sans-serif; color:var(--sumi); }
+.phone { max-width:420px; margin:0 auto; min-height:100vh; position:relative; padding-bottom:30px; }
+.hidden { display:none !important; }
+
+/* JOURNEY */
+.j-header { background:var(--doppi); color:#fff; padding:26px 20px 24px; text-align:center; border-radius:0 0 28px 28px; }
+.j-header .emoji { font-size:34px; margin-bottom:6px; }
+.j-header h1 { font-family:'Noto Serif JP',serif; font-size:19px; font-weight:900; }
+.j-header .sub { font-size:12px; opacity:0.75; margin-top:4px; }
+.j-progress-wrap { padding:20px 20px 6px; }
+.j-progress-label { display:flex; justify-content:space-between; font-size:12.5px; font-weight:700; margin-bottom:8px; }
+.j-progress-track { height:8px; background:var(--line); border-radius:6px; overflow:hidden; }
+.j-progress-fill { height:100%; background:linear-gradient(90deg, var(--sakura), var(--shu)); border-radius:6px; transition:width .4s ease; }
+.j-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; padding:14px 20px 20px; }
+.j-node { aspect-ratio:1; border-radius:14px; display:flex; align-items:center; justify-content:center; font-family:'Noto Serif JP',serif; font-size:19px; font-weight:700; background:var(--paper); border:2px solid var(--line); cursor:pointer; }
+.j-node.done { background:linear-gradient(160deg,#fff,var(--sakura-soft)); border-color:var(--sakura); color:#c2536c; }
+.j-node.current { border-color:var(--ai-blue); box-shadow:0 0 0 3px var(--ai-blue-soft); color:var(--ai-blue); }
+.j-node.locked { opacity:0.4; cursor:default; }
+
+/* DICE SCREEN */
+.dice-top { display:flex; align-items:center; gap:12px; padding:16px 20px 4px; }
+.dice-back { font-size:13px; color:var(--ai-blue); font-weight:700; cursor:pointer; }
+.dice-dots { display:flex; gap:6px; margin-left:auto; }
+.dice-dot { width:8px; height:8px; border-radius:50%; background:var(--line); }
+.dice-dot.active { background:var(--shu); width:22px; border-radius:5px; }
+.dice-dot.past { background:var(--ok); }
+
+.dice-scene { height:410px; display:flex; align-items:center; justify-content:center; perspective:1300px; margin-top:10px; position:relative; }
+.dice-scene::after { content:''; position:absolute; bottom:52px; width:200px; height:24px; background:radial-gradient(ellipse, rgba(33,31,46,0.22), transparent 70%); border-radius:50%; z-index:0; }
+.dice-cube { width:270px; height:270px; position:relative; transform-style:preserve-3d; transition:transform .85s cubic-bezier(.22,.85,.25,1); z-index:1; }
+.dice-face {
+  position:absolute; width:270px; height:270px; border-radius:24px; padding:22px;
+  background:linear-gradient(155deg,#fffefb,#f6f1e8); border:1px solid #ece3d2;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  backface-visibility:hidden; text-align:center; overflow:hidden;
+}
+.dice-face::before { content:''; position:absolute; top:0; left:0; right:0; height:44%; background:linear-gradient(180deg, rgba(255,255,255,0.55), transparent); pointer-events:none; }
+.dice-face::after { content:''; position:absolute; inset:0; border-radius:24px; border:1px solid rgba(156,122,53,0.35); pointer-events:none; }
+.dice-face.front { transform:translateZ(135px); }
+.dice-face.right { transform:rotateY(90deg) translateZ(135px); }
+.dice-face.back { transform:rotateY(180deg) translateZ(135px); }
+.dice-face.left { transform:rotateY(-90deg) translateZ(135px); }
+/* Kub "qalinligi" - devor his qilish uchun */
+.dice-wall { position:absolute; width:270px; height:270px; background:linear-gradient(90deg, #d8cdb8, #c9bda3); }
+.dice-wall.w1 { transform:rotateY(45deg) translateZ(135px); }
+.dice-wall.w2 { transform:rotateY(135deg) translateZ(135px); }
+
+.face-tag { font-size:9.5px; font-weight:800; letter-spacing:0.09em; color:var(--kin); margin-bottom:8px; position:relative; z-index:2; }
+
+.dice-nav { display:flex; justify-content:center; align-items:center; gap:14px; margin-top:20px; padding:0 20px; }
+.dice-arrow { width:44px; height:44px; border-radius:50%; background:var(--paper); border:1px solid var(--line); font-size:16px; cursor:pointer; flex-shrink:0; box-shadow:0 2px 6px rgba(0,0,0,0.06); }
+.dice-main-btn { flex:1; max-width:220px; background:linear-gradient(135deg,var(--shu),#a83d31); color:#fff; border:none; border-radius:100px; padding:14px; font-size:14px; font-weight:900; cursor:pointer; box-shadow:0 6px 16px rgba(192,72,58,0.3); }
+.dice-main-btn:disabled { background:#d8d2c5; color:#a8a396; box-shadow:none; }
+.dice-hint { text-align:center; font-size:11px; color:#a89e91; margin-top:12px; }
+
+/* Face 1 */
+.f1-char { font-family:'Noto Serif JP',serif; font-size:60px; font-weight:900; line-height:1; position:relative; z-index:2; }
+.f1-romaji { font-size:15px; color:var(--ai-blue); font-weight:800; margin-top:2px; position:relative; z-index:2; }
+.speak-btn { display:inline-flex; align-items:center; gap:5px; background:var(--doppi); color:#fff; border:none; border-radius:100px; padding:7px 14px; font-size:11px; font-weight:700; cursor:pointer; margin-top:9px; position:relative; z-index:2; }
+.f1-word-box { background:var(--sakura-soft); border-radius:13px; padding:10px 15px; margin-top:11px; width:100%; position:relative; z-index:2; }
+.f1-word { font-family:'Noto Serif JP',serif; font-size:22px; font-weight:700; }
+.f1-word .hl { color:var(--shu); text-decoration:underline; text-decoration-color:var(--shu); text-decoration-thickness:2px; text-underline-offset:3px; }
+.f1-word-uz { font-size:11px; color:#8a5560; margin-top:2px; }
+
+/* Face 2 - yozish */
+.hw-svg-box { width:110px; height:110px; background:#fff; border-radius:12px; border:1px solid var(--line); position:relative; z-index:2; }
+.hw-svg-box svg { width:100%; height:100%; }
+.hw-svg-box path { fill:none; stroke:var(--sumi); stroke-width:6; stroke-linecap:round; stroke-linejoin:round; }
+.stroke-nums { display:flex; gap:6px; margin-top:7px; position:relative; z-index:2; }
+.stroke-num { width:20px; height:20px; border-radius:50%; background:var(--line); color:#a89e91; font-size:10px; font-weight:800; display:flex; align-items:center; justify-content:center; transition:all .25s ease; }
+.stroke-num.active { background:var(--shu); color:#fff; transform:scale(1.25); }
+.stroke-num.done { background:var(--ok); color:#fff; }
+.f2-replay { background:var(--paper); border:1.5px solid var(--line); color:var(--ai-blue); border-radius:100px; padding:4px 11px; font-size:10px; font-weight:700; cursor:pointer; margin-top:5px; position:relative; z-index:2; }
+.f2-trace-label { font-size:10px; font-weight:800; color:var(--shu); margin-top:8px; position:relative; z-index:2; }
+.f2-trace-canvas-box { position:relative; z-index:2; }
+.f2-trace-canvas-box canvas { width:110px; height:110px; background:#fff; border-radius:12px; border:1.5px dashed var(--kin); touch-action:none; }
+.f2-clear-btn { font-size:9.5px; color:#a89e91; margin-top:4px; cursor:pointer; text-decoration:underline; position:relative; z-index:2; }
+.f2-simple-char { font-family:'Noto Serif JP',serif; font-size:56px; font-weight:900; position:relative; z-index:2; animation: charReveal .6s ease; }
+@keyframes charReveal { from { opacity:0; transform:scale(0.7); } to { opacity:1; transform:scale(1); } }
+
+/* Face 3/4 */
+.fq-prompt { font-family:'Noto Serif JP',serif; font-size:13.5px; font-weight:700; margin-bottom:9px; line-height:1.5; position:relative; z-index:2; }
+.fq-big { font-size:40px; display:block; margin-bottom:5px; }
+.fq-opts { display:grid; grid-template-columns:1fr 1fr; gap:7px; width:100%; position:relative; z-index:2; }
+.fq-opt { background:var(--washi); border:1.5px solid var(--line); border-radius:11px; padding:9px; font-family:'Noto Serif JP',serif; font-size:15px; font-weight:700; cursor:pointer; }
+.fq-opt.romaji-opt { font-family:'Zen Kaku Gothic New',sans-serif; font-size:12px; }
+.fq-opt.correct { background:rgba(47,125,107,0.12); border-color:var(--ok); color:#2c5c42; }
+.fq-opt.wrong { background:rgba(192,72,58,0.1); border-color:var(--shu); color:var(--shu); }
+
+.mastered-wrap { text-align:center; padding:60px 20px; }
+.mastered-emoji { font-size:60px; margin-bottom:10px; }
+.mastered-char { font-family:'Noto Serif JP',serif; font-size:64px; font-weight:900; color:var(--shu); }
+.mastered-title { font-size:18px; font-weight:900; margin-top:10px; }
+.mastered-sub { font-size:13px; color:#8a8070; margin-top:6px; }
+.nav-btn { display:block; width:100%; background:var(--shu); color:#fff; border:none; border-radius:14px; padding:15px; font-size:14.5px; font-weight:900; cursor:pointer; margin-top:20px; }
+</style>
+</head>
+<body>
+<div class="phone">
+
+  <div id="journeyScreen">
+    <div class="j-header">
+      <div class="emoji">🌱</div>
+      <h1>Hiragana sayohati</h1>
+      <div class="sub">46 ta asosiy belgini bosqichma-bosqich o'rganing</div>
+    </div>
+    <div class="j-progress-wrap">
+      <div class="j-progress-label"><span>Progress</span><span id="jProgressText">0 / 5</span></div>
+      <div class="j-progress-track"><div class="j-progress-fill" id="jProgressFill" style="width:0%;"></div></div>
+    </div>
+    <div class="j-grid" id="jGrid"></div>
+  </div>
+
+  <div id="diceScreen" class="hidden">
+    <div class="dice-top">
+      <div class="dice-back" id="diceBackBtn">← Ortga</div>
+      <div class="dice-dots" id="diceDots"></div>
+    </div>
+
+    <div class="dice-scene">
+      <div class="dice-cube" id="diceCube">
+        <div class="dice-face front" id="face1"></div>
+        <div class="dice-face right" id="face2"></div>
+        <div class="dice-face back" id="face3"></div>
+        <div class="dice-face left" id="face4"></div>
+      </div>
+    </div>
+
+    <div class="dice-nav">
+      <button class="dice-arrow" id="diceArrowLeft">←</button>
+      <button class="dice-main-btn" id="diceMainBtn">Aylantirish →</button>
+      <button class="dice-arrow" id="diceArrowRight">→</button>
+    </div>
+    <div class="dice-hint">Zarikni suring (swipe) yoki tugmalardan foydalaning</div>
+  </div>
+
+  <div id="masteredScreen" class="hidden">
+    <div class="mastered-wrap">
+      <div class="mastered-emoji">🎉</div>
+      <div class="mastered-char" id="mCharDisplay"></div>
+      <div class="mastered-title">MASTERED!</div>
+      <div class="mastered-sub" id="mSubText"></div>
+      <button class="nav-btn" id="masteredNextBtn">Keyingi belgi →</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ================== MA'LUMOT ================== */
+// stroke: faqat 'a' uchun togri tekshirilgan SVG chiziq yoli mavjud.
+// Qolganlari uchun hozircha aniq chiziq malumoti yoq - shuning uchun animatsiyasiz, halol korsatiladi.
+const CHARS = [
+  { char:'あ', romaji:'a', word:'あめ', wordUz:"yomg'ir" },
+  { char:'い', romaji:'i', word:'いぬ', wordUz:'it' },
+  { char:'う', romaji:'u', word:'うみ', wordUz:'dengiz' },
+  { char:'え', romaji:'e', word:'えき', wordUz:'vokzal' },
+  { char:'お', romaji:'o', word:'おちゃ', wordUz:'choy' },
+];
+
+let progress = CHARS.map(() => ({ s1:false, s2:false, s3:false, s4:false }));
+let curIdx = 0, side = 0, s2Done = false, s3Answered = false, s4Answered = false;
+
+function isMastered(i) { const p = progress[i]; return p.s1 && p.s2 && p.s3 && p.s4; }
+function isUnlocked(i) { return i === 0 || isMastered(i - 1); }
+
+function speak(text) {
+  console.log('[speak] chaqirildi, matn:', text);
+  if (!('speechSynthesis' in window)) { console.log('[speak] speechSynthesis mavjud emas'); return; }
+  const voices = speechSynthesis.getVoices();
+  console.log('[speak] mavjud ovozlar soni:', voices.length, voices.filter(v=>v.lang.startsWith('ja')).map(v=>v.name));
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'ja-JP'; u.rate = 0.85;
+  u.onstart = () => console.log('[speak] BOSHLANDI:', text);
+  u.onend = () => console.log('[speak] TUGADI:', text);
+  u.onerror = (e) => console.log('[speak] XATO:', e.error);
+  speechSynthesis.cancel();
+  speechSynthesis.speak(u);
+  console.log('[speak] speak() chaqirib bolindi, speaking holati:', speechSynthesis.speaking, 'pending:', speechSynthesis.pending);
+}
+
+/* ================== JOURNEY ================== */
+function renderJourney() {
+  const masteredCount = progress.filter((_, i) => isMastered(i)).length;
+  document.getElementById('jProgressText').textContent = `${masteredCount} / ${CHARS.length}`;
+  document.getElementById('jProgressFill').style.width = (masteredCount / CHARS.length * 100) + '%';
+  const grid = document.getElementById('jGrid');
+  grid.innerHTML = CHARS.map((c, i) => {
+    let cls = 'locked', content = '🔒';
+    if (isMastered(i)) { cls = 'done'; content = '✓'; }
+    else if (isUnlocked(i)) { cls = 'current'; content = c.char; }
+    return `<div class="j-node ${cls}" data-idx="${i}">${content}</div>`;
+  }).join('');
+  grid.querySelectorAll('.j-node:not(.locked)').forEach(node => {
+    node.addEventListener('click', () => openCharacter(parseInt(node.dataset.idx)));
+  });
+}
+document.getElementById('diceBackBtn').addEventListener('click', () => {
+  document.getElementById('diceScreen').classList.add('hidden');
+  document.getElementById('journeyScreen').classList.remove('hidden');
+  renderJourney();
+});
+
+/* ================== ZARIKNI OCHISH ================== */
+function openCharacter(idx) {
+  curIdx = idx; side = 0; s2Done = false; s3Answered = false; s4Answered = false;
+  document.getElementById('journeyScreen').classList.add('hidden');
+  document.getElementById('masteredScreen').classList.add('hidden');
+  document.getElementById('diceScreen').classList.remove('hidden');
+  buildFaces(CHARS[idx]);
+  renderCubeState();
+}
+
+function buildFaces(c) {
+  const wordHtml = c.word.replace(c.char, `<span class="hl">${c.char}</span>`);
+  document.getElementById('face1').innerHTML = `
+    <div class="face-tag">1・KO'R + ESHIT + SO'Z</div>
+    <div class="f1-char">${c.char}</div>
+    <div class="f1-romaji">${c.romaji}</div>
+    <button class="speak-btn" onclick="speak('${c.char}')">🔊 Tinglash</button>
+    <div class="f1-word-box">
+      <div class="f1-word">${wordHtml}</div>
+      <div class="f1-word-uz">${c.wordUz}</div>
+    </div>`;
+
+  // FACE 2 - boshida "yuklanmoqda" holatida, keyin animCJK'dan chiziq malumoti keladi
+  document.getElementById('face2').innerHTML = `
+    <div class="face-tag">2・QANDAY YOZILADI</div>
+    <div class="f2-simple-char" id="f2CharSlot">${c.char}</div>
+    <div class="f2-trace-label">✏️ O'zingiz yozing:</div>
+    <div class="f2-trace-canvas-box"><canvas id="traceCanvas" width="220" height="220"></canvas></div>
+    <div class="f2-clear-btn" id="clearTraceBtn">tozalash</div>`;
+  setupTraceCanvas(c.char);
+  loadStrokesForFace2(c.char, curIdx);
+
+  // FACE 3
+  const others3 = CHARS.filter(x => x.char !== c.char).sort(() => Math.random()-0.5).slice(0,3);
+  const opts3 = [...others3.map(x=>x.romaji), c.romaji].sort(() => Math.random()-0.5);
+  document.getElementById('face3').innerHTML = `
+    <div class="face-tag">3・XOTIRA TESTI</div>
+    <div class="fq-prompt"><span class="fq-big">${c.char}</span>qanday o'qiladi?</div>
+    <div class="fq-opts" id="q3Opts">${opts3.map(o=>`<div class="fq-opt romaji-opt" data-val="${o}">${o}</div>`).join('')}</div>`;
+  document.querySelectorAll('#q3Opts .fq-opt').forEach(opt => {
+    opt.addEventListener('click', () => {
+      document.querySelectorAll('#q3Opts .fq-opt').forEach(o=>o.style.pointerEvents='none');
+      if (opt.dataset.val === c.romaji) opt.classList.add('correct');
+      else { opt.classList.add('wrong'); document.querySelectorAll('#q3Opts .fq-opt').forEach(o=>{if(o.dataset.val===c.romaji)o.classList.add('correct');}); }
+      s3Answered = true; updateMainBtnState();
+    });
+  });
+
+  // FACE 4
+  const type = Math.floor(Math.random()*2);
+  const others4 = CHARS.filter(x => x.char !== c.char).sort(() => Math.random()-0.5).slice(0,3);
+  const opts4 = [...others4.map(x=>x.char), c.char].sort(() => Math.random()-0.5);
+  let promptHtml4;
+  if (type === 0) promptHtml4 = `<div class="face-tag">4・CHALLENGE</div><div style="font-size:12px;margin-bottom:7px;position:relative;z-index:2;">🔊 Ovozni tinglang</div><button class="speak-btn" id="q4Play">🔊 Qayta eshitish</button>`;
+  else promptHtml4 = `<div class="face-tag">4・CHALLENGE</div><div class="fq-prompt"><span class="fq-big" style="font-size:32px;">${c.word}</span></div><div style="font-size:11px;color:#8a8070;position:relative;z-index:2;">"${c.romaji}" qaysi belgi?</div>`;
+  document.getElementById('face4').innerHTML = `${promptHtml4}<div class="fq-opts" id="q4Opts" style="margin-top:9px;">${opts4.map(o=>`<div class="fq-opt" data-val="${o}">${o}</div>`).join('')}</div>`;
+  if (type === 0) document.getElementById('q4Play').addEventListener('click', ()=>speak(c.char));
+  document.querySelectorAll('#q4Opts .fq-opt').forEach(opt => {
+    opt.addEventListener('click', () => {
+      document.querySelectorAll('#q4Opts .fq-opt').forEach(o=>o.style.pointerEvents='none');
+      if (opt.dataset.val === c.char) opt.classList.add('correct');
+      else { opt.classList.add('wrong'); document.querySelectorAll('#q4Opts .fq-opt').forEach(o=>{if(o.dataset.val===c.char)o.classList.add('correct');}); }
+      s4Answered = true; updateMainBtnState();
+    });
+  });
+
+  speak(c.char);
+}
+
+/* ================== O'ZIM CHIZGAN SVG ANIMATSIYA (tashqi manba yoq) ================== */
+/* ================== ANIMCJK'DAN CHIZIQ MALUMOTINI YUKLASH ================== */
+/* Manba: github.com/parsimonhi/animCJK (svgsJaKana papkasi, 177 ta kana belgisi) */
+async function loadStrokesForFace2(char, forIdx) {
+  try {
+    const code = char.codePointAt(0); // fayl nomi - unicode ONLIK qiymati
+    const url = `https://cdn.jsdelivr.net/gh/parsimonhi/animCJK/svgsJaKana/${code}.svg`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('topilmadi: ' + res.status);
+    const svgText = await res.text();
+
+    // Foydalanuvchi shu orada boshqa belgiga otib ketgan bolsa - eski natijani qollamaymiz
+    if (forIdx !== curIdx) return;
+
+    const doc = new DOMParser().parseFromString(svgText, 'image/svg+xml');
+    if (doc.querySelector('parsererror')) throw new Error('svg parse xato');
+
+    let pathEls = Array.from(doc.querySelectorAll('path[class*="median"]'));
+    if (pathEls.length === 0) pathEls = Array.from(doc.querySelectorAll('path'));
+    const dList = pathEls.map(p => p.getAttribute('d')).filter(Boolean);
+    if (dList.length === 0) throw new Error('chiziq topilmadi');
+
+    const svgRoot = doc.querySelector('svg');
+    const viewBox = svgRoot?.getAttribute('viewBox') || '0 0 109 109';
+
+    const slot = document.getElementById('f2CharSlot');
+    if (!slot) return;
+    const nums = dList.map((_, i) => `<div class="stroke-num" id="sNum${i}">${i+1}</div>`).join('');
+    slot.outerHTML = `
+      <div class="hw-svg-box"><svg viewBox="${viewBox}" id="strokeSvg">
+        ${dList.map(d => `<path d="${d}"/>`).join('')}
+      </svg></div>
+      <div class="stroke-nums" id="strokeNums">${nums}</div>
+      <button class="f2-replay" id="s2ReplayBtn">▶ Boshidan ko'rsatish</button>`;
+    setTimeout(() => animateStrokes(dList.length), 200);
+    document.getElementById('s2ReplayBtn').addEventListener('click', () => animateStrokes(dList.length));
+  } catch (e) {
+    // Xato bolsa - jim tarzda oddiy belgi korinishida qoldiramiz (allaqachon korsatilgan), Script error chiqarmaymiz
+    console.warn('animCJK chiziq malumoti yuklanmadi:', char, e.message);
+  }
+}
+
+function animateStrokes(count) {
+  const svg = document.getElementById('strokeSvg');
+  if (!svg) return;
+  const paths = svg.querySelectorAll('path');
+
+  // Barchasini boshlangich holatga qaytaramiz
+  paths.forEach(path => {
+    const len = path.getTotalLength();
+    path.style.transition = 'none';
+    path.style.strokeDasharray = len;
+    path.style.strokeDashoffset = len;
+  });
+  for (let i = 0; i < count; i++) {
+    const badge = document.getElementById('sNum' + i);
+    if (badge) { badge.classList.remove('active','done'); }
+  }
+  svg.getBoundingClientRect(); // reflow
+
+  const STEP_GAP = 1150; // har chiziq uchun ajratilgan umumiy vaqt (sekinroq, aniq korinishi uchun)
+  paths.forEach((path, i) => {
+    setTimeout(() => {
+      const badge = document.getElementById('sNum' + i);
+      if (badge) badge.classList.add('active');
+      path.style.transition = 'stroke-dashoffset .85s ease';
+      path.style.strokeDashoffset = '0';
+      setTimeout(() => {
+        if (badge) { badge.classList.remove('active'); badge.classList.add('done'); }
+      }, 850);
+    }, i * STEP_GAP + 150);
+  });
+}
+
+/* ================== ERKIN CHIZISH (tekshiruvsiz, tashqi manba yoq) ================== */
+function setupTraceCanvas(guideChar) {
+  const canvas = document.getElementById('traceCanvas');
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0,0,220,220);
+  ctx.font = '140px "Noto Serif JP", serif';
+  ctx.fillStyle = 'rgba(33,31,46,0.13)';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText(guideChar, 110, 118);
+  ctx.strokeStyle = '#c0483a'; ctx.lineWidth = 6; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+
+  let drawing = false;
+  function pos(e) {
+    const r = canvas.getBoundingClientRect();
+    const x = (e.touches ? e.touches[0].clientX : e.clientX);
+    const y = (e.touches ? e.touches[0].clientY : e.clientY);
+    return { x: (x - r.left) * (220/r.width), y: (y - r.top) * (220/r.height) };
+  }
+  function onDown(e) {
+    drawing = true; const p = pos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y);
+    s2Done = true; updateMainBtnState();
+    e.preventDefault();
+  }
+  function onMove(e) { if (!drawing) return; const p = pos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); e.preventDefault(); }
+  function onUp() { drawing = false; }
+
+  canvas.onpointerdown = onDown; canvas.onpointermove = onMove; canvas.onpointerup = onUp; canvas.onpointerleave = onUp;
+
+  document.getElementById('clearTraceBtn').onclick = () => setupTraceCanvas(guideChar);
+}
+
+/* ================== ZARIKNI AYLANTIRISH ================== */
+function renderCubeState() {
+  document.getElementById('diceCube').style.transform = `rotateY(${-side*90}deg)`;
+  const dots = document.getElementById('diceDots');
+  dots.innerHTML = [0,1,2,3].map(n => {
+    let cls = ''; if (n < side) cls='past'; else if (n===side) cls='active';
+    return `<div class="dice-dot ${cls}"></div>`;
+  }).join('');
+  updateMainBtnState();
+}
+function updateMainBtnState() {
+  const btn = document.getElementById('diceMainBtn');
+  if (side === 0) { btn.disabled = false; btn.textContent = 'Aylantirish →'; }
+  else if (side === 1) { btn.disabled = !s2Done; btn.textContent = s2Done ? 'Aylantirish →' : "Avval yozib ko'ring"; }
+  else if (side === 2) { btn.disabled = !s3Answered; btn.textContent = 'Aylantirish →'; }
+  else if (side === 3) { btn.disabled = !s4Answered; btn.textContent = 'Yakunlash ✓'; }
+}
+function goSide(delta) {
+  const newSide = side + delta;
+  if (newSide < 0) return;
+  if (newSide > 3) { finishCharacter(); return; }
+  if (delta > 0) {
+    if (side === 0) progress[curIdx].s1 = true;
+    if (side === 1 && s2Done) progress[curIdx].s2 = true;
+    if (side === 2 && s3Answered) progress[curIdx].s3 = true;
+  }
+  side = newSide; renderCubeState();
+}
+document.getElementById('diceMainBtn').addEventListener('click', () => {
+  if (side === 3) { progress[curIdx].s4 = true; finishCharacter(); return; }
+  goSide(1);
+});
+document.getElementById('diceArrowRight').addEventListener('click', () => goSide(1));
+document.getElementById('diceArrowLeft').addEventListener('click', () => goSide(-1));
+
+let sx = null;
+document.querySelector('.dice-scene').addEventListener('pointerdown', e => { if(e.target.id !== 'traceCanvas') sx = e.clientX; });
+document.querySelector('.dice-scene').addEventListener('pointerup', e => {
+  if (sx === null) return;
+  const dx = e.clientX - sx;
+  if (Math.abs(dx) > 50) goSide(dx < 0 ? 1 : -1);
+  sx = null;
+});
+
+function finishCharacter() {
+  const c = CHARS[curIdx];
+  document.getElementById('diceScreen').classList.add('hidden');
+  document.getElementById('masteredScreen').classList.remove('hidden');
+  document.getElementById('mCharDisplay').textContent = c.char;
+  document.getElementById('mSubText').textContent = `Ajoyib! Siz "${c.char}" (${c.romaji}) belgisini o'zlashtirdingiz.`;
+}
+document.getElementById('masteredNextBtn').addEventListener('click', () => {
+  document.getElementById('masteredScreen').classList.add('hidden');
+  document.getElementById('journeyScreen').classList.remove('hidden');
+  renderJourney();
+  if (curIdx + 1 < CHARS.length) setTimeout(() => openCharacter(curIdx + 1), 300);
+});
+
+renderJourney();
+</script>
+</body></html>
