@@ -177,10 +177,18 @@ function isMastered(i) { const p = progress[i]; return p.s1 && p.s2 && p.s3 && p
 function isUnlocked(i) { return i === 0 || isMastered(i - 1); }
 
 function speak(text) {
-  if (!('speechSynthesis' in window)) return;
+  console.log('[speak] chaqirildi, matn:', text);
+  if (!('speechSynthesis' in window)) { console.log('[speak] speechSynthesis mavjud emas'); return; }
+  const voices = speechSynthesis.getVoices();
+  console.log('[speak] mavjud ovozlar soni:', voices.length, voices.filter(v=>v.lang.startsWith('ja')).map(v=>v.name));
   const u = new SpeechSynthesisUtterance(text);
   u.lang = 'ja-JP'; u.rate = 0.85;
-  speechSynthesis.cancel(); speechSynthesis.speak(u);
+  u.onstart = () => console.log('[speak] BOSHLANDI:', text);
+  u.onend = () => console.log('[speak] TUGADI:', text);
+  u.onerror = (e) => console.log('[speak] XATO:', e.error);
+  speechSynthesis.cancel();
+  speechSynthesis.speak(u);
+  console.log('[speak] speak() chaqirib bolindi, speaking holati:', speechSynthesis.speaking, 'pending:', speechSynthesis.pending);
 }
 
 /* ================== JOURNEY ================== */
