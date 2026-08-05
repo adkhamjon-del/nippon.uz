@@ -3147,10 +3147,6 @@ async function openGrammarLesson(lesson) {
   }
 
   let guideHtml = data.guide_html || '';
-  if (isReview) {
-    const reviewBanner = `<div style="background:#2d5a72;color:#fff;text-align:center;padding:14px;font-family:sans-serif;font-weight:700;font-size:15px;">📖 Takrorlash — bilim va o'rganishning onasidir.</div>`;
-    guideHtml = reviewBanner + guideHtml;
-  }
   document.getElementById('grammarGuideFrame').srcdoc = guideHtml;
 }
 
@@ -5118,6 +5114,1010 @@ function renderFtListeningReveal(part, qs) {
   document.getElementById('ftRevealScriptBtn').addEventListener('click', () => {
     document.getElementById('ftRevealPanelWrap').innerHTML = `
       <div class="ft-reveal-panel">
+        <div class="frp-label">\ud83c\uddef\ud83c\uddf5 Matn</div><div class="frp-jp">${escapeHtml(scriptText)}</div>
+        <div class="frp-label">\ud83c\uddfa\ud83c\uddff Tarjima</div><div class="frp-uz">${escapeHtml(translationText)}</div>
+      </div>`;
+    document.getElementById('ftRevealScriptBtn').style.display = 'none';
+  });
+
+  document.getElementById('ftPartBcNextGroupBtn').addEventListener('click', () => {
+    ftCurrentIndex += qs.length;
+    ftListeningPartIdx++;
+    ftListeningSubPos = 0;
+    saveFtProgress();
+    renderFtListeningFlow();
+  });
+}
+
+function showFtBreak() {
+  const skill = ftSkillForIndex(ftCurrentIndex);
+  document.getElementById('ftBreakNextSkill').textContent = FT_SKILL_LABELS[skill];
+  document.getElementById('ftTimerBar').classList.add('ft-break-mode');
+  const overlay = document.getElementById('ftBreakOverlay');
+  overlay.classList.add('show');
+
+  let breakLeft = FT_BREAK_SECONDS;
+  document.getElementById('ftBreakTimer').textContent = '5:00';
+  const breakInterval = setInterval(() => {
+    breakLeft--;
+    const m = Math.floor(breakLeft/60), s = breakLeft%60;
+    document.getElementById('ftBreakTimer').textContent = `${m}:${String(s).padStart(2,'0')}`;
+    if (breakLeft <= 0) { clearInterval(breakInterval); endFtBreak(); }
+  }, 1000);
+
+  document.getElementById('ftBreakContinueBtn').onclick = () => {
+    clearInterval(breakInterval);
+    endFtBreak();
+  };
+}
+
+function endFtBreak() {
+  document.getElementById('ftBreakOverlay').classList.remove('show');
+  document.getElementById('ftTimerBar').classList.remove('ft-break-mode');
+  ftSkipBreakCheck = true;
+  renderFtQuestion();
+}
+
+/* ---------- YAKUNLASH / BAHOLASH ---------- */
+async function finishFinalTest(timeUp) {
+  if (ftTimerInterval) clearInterval(ftTimerInterval);
+
+  const scores = { kanji: {c:0,t:0}, grammar: {c:0,t:0}, reading: {c:0,t:0}, listening: {c:0,t:0} };
+  ftQuestions.forEach(q => {
+    scores[q.skill].t++;
+    if (ftAnswers[q.id] === q.correct_answer) scores[q.skill].c++;
+  });
+
+  const totalCorrect = Object.values(scores).reduce((a,s) => a + s.c, 0);
+  const totalQ = ftQuestions.length;
+  const overallPct = totalQ ? Math.round(totalCorrect / totalQ * 100) : 0;
+
+  const knowledgeCorrect = scores.kanji.c + scores.grammar.c + scores.reading.c;
+  const knowledgeTotal = scores.kanji.t + scores.grammar.t + scores.reading.t;
+  const knowledgePct = knowledgeTotal ? (knowledgeCorrect / knowledgeTotal * 100) : 0;
+  const listeningPct = scores.listening.t ? (scores.listening.c / scores.listening.t * 100) : 0;
+
+  const passed = knowledgePct >= 32 && listeningPct >= 32 && overallPct >= 44;
+
+  const certificateId = passed ? ('NP-' + currentUser.id.slice(0,8).toUpperCase() + '-' + Date.now().toString(36).toUpperCase()) : null;
+
+  const updatePayload = {
+    status: 'completed', completed_at: new Date().toISOString(),
+    kanji_correct: scores.kanji.c, grammar_correct: scores.grammar.c,
+    reading_correct: scores.reading.c, listening_correct: scores.listening.c,
+    kanji_total: scores.kanji.t, grammar_total: scores.grammar.t,
+    reading_total: scores.reading.t, listening_total: scores.listening.t,
+    overall_pct: overallPct, passed, answers: ftAnswers,
+    full_name: ftAttempt.full_name || currentUser.user_metadata?.full_name || currentUser.email,
+  };
+  if (certificateId) updatePayload.certificate_id = certificateId;
+
+  const { data: finalRow } = await withRetry(
+    () => supabaseClient.from('final_test_attempts').update(updatePayload).eq('id', ftAttempt.id).select().single(),
+    'natijani saqlash'
+  );
+  finalTestStatus = finalRow || { ...ftAttempt, ...updatePayload };
+
+  renderFtResult(scores, overallPct, passed, timeUp);
+}
+
+/* ---------- NATIJA EKRANI ---------- */
+function renderFtResult(scores, overallPct, passed, timeUp) {
+  document.getElementById('finalTestScreen').classList.add('hidden');
+  document.getElementById('ftResultScreen').classList.remove('hidden');
+  backBtn.classList.add('hidden');
+  headerEyebrow.textContent = '\ud83c\udf93 NATIJA';
+  headerTitle.textContent = 'N5 Final Assessment';
+
+  const skillPct = s => scores[s].t ? Math.round(scores[s].c/scores[s].t*100) : 0;
+  const skillLabels = { kanji: '\ud83c\uddef\ud83c\uddf5 Kanji', grammar: '\u270f\ufe0f Grammatika', reading: "\ud83d\udcd6 O'qish", listening: '\ud83c\udfa7 Tinglash' };
+  let weakestSkill = FT_SKILL_ORDER.reduce((a,b) => skillPct(a) <= skillPct(b) ? a : b);
+
+  let html = `<div class="ft-result-card">`;
+  if (timeUp) html += `<div style="font-size:12px;color:#a89e91;margin-bottom:10px;">\u23f1\ufe0f Vaqt tugadi, test avtomatik yakunlandi</div>`;
+  html += `<div class="ft-result-badge">${passed ? '\ud83c\udf89' : '\ud83d\udcaa'}</div>`;
+  html += `<div class="ft-result-status ${passed ? 'passed' : 'failed'}">${passed ? '\u5408\u683c Goukaku' : '\u4e0d\u5408\u683c Fugoukaku'}</div>`;
+  html += `<div class="ft-result-caption">Nippon.uz N5 Final Assessment \u2014 ${passed ? 'Kurs talablari bajarildi' : 'Hali yetarli emas'}</div>`;
+
+  html += `<div class="ft-skill-breakdown">`;
+  FT_SKILL_ORDER.forEach(s => {
+    const p = skillPct(s);
+    const color = p < 70 ? 'var(--bad)' : (p < 80 ? '#c98a1f' : 'var(--ok)');
+    html += `<div class="ft-skill-row"><span class="fsr-name">${skillLabels[s]}</span><span class="fsr-pct" style="color:${color};">${p}%</span></div>`;
+  });
+  html += `<div class="ft-skill-row"><span class="fsr-name">Umumiy</span><span class="fsr-pct">${overallPct}%</span></div>`;
+  html += `</div>`;
+
+  if (!passed) {
+    const retryDate = ftRetryDate(new Date().toISOString());
+    html += `<div class="ft-weak-box">
+      <div class="fwb-title">Eng zaif skill: ${skillLabels[weakestSkill]} (${skillPct(weakestSkill)}%)</div>
+      <div class="fwb-detail">Tavsiya: ${skillLabels[weakestSkill]} bo'limini qayta ko'rib chiqing.</div>
+    </div>`;
+    html += `<div class="ft-retry-note">\ud83d\udd04 Qayta urinish: ${retryDate.toLocaleDateString('uz-UZ')} dan keyin mumkin</div>`;
+    html += `<button class="ft-done-btn" id="ftBackToLessonsBtn">Darslarga qaytish</button>`;
+  } else {
+    html += `<button class="ft-cert-cta-btn" id="ftViewCertBtn">\ud83c\udfc5 Sertifikatni ko'rish</button>`;
+    html += `<button class="ft-done-btn" id="ftBackToLessonsBtn">Darslarga qaytish</button>`;
+  }
+  html += `</div>`;
+
+  document.getElementById('ftResultWrap').innerHTML = html;
+
+  const backBtn2 = document.getElementById('ftBackToLessonsBtn');
+  if (backBtn2) backBtn2.addEventListener('click', () => { document.getElementById('ftResultScreen').classList.add('hidden'); showLessonListScreen(); });
+  const certBtn = document.getElementById('ftViewCertBtn');
+  if (certBtn) certBtn.addEventListener('click', () => renderFtCertificate(finalTestStatus));
+}
+
+/* ---------- SERTIFIKAT (haqiqiy dizayn fon rasm + dinamik maydonlar) ---------- */
+function loadFtCertBg() {
+  if (ftCertBgImg) return Promise.resolve(ftCertBgImg);
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => { ftCertBgImg = img; resolve(img); };
+    img.onerror = reject;
+    img.src = FT_CERT_BG_SRC;
+  });
+}
+
+// Wait (with a timeout safety-net) for the certificate's web fonts to actually be usable.
+async function ensureCertFontsReady() {
+  const specs = [
+    'italic 900 46px "Playfair Display"',
+    '900 26px "Zen Kaku Gothic New"',
+    '700 20px "Zen Kaku Gothic New"',
+    '900 30px "Zen Kaku Gothic New"',
+    '900 20px "Noto Serif JP"'
+  ];
+  try {
+    await Promise.race([
+      Promise.all(specs.map(s => document.fonts.load(s))).then(() => document.fonts.ready),
+      new Promise(res => setTimeout(res, 2500))
+    ]);
+  } catch (e) { console.warn('font preload issue', e); }
+  try { return document.fonts.check('italic 900 46px "Playfair Display"'); }
+  catch (e) { return false; }
+}
+
+async function renderFtCertificate(attempt) {
+  lessonListScreen.classList.add('hidden');
+  document.getElementById('ftResultScreen').classList.add('hidden');
+  document.getElementById('ftCertScreen').classList.remove('hidden');
+  headerEyebrow.textContent = '\ud83c\udfc5 SERTIFIKAT';
+  headerTitle.textContent = '';
+
+  const canvas = document.getElementById('ftCertCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const level = attempt.jlpt_level || 'N5';
+
+  const playfairReady = await ensureCertFontsReady();
+  // ALWAYS start from a guaranteed-valid, correctly-sized fallback first — if the
+  // Playfair Display font-string assignment below is ever rejected by the canvas
+  // (e.g. font not truly ready), ctx.font keeps this 46px baseline instead of
+  // silently reverting to whatever tiny font was set earlier in the function.
+  const safeNameFont = 'italic 900 46px Georgia, "Times New Roman", serif';
+  const nameFont = playfairReady
+    ? 'italic 900 46px "Playfair Display", Georgia, serif'
+    : safeNameFont;
+
+  const fullName = attempt.full_name || '\u2014';
+  const dateStr = new Date(attempt.completed_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+  const certId = attempt.certificate_id || '\u2014';
+  const skillLabels = { kanji: 'Kanji', grammar: 'Grammatika', reading: "O'qish", listening: 'Tinglash' };
+  const skillIcons = { kanji: '\u6f22', grammar: '\u270f\ufe0f', reading: '\ud83d\udcd6', listening: '\ud83c\udfa7' };
+  const scoresArr = FT_SKILL_ORDER.map(s => {
+    const c = attempt[s + '_correct'] || 0;
+    const t = attempt[s + '_total'] || 0;
+    return { s, c, t, pct: t ? Math.round(c / t * 100) : 0 };
+  });
+
+  const NAVY = '#1b2a4a', GOLD = '#c9a227', GRAY = '#6b6459';
+  // same red/amber/green thresholds as the result screen (<70 red, <80 amber, >=80 green)
+  const scoreColor = pct => pct < 70 ? '#c0483a' : (pct < 80 ? '#c98a1f' : '#2f7a4f');
+
+  // 1) draw the REAL certificate design as-is (border, artwork, logo, titles, badges, stamp, footer — original pixels, untouched)
+  const bg = await loadFtCertBg();
+  ctx.drawImage(bg, 0, 0, W, H);
+
+  // 2) overlay ONLY the marked dynamic fields, in the exact blanked-out spots
+
+  // -- Certificate ID + Verify Certificate label (top-right) --
+  ctx.textAlign = 'right';
+  ctx.fillStyle = NAVY; ctx.font = '700 15px "Zen Kaku Gothic New", sans-serif';
+  ctx.fillText('Certificate ID', 1460, 84);
+  ctx.fillStyle = NAVY; ctx.font = '900 24px "Zen Kaku Gothic New", sans-serif';
+  ctx.fillText(certId, 1460, 119);
+  ctx.fillStyle = GOLD; ctx.font = '700 15px "Zen Kaku Gothic New", sans-serif';
+  ctx.fillText('Verify Certificate', 1460, 146);
+
+  // -- QR code (fits inside the existing gold frame) --
+  const verifyUrl = `${window.location.origin}${window.location.pathname}?verify=${attempt.certificate_id}`;
+  let qrDrawn = false, qrErrMsg = '';
+  try {
+    let qrDataUrl;
+    try {
+      qrDataUrl = await QRCode.toDataURL(verifyUrl, { width: 190, margin: 1, color: { dark: '#1b2a4a', light: '#fffdf8' } });
+    } catch (e1) {
+      qrDataUrl = await QRCode.toDataURL(verifyUrl, { width: 190, margin: 1 }); // plain fallback, no custom colors
+    }
+    const qrImg = new Image();
+    await new Promise((res, rej) => { qrImg.onload = res; qrImg.onerror = rej; qrImg.src = qrDataUrl; });
+    ctx.drawImage(qrImg, 1258, 136, 190, 190);
+    qrDrawn = true;
+  } catch (e) {
+    console.warn('QR generation failed', e);
+    qrErrMsg = (e && (e.message || e.toString())) || 'unknown error';
+  }
+  if (!qrDrawn) {
+    // temporary on-canvas diagnostic so we can see WHY it failed from a screenshot
+    ctx.textAlign = 'left';
+    ctx.fillStyle = '#c0483a'; ctx.font = '700 12px sans-serif';
+    ctx.fillText(typeof QRCode === 'undefined' ? 'QRCode lib topilmadi' : ('QR xato: ' + qrErrMsg).slice(0, 45), 1258, 240);
+  }
+
+  // -- Name --
+  ctx.textAlign = 'center';
+  ctx.fillStyle = NAVY;
+  ctx.font = safeNameFont;   // guaranteed-valid baseline at the correct size
+  ctx.font = nameFont;       // then try to upgrade to Playfair Display if it's ready
+  ctx.fillText(fullName, 745, 424);
+
+  // -- Score columns (icon ring + label + % [color-coded] + fraction) --
+  const cols = [355, 640, 920, 1205];
+  scoresArr.forEach((sc, i) => {
+    const cx = cols[i];
+    ctx.strokeStyle = GOLD; ctx.lineWidth = 1.4;
+    ctx.beginPath(); ctx.arc(cx, 632, 24, 0, Math.PI * 2); ctx.stroke();
+    ctx.fillStyle = NAVY; ctx.font = '900 20px "Noto Serif JP", "Zen Kaku Gothic New", sans-serif';
+    ctx.fillText(skillIcons[sc.s], cx, 640);
+    ctx.fillStyle = NAVY; ctx.font = '700 20px "Zen Kaku Gothic New", sans-serif';
+    ctx.fillText(skillLabels[sc.s], cx, 665);
+    ctx.fillStyle = scoreColor(sc.pct); ctx.font = '900 30px "Zen Kaku Gothic New", sans-serif';
+    ctx.fillText(sc.pct + '%', cx, 700);
+    ctx.fillStyle = GRAY; ctx.font = '400 15px "Zen Kaku Gothic New", sans-serif';
+    ctx.fillText(sc.c + ' / ' + sc.t, cx, 727);
+  });
+
+  // -- Issued Date --
+  ctx.textAlign = 'left';
+  ctx.font = '20px sans-serif';
+  ctx.fillText('\ud83d\udcc5', 445, 938);
+  ctx.fillStyle = GRAY; ctx.font = '400 15px "Zen Kaku Gothic New", sans-serif';
+  ctx.fillText('Issued Date', 478, 932);
+  ctx.fillStyle = NAVY; ctx.font = '700 20px "Zen Kaku Gothic New", sans-serif';
+  ctx.fillText(dateStr, 478, 964);
+
+  document.getElementById('ftCertDownloadBtn').onclick = () => {
+    const link = document.createElement('a');
+    link.download = `nippon-uz-sertifikat-${level}-${fullName.replace(/\s+/g,'-')}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  };
+  document.getElementById('ftCertDoneBtn').addEventListener('click', () => {
+    document.getElementById('ftCertScreen').classList.add('hidden');
+    showLessonListScreen();
+  });
+}
+
+function renderFtWatermark() {
+  const wm = document.getElementById('ftWatermark');
+  if (!wm) return;
+  wm.innerHTML = '';
+  const name = currentUser ? (currentUser.user_metadata?.full_name || currentUser.email.split('@')[0]) : 'mehmon';
+  const label = `${name} \u00b7 nippon.uz \u00b7 ${new Date().toISOString().slice(0,10)}`;
+  for (let r = 0; r < 12; r++) for (let c = 0; c < 2; c++) {
+    const s = document.createElement('span');
+    s.textContent = label;
+    s.style.top = (r*90-20)+'px'; s.style.left=(c*220-40)+'px';
+    wm.appendChild(s);
+  }
+}
+
+/* ---------- SERTIFIKAT TEKSHIRISH (QR orqali, public) ---------- */
+async function checkVerifyUrlParam() {
+  const params = new URLSearchParams(window.location.search);
+  const certId = params.get('verify');
+  if (!certId) return false;
+
+  document.getElementById('ftVerifyScreen').classList.remove('hidden');
+  document.getElementById('ftVerifyWrap').innerHTML = '<div class="loading-msg">Tekshirilmoqda...</div>';
+
+  const { data, error } = await withRetry(
+    () => supabaseClient.from('final_test_attempts').select('*').eq('certificate_id', certId).maybeSingle(),
+    'sertifikatni tekshirish'
+  );
+
+  if (error || !data) {
+    document.getElementById('ftVerifyWrap').innerHTML = `<div class="ft-verify-card"><div style="font-size:40px;">\u274c</div><div style="font-weight:800;margin-top:10px;">Sertifikat topilmadi</div></div>`;
+    return true;
+  }
+
+  const skillLabels = { kanji: 'Kanji', grammar: 'Grammatika', reading: "O'qish", listening: 'Tinglash' };
+  let rowsHtml = FT_SKILL_ORDER.map(s => {
+    const c = data[s+'_correct']||0, t = data[s+'_total']||0;
+    const pct = t ? Math.round(c/t*100) : 0;
+    return `<div class="ft-skill-row"><span class="fsr-name">${skillLabels[s]}</span><span class="fsr-pct">${pct}%</span></div>`;
+  }).join('');
+
+  document.getElementById('ftVerifyWrap').innerHTML = `
+    <div class="ft-verify-card">
+      <div class="ft-verify-ok">\u2705 Tasdiqlangan sertifikat</div>
+      <div class="ft-verify-name">${escapeHtml(data.full_name || '\u2014')}</div>
+      <div class="ft-verify-date">N5 \u2014 ${new Date(data.completed_at).toLocaleDateString('uz-UZ')}</div>
+      <div class="ft-skill-breakdown">${rowsHtml}</div>
+      <div style="font-size:11px;color:#a89e91;margin-top:10px;">Nippon.uz orqali tasdiqlangan</div>
+    </div>`;
+  return true;
+}
+
+async function initApp() {
+  const isVerifyPage = await checkVerifyUrlParam();
+  if (isVerifyPage) return;
+  await initAuth();
+  if (!currentUser) {
+    showAuthGate();
+    return;
+  }
+  await proceedAfterAuth();
+}
+initApp();
+
+/* ===== HIRAGANA ZARIGI MODULI - JS (base.html'dan) ===== */
+/* ================== MA'LUMOT ================== */
+// stroke: faqat 'a' uchun togri tekshirilgan SVG chiziq yoli mavjud.
+// Qolganlari uchun hozircha aniq chiziq malumoti yoq - shuning uchun animatsiyasiz, halol korsatiladi.
+const CHARS = [
+  { char:'あ', romaji:'a', word:'あめ', wordUz:"yomg'ir" },
+  { char:'い', romaji:'i', word:'いぬ', wordUz:'it' },
+  { char:'う', romaji:'u', word:'うみ', wordUz:'dengiz' },
+  { char:'え', romaji:'e', word:'えき', wordUz:'vokzal' },
+  { char:'お', romaji:'o', word:'おちゃ', wordUz:'choy' },
+  { char:'か', romaji:'ka', word:'かさ', wordUz:"soyabon" },
+  { char:'が', romaji:'ga', word:'がっこう', wordUz:'maktab' },
+  { char:'き', romaji:'ki', word:'き', wordUz:'daraxt' },
+  { char:'ぎ', romaji:'gi', word:'ぎんこう', wordUz:'bank' },
+  { char:'く', romaji:'ku', word:'くつ', wordUz:'poyabzal' },
+  { char:'ぐ', romaji:'gu', word:'ぐあい', wordUz:'ahvol' },
+  { char:'け', romaji:'ke', word:'けさ', wordUz:'bugun ertalab' },
+  { char:'げ', romaji:'ge', word:'げんき', wordUz:"sog'lom" },
+  { char:'こ', romaji:'ko', word:'こども', wordUz:'bola' },
+  { char:'ご', romaji:'go', word:'ごはん', wordUz:'ovqat' },
+  { char:'さ', romaji:'sa', word:'さかな', wordUz:'baliq' },
+  { char:'ざ', romaji:'za', word:'ざっし', wordUz:'jurnal' },
+  { char:'し', romaji:'shi', word:'しんぶん', wordUz:'gazeta' },
+  { char:'じ', romaji:'ji', word:'じかん', wordUz:'vaqt' },
+  { char:'す', romaji:'su', word:'すし', wordUz:'sushi' },
+  { char:'ず', romaji:'zu', word:'ずつう', wordUz:"bosh og'rig'i" },
+  { char:'せ', romaji:'se', word:'せんせい', wordUz:"o'qituvchi" },
+  { char:'ぜ', romaji:'ze', word:'ぜんぶ', wordUz:'hammasi' },
+  { char:'そ', romaji:'so', word:'そら', wordUz:'osmon' },
+  { char:'ぞ', romaji:'zo', word:'ぞう', wordUz:'fil' },
+  { char:'た', romaji:'ta', word:'たまご', wordUz:'tuxum' },
+  { char:'だ', romaji:'da', word:'だいがく', wordUz:'universitet' },
+  { char:'ち', romaji:'chi', word:'ちず', wordUz:'xarita' },
+  { char:'つ', romaji:'tsu', word:'つき', wordUz:'oy' },
+  { char:'て', romaji:'te', word:'てがみ', wordUz:'xat' },
+  { char:'で', romaji:'de', word:'でんわ', wordUz:'telefon' },
+  { char:'と', romaji:'to', word:'とけい', wordUz:'soat' },
+  { char:'な', romaji:'na', word:'なつ', wordUz:'yoz' },
+  { char:'に', romaji:'ni', word:'にく', wordUz:"go'sht" },
+  { char:'ぬ', romaji:'nu', word:'ぬの', wordUz:'mato' },
+  { char:'ね', romaji:'ne', word:'ねこ', wordUz:'mushuk' },
+  { char:'の', romaji:'no', word:'のみもの', wordUz:'ichimlik' },
+  { char:'は', romaji:'ha', word:'はな', wordUz:'gul' },
+  { char:'ひ', romaji:'hi', word:'ひと', wordUz:'odam' },
+  { char:'ふ', romaji:'fu', word:'ふゆ', wordUz:'qish' },
+  { char:'へ', romaji:'he', word:'へや', wordUz:'xona' },
+  { char:'ほ', romaji:'ho', word:'ほし', wordUz:'yulduz' },
+  { char:'ま', romaji:'ma', word:'まど', wordUz:'deraza' },
+  { char:'み', romaji:'mi', word:'みず', wordUz:'suv' },
+  { char:'む', romaji:'mu', word:'むし', wordUz:'hasharot' },
+  { char:'め', romaji:'me', word:'め', wordUz:"ko'z" },
+  { char:'も', romaji:'mo', word:'もも', wordUz:'shaftoli' },
+  { char:'や', romaji:'ya', word:'やま', wordUz:"tog'" },
+  { char:'ゆ', romaji:'yu', word:'ゆき', wordUz:'qor' },
+  { char:'よ', romaji:'yo', word:'よる', wordUz:'kecha' },
+  { char:'ら', romaji:'ra', word:'らくだ', wordUz:'tuya' },
+  { char:'り', romaji:'ri', word:'りんご', wordUz:'olma' },
+  { char:'る', romaji:'ru', word:'るす', wordUz:'uyda yo\'qlik' },
+  { char:'れ', romaji:'re', word:'れいぞうこ', wordUz:'muzlatgich' },
+  { char:'ろ', romaji:'ro', word:'ろうか', wordUz:'dahliz' },
+  { char:'わ', romaji:'wa', word:'わたし', wordUz:'men' },
+  { char:'を', romaji:'wo', word:'を', wordUz:"zarracha (grammatik belgi)" },
+  { char:'ん', romaji:'n', word:'ん', wordUz:"so'z oxiridagi tovush" },
+];
+
+let progress = CHARS.map(() => ({ s1:false, s2:false, s3:false, s4:false }));
+let curIdx = 0, side = 0, s2Done = false, s3Answered = false, s4Answered = false;
+const FACE_TAGS = ["KO'R + ESHIT + SO'Z", "QANDAY YOZILADI", "XOTIRA TESTI", "CHALLENGE"];
+
+function isMastered(i) { const p = progress[i]; return p.s1 && p.s2 && p.s3 && p.s4; }
+function isUnlocked(i) { return i === 0 || isMastered(i - 1); }
+
+let voicesReadyOnce = false;
+function primeVoices() { if (speechSynthesis.getVoices().length > 0) voicesReadyOnce = true; }
+if ('speechSynthesis' in window) {
+  speechSynthesis.onvoiceschanged = primeVoices;
+  primeVoices();
+}
+
+function speak(text) {
+  console.log('[speak] chaqirildi, matn:', text);
+  if (!('speechSynthesis' in window)) { console.log('[speak] speechSynthesis mavjud emas'); return; }
+  const doSpeak = () => {
+    const voices = speechSynthesis.getVoices();
+    console.log('[speak] mavjud ovozlar soni:', voices.length, voices.filter(v=>v.lang.startsWith('ja')).map(v=>v.name));
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'ja-JP'; u.rate = 0.85;
+    u.onstart = () => console.log('[speak] BOSHLANDI:', text);
+    u.onend = () => console.log('[speak] TUGADI:', text);
+    u.onerror = (e) => console.log('[speak] XATO:', e.error);
+    speechSynthesis.cancel();
+    speechSynthesis.speak(u);
+    console.log('[speak] speak() chaqirib bolindi, speaking holati:', speechSynthesis.speaking, 'pending:', speechSynthesis.pending);
+  };
+  if (voicesReadyOnce || speechSynthesis.getVoices().length > 0) {
+    doSpeak();
+  } else {
+    console.log('[speak] ovozlar hali tayyor emas, 200ms kutib qayta urinilmoqda...');
+    setTimeout(doSpeak, 200);
+  }
+}
+
+/* ================== JOURNEY ================== */
+function renderJourney() {
+  const masteredCount = progress.filter((_, i) => isMastered(i)).length;
+  document.getElementById('jProgressText').textContent = `${masteredCount} / ${CHARS.length}`;
+  document.getElementById('jProgressFill').style.width = (masteredCount / CHARS.length * 100) + '%';
+  const grid = document.getElementById('jGrid');
+  grid.innerHTML = CHARS.map((c, i) => {
+    let cls = 'locked', content = '🔒';
+    if (isMastered(i)) { cls = 'done'; content = '✓'; }
+    else if (isUnlocked(i)) { cls = 'current'; content = c.char; }
+    return `<div class="j-node ${cls}" data-idx="${i}">${content}</div>`;
+  }).join('');
+  grid.querySelectorAll('.j-node:not(.locked)').forEach(node => {
+    node.addEventListener('click', () => openCharacter(parseInt(node.dataset.idx)));
+  });
+}
+document.getElementById('diceBackBtn').addEventListener('click', () => {
+  document.getElementById('hiraganaDiceScreen').classList.add('hidden');
+  document.getElementById('hiraganaJourneyScreen').classList.remove('hidden');
+  renderJourney();
+});
+
+/* ================== ZARIKNI OCHISH ================== */
+function openCharacter(idx) {
+  curIdx = idx; side = 0; s2Done = false; s3Answered = false; s4Answered = false;
+  document.getElementById('hiraganaJourneyScreen').classList.add('hidden');
+  document.getElementById('masteredScreen').classList.add('hidden');
+  document.getElementById('hiraganaDiceScreen').classList.remove('hidden');
+  buildFaces(CHARS[idx]);
+  renderCubeState();
+}
+
+function buildFaces(c) {
+  const wordHtml = c.word.replace(c.char, `<span class="hl">${c.char}</span>`);
+  document.getElementById('face1').innerHTML = `
+    <div class="face-badge b1">1</div>
+    <div class="face-tag">KO'R + ESHIT + SO'Z</div>
+    <div class="f1-char">${c.char}</div>
+    <div class="f1-romaji">${c.romaji}</div>
+    <button class="speak-btn" id="f1SpeakBtn">🔊 Tinglash</button>
+    <div class="f1-word-box">
+      <div class="f1-word">${wordHtml}</div>
+      <div class="f1-word-uz">${c.wordUz}</div>
+    </div>`;
+  document.getElementById('f1SpeakBtn').addEventListener('click', () => speak(c.char));
+
+  // FACE 2 - boshida "yuklanmoqda" holatida, keyin animCJK'dan chiziq malumoti keladi
+  document.getElementById('face2').innerHTML = `
+    <div class="face-badge b2">2</div>
+    <div class="face-tag">QANDAY YOZILADI</div>
+    <div class="f2-simple-char" id="f2CharSlot">${c.char}</div>
+    <div class="f2-trace-label">✏️ O'zingiz yozing:</div>
+    <div class="f2-trace-canvas-box"><canvas id="traceCanvas" width="220" height="220"></canvas></div>
+    <div class="f2-clear-btn" id="clearTraceBtn">tozalash</div>`;
+  setupTraceCanvas(c.char);
+  loadStrokesForFace2(c.char, curIdx);
+
+  // FACE 3
+  const others3 = CHARS.filter(x => x.char !== c.char).sort(() => Math.random()-0.5).slice(0,3);
+  const opts3 = [...others3.map(x=>x.romaji), c.romaji].sort(() => Math.random()-0.5);
+  document.getElementById('face3').innerHTML = `
+    <div class="face-badge b3">3</div>
+    <div class="face-tag">XOTIRA TESTI</div>
+    <div class="fq-prompt"><span class="fq-big">${c.char}</span>qanday o'qiladi?</div>
+    <div class="fq-opts" id="q3Opts">${opts3.map(o=>`<div class="fq-opt romaji-opt" data-val="${o}">${o}</div>`).join('')}</div>`;
+  document.querySelectorAll('#q3Opts .fq-opt').forEach(opt => {
+    opt.addEventListener('click', () => {
+      document.querySelectorAll('#q3Opts .fq-opt').forEach(o=>o.style.pointerEvents='none');
+      if (opt.dataset.val === c.romaji) opt.classList.add('correct');
+      else { opt.classList.add('wrong'); document.querySelectorAll('#q3Opts .fq-opt').forEach(o=>{if(o.dataset.val===c.romaji)o.classList.add('correct');}); }
+      s3Answered = true; updateMainBtnState();
+    });
+  });
+
+  // FACE 4
+  const type = Math.floor(Math.random()*2);
+  const others4 = CHARS.filter(x => x.char !== c.char).sort(() => Math.random()-0.5).slice(0,3);
+  const opts4 = [...others4.map(x=>x.char), c.char].sort(() => Math.random()-0.5);
+  let promptHtml4;
+  if (type === 0) promptHtml4 = `<div class="face-badge b4">4</div><div class="face-tag">CHALLENGE</div><div style="font-size:12px;margin-bottom:7px;position:relative;z-index:2;">🔊 Ovozni tinglang</div><button class="speak-btn" id="q4Play">🔊 Qayta eshitish</button>`;
+  else promptHtml4 = `<div class="face-badge b4">4</div><div class="face-tag">CHALLENGE</div><div class="fq-prompt"><span class="fq-big" style="font-size:32px;">${c.word}</span></div><div style="font-size:11px;color:#8a8070;position:relative;z-index:2;">"${c.romaji}" qaysi belgi?</div>`;
+  document.getElementById('face4').innerHTML = `${promptHtml4}<div class="fq-opts" id="q4Opts" style="margin-top:9px;">${opts4.map(o=>`<div class="fq-opt" data-val="${o}">${o}</div>`).join('')}</div>`;
+  if (type === 0) document.getElementById('q4Play').addEventListener('click', ()=>speak(c.char));
+  document.querySelectorAll('#q4Opts .fq-opt').forEach(opt => {
+    opt.addEventListener('click', () => {
+      document.querySelectorAll('#q4Opts .fq-opt').forEach(o=>o.style.pointerEvents='none');
+      if (opt.dataset.val === c.char) opt.classList.add('correct');
+      else { opt.classList.add('wrong'); document.querySelectorAll('#q4Opts .fq-opt').forEach(o=>{if(o.dataset.val===c.char)o.classList.add('correct');}); }
+      s4Answered = true; updateMainBtnState();
+    });
+  });
+}
+
+/* ================== ZARIQ TARTIBI - TASHQI MANBAGA BOG'LIQ EMAS ================== */
+/* animCJK'dan runtime fetch qilish Claude preview/iframe kabi ba'zi muhitlarda   */
+/* tarmoq cheklovi tufayli ishlamay qolishi mumkin edi ("Load failed"). Shu       */
+/* sababli har bir belgi uchun ANIQ, rasmiy chiziq shakli - kana-svg-data        */
+/* loyihasidan (animCJK'ning o'ziga asoslangan, ochiq manba) olingan - shu       */
+/* faylga joylashtirilgan: internetga ehtiyoj yo'q va shakl 100% to'g'ri.        */
+/* Har bir chiziq uchun HAQIQIY qalam yo'li (outline, "strokes") animCJK'dan     */
+/* olinadi va clip-path sifatida ishlatiladi - shu orqali chizilayotgan chiziq   */
+/* aniq harfning o'zi bilan bir xil shaklda chiqadi (o'zim taxminiy chizmayman). */
+// Har bir chiziq uchun rang - tartibni ①②③ rasmidagidek rang bilan ham ajratib beradi
+// Ba'zi belgilarning "outline" satrida (masalan さ, ざ) manba tomonidan animatsiya
+// texnikasi uchun ortiqcha ulash (bridging) geometriyasi biriktirilgan bo'lishi
+// mumkin. To'g'ridan-to'g'ri to'ldirish (fill) uchun faqat BIRINCHI yopiq
+// bo'lakni olish xavfsiz - ortiqcha ulanishlarni chetlab o'tadi.
+function firstSubpath(d) {
+  const i = d.indexOf('Z');
+  return i === -1 ? d : d.slice(0, i + 1);
+}
+
+const STROKE_COLORS = ['#a68a2e', '#8b2f2f', '#2f7d6b', '#2d5a72', '#7a4fa0', '#c0483a'];
+
+// 1024x1024 koordinata maydonida (animCJK standart o'lchami). Har bir chiziq uchun:
+//  - outline: qalamning HAQIQIY qalinlik shakli (rasmiy manbadan, clip-path sifatida)
+//  - median: chizishni animatsiya qilish uchun markaziy chiziq
+// Manba: kana-svg-data (github.com/hy2k/kana-svg-data) -> animCJK (github.com/parsimonhi/animCJK)
+const STROKE_DATA = {
+  'あ': [
+    { outline:["M660 211C637 211 616 221 597 232C570 245 542 252 514 261C464 274 414 285 363 291C319 294 273 293 231 278C211 270 195 254 174 248C167 248 162 257 167 263C181 293 209 313 239 325C284 343 335 344 384 340C462 332 538 307 615 290C639 284 665 281 686 267C695 261 705 254 709 244C712 234 706 224 697 221C685 215 672 211 660 211Z"], median:[[174,258],[251,308],[440,306],[697,241]] },
+    { outline:["M334 128C328 130 318 134 320 143C325 154 337 158 346 165C356 171 369 178 369 192C370 213 365 233 363 254C347 370 335 488 345 606C349 642 354 679 366 715C376 742 389 768 410 788C422 797 441 795 449 781C459 764 457 743 448 726C439 710 424 699 415 682C402 655 399 624 396 595C388 503 397 411 415 321C422 287 429 252 447 223C454 208 462 192 459 175C455 160 441 152 427 147C398 136 366 130 334 128Z"], median:[[331,137],[420,185],[373,388],[367,632],[409,728],[431,777]] },
+    { outline:["M559 431C556 431 552 435 555 438C565 455 581 471 580 492C580 512 567 529 558 545C517 612 461 670 402 721C361 754 315 780 264 792C249 795 232 795 220 784C207 771 208 751 210 734C216 690 244 653 278 625C306 602 337 580 372 565C372 552 372 540 373 527C326 543 282 568 241 596C201 625 165 663 151 712C139 749 143 793 168 824C183 843 206 856 230 857C278 860 324 841 364 817C440 770 506 708 558 636C581 602 602 567 619 530C626 514 632 497 629 481C625 467 615 456 604 447C591 437 575 431 559 431Z","M602 484C565 485 528 489 492 494C447 501 405 515 363 531C363 543 363 556 363 568C414 548 467 530 523 524C563 518 604 515 644 519C689 524 736 537 769 569C793 591 806 622 807 654C808 675 806 697 800 717C776 774 725 817 671 846C627 871 580 890 531 902C521 906 509 909 501 917C498 921 497 925 498 930C549 927 600 918 650 906C715 889 780 861 830 814C861 784 887 745 891 701C899 631 861 557 796 526C736 496 668 484 602 484Z"], median:[[570,440],[610,484],[460,727],[200,836],[181,682],[342,556],[466,514],[641,499],[754,520],[838,606],[845,763],[703,869],[508,922]] }
+  ],
+  'い': [
+    { outline:["M181 359C174 359 165 363 166 371C167 382 176 389 183 396C198 412 199 435 204 455C222 538 238 623 276 700C300 745 333 786 374 816C385 824 400 826 411 818C418 814 420 805 420 797C421 780 417 762 420 745C422 720 430 696 436 671C437 666 438 657 431 654C424 652 417 658 414 664C399 686 387 710 372 731C370 734 366 735 364 732C347 718 331 702 319 683C303 658 294 629 285 601C276 570 267 538 260 506C254 477 250 448 249 419C249 409 254 399 253 389C251 379 240 375 232 370C216 363 199 359 181 359Z"], median:[[174,370],[218,397],[276,642],[316,734],[394,801],[396,733],[423,673]] },
+    { outline:["M635 377C629 377 622 385 627 391C650 417 675 440 694 469C728 520 749 581 754 643C757 662 765 680 778 695C785 702 797 703 805 698C815 692 818 681 819 670C822 648 818 627 814 606C801 547 768 494 728 450C704 425 678 401 649 382C645 379 640 377 635 377Z"], median:[[641,389],[702,445],[767,549],[792,682]] }
+  ],
+  'う': [
+    { outline:["M406 101C399 101 389 103 388 111C390 121 400 124 406 130C444 155 485 176 527 193C562 207 598 219 635 228C650 229 668 224 674 209C680 192 669 174 656 164C640 150 619 142 597 142C544 136 491 125 439 108C429 104 418 101 406 101Z"], median:[[400,113],[654,205]] },
+    { outline:["M581 343C514 344 450 367 386 385C345 398 304 415 261 416C243 415 226 410 208 411C199 414 200 426 206 431C224 453 248 472 277 475C299 478 321 470 341 460C373 443 406 427 440 416C490 397 543 383 597 381C619 382 642 391 655 410C673 436 672 469 671 500C667 576 640 650 604 717C572 778 532 834 492 890C485 898 476 907 478 919C482 928 495 927 502 922C513 913 521 901 531 892C602 818 666 737 710 644C734 595 751 540 747 485C743 443 726 400 693 372C662 347 620 342 581 343Z"], median:[[213,423],[286,450],[494,372],[610,360],[684,394],[718,462],[672,690],[492,911]] }
+  ],
+  'え': [
+    { outline:["M406 101C399 101 388 103 388 111C389 121 399 125 406 130C443 156 485 176 527 193C562 207 598 221 635 228C650 231 668 224 674 209C680 192 669 175 656 164C640 151 619 144 597 142C544 137 491 125 439 108C429 105 418 101 406 101Z"], median:[[400,113],[654,205]] },
+    { outline:["M620 313C595 315 572 327 548 335C460 364 374 397 285 422C263 428 240 426 217 425C208 425 197 421 188 427C182 430 184 439 188 445C197 456 208 466 219 475C233 485 249 490 266 490C286 489 304 480 323 473C388 449 450 419 514 392C532 385 549 378 566 370C520 425 472 477 422 527C369 579 316 630 261 679C236 701 206 717 184 742C167 760 168 789 173 813C176 825 184 839 198 838C210 838 218 828 227 820C251 798 273 775 299 755C326 735 356 713 390 712C407 711 426 713 440 723C454 732 464 746 474 759C500 791 521 828 558 848C595 869 638 873 680 874C719 875 759 874 798 873C816 873 835 873 852 867C862 863 872 854 869 843C865 829 851 822 840 815C822 804 800 798 779 803C749 810 719 809 689 809C653 809 617 807 584 793C560 784 544 762 527 743C502 716 473 690 435 681C397 671 354 677 320 697C315 700 313 702 318 697C406 612 494 528 585 447C608 426 632 406 657 388C664 383 675 380 679 372C684 361 673 351 667 343C656 329 640 312 620 313Z"], median:[[197,436],[277,460],[618,334],[654,363],[608,380],[203,762],[204,804],[333,709],[407,692],[482,722],[596,836],[793,835],[855,853]] }
+  ],
+  'お': [
+    { outline:["M504 281C474 281 450 302 422 310C380 325 336 333 292 342C258 347 224 348 190 343C162 338 137 324 113 311C107 308 101 312 100 317C98 329 107 338 113 346C137 375 173 390 210 394C269 401 328 388 385 375C424 365 463 355 502 346C520 341 538 332 549 315C554 304 546 290 534 288C525 283 514 280 504 281Z"], median:[[111.6,323.2],[174,363.7],[327,362.1],[535.2,309.4]] },
+    { outline:["M295 89C287 88 276 92 275 102C274 112 285 117 291 124C301 134 309 148 308 163C310 219 306 276 306 333C304 354 301 376 303 398C303 480 303 562 302 644C303 671 298 697 297 724C293 758 290 792 282 825C278 838 273 853 261 860C248 866 235 860 223 856C204 849 204 909 223 916C244 924 268 932 290 924C313 917 326 896 334 874C348 836 349 794 352 754C355 702 357 651 358 599C357 569 357 538 357 508C358 447 362 387 362 327C364 283 364 238 373 195C376 179 383 163 379 147C373 126 356 110 337 101C324 94 310 88 295 89Z","M643 503C558 504 475 530 399 566C359 585 320 607 281 629C241 653 202 678 169 711C146 736 129 769 133 803C134 831 145 859 167 878C185 896 199 906 223 916C242 923 242 863 223 856C202 846 191 836 180 817C170 793 180 765 196 746C224 710 265 688 303 664C351 634 402 609 456 591C485 581 515 572 546 565C602 554 661 554 714 575C750 591 781 623 786 663C791 696 785 730 768 758C743 800 703 829 663 855C638 871 612 884 587 899C580 903 573 912 578 920C583 929 594 927 602 925C644 915 684 897 721 875C756 855 789 830 816 800C839 774 854 742 856 707C858 679 856 649 847 622C839 598 824 576 806 560C780 535 748 519 714 510C691 504 667 502 643 503Z"], median:[[287,100],[338,140],[311,847],[282,898],[234,906],[218,900],[165,836],[158,764],[243,671],[525,536],[748,543],[835,691],[763,820],[588,917]] },
+    { outline:["M713 177C701 176 694 193 704 200C726 217 752 231 768 255C791 284 807 317 826 347C837 361 857 368 874 363C886 357 889 342 889 329C888 305 873 284 859 265C837 238 810 213 778 199C760 190 741 183 722 178C719 177 716 177 713 177Z"], median:[[710,189],[794,229],[868,350]] }
+  ],
+  'か': [
+    { outline:["M460 355C404 356 350 375 296 391C260 402 223 417 186 425C158 432 130 436 102 441C95 443 85 446 85 455C86 468 98 476 108 483C121 492 135 499 150 501C170 503 187 489 205 484C250 467 295 451 339 434C385 418 433 408 481 409C496 410 514 414 524 427C536 443 533 465 531 484C522 565 488 640 453 711C439 740 426 768 407 793C403 800 394 806 386 802C373 796 361 787 348 780C338 774 328 767 317 767C309 767 301 773 302 782C303 795 316 801 322 811C343 840 360 870 376 900C381 910 387 924 399 925C411 927 420 917 428 908C465 861 491 807 515 752C538 695 561 639 577 580C589 537 597 491 590 446C585 419 571 393 548 377C522 359 491 354 460 355Z"], median:[[104,461],[154,476],[413,401],[492,396],[544,419],[572,511],[409,881],[319,786]] },
+    { outline:["M350 111C343 110 335 117 337 125C340 137 351 146 353 159C358 180 350 201 344 222C329 270 309 318 292 366C263 442 233 518 201 591C185 626 170 661 153 695C143 717 125 735 119 758C112 783 117 812 131 835C134 840 139 847 147 846C161 844 169 831 174 819C207 740 240 661 271 581C299 514 326 445 350 376C367 330 385 283 408 240C415 228 424 216 428 202C433 178 423 154 407 137C394 122 374 110 353 111C352 111 351 110 350 111Z"], median:[[354,131],[392,199],[143,835]] },
+    { outline:["M648 261C637 261 632 276 638 285C644 297 656 302 665 312C726 362 782 420 817 491C837 531 850 574 864 617C868 630 879 642 893 643C912 645 930 631 932 612C944 577 934 539 918 506C896 463 872 418 832 387C777 340 717 299 656 262C653 262 651 260 648 261Z"], median:[[649,283],[836,441],[902,626]] }
+  ],
+  'が': [
+    { outline:["M460 363C404 364 350 383 296 399C260 410 223 424 186 432C158 439 130 443 102 448C95 450 85 453 85 462C86 475 98 483 108 490C121 499 135 506 150 508C170 510 187 496 205 491C250 474 295 458 339 441C385 425 433 416 481 417C496 418 514 421 524 434C536 450 533 472 531 491C522 571 488 645 453 716C439 744 426 772 407 797C403 804 394 810 386 806C373 800 361 791 348 784C338 778 328 771 317 771C309 771 301 777 302 786C303 799 316 805 322 815C343 843 360 873 376 903C381 913 387 926 399 927C411 929 420 919 428 911C465 864 491 811 515 756C538 700 561 644 577 586C589 543 597 498 590 453C585 426 571 401 548 385C522 367 491 362 460 363Z"], median:[[108,466],[154,476],[413,401],[492,396],[544,419],[572,511],[409,881],[319,786]] },
+    { outline:["M350 121C343 120 335 127 337 135C340 147 351 156 353 169C358 190 350 211 344 231C329 279 309 326 292 374C263 449 233 524 201 597C185 631 170 666 153 700C143 721 125 739 119 762C112 787 117 816 131 838C134 843 139 850 147 849C161 847 169 834 174 822C207 744 240 666 271 587C299 520 326 452 350 384C367 338 385 292 408 249C415 237 424 225 428 212C433 188 423 164 407 147C394 132 374 120 353 121C352 121 351 120 350 121Z"], median:[[356,137],[392,199],[143,835]] },
+    { outline:["M628 270C617 270 612 285 618 294C624 306 636 311 645 320C706 370 762 427 797 498C817 537 830 580 844 622C848 635 859 647 873 648C892 650 910 636 912 618C924 583 914 545 898 513C876 470 852 425 812 395C757 348 697 308 636 271C633 271 631 269 628 270Z"], median:[[633,287],[816,441],[882,626]] },
+    { outline:["M746 175C739 176 729 176 727 184C725 193 735 197 740 200C757 207 773 216 786 228C807 245 824 266 843 285C852 292 867 294 874 284C883 272 878 255 874 242C867 221 854 201 833 194C805 183 776 178 747 175C746 175 746 175 746 175Z"], median:[[741,189],[836,217],[863,277.7]] },
+    { outline:["M795 96C788 96 781 101 782 108C783 117 793 118 799 122C811 127 823 133 833 141C858 160 879 184 900 207C909 215 927 214 932 201C939 186 932 169 926 155C918 136 904 118 884 112C857 102 829 98 800 96C798 96 797 96 795 96Z"], median:[[797,108],[888,139],[920,196.7]] }
+  ],
+  'き': [
+    { outline:["M640 222C624 222 613 236 599 244C558 271 512 290 463 302C412 314 359 318 307 314C298 314 286 312 279 321C275 328 283 335 289 339C316 356 349 359 380 361C424 362 469 354 511 340C563 324 613 303 662 280C673 274 687 266 688 251C688 238 675 229 664 226C656 223 648 222 640 222Z"], median:[[294,332],[433,342],[677,253]] },
+    { outline:["M739 398C728 398 718 403 710 410C643 458 553 488 481 494C448 496 415 494 382 496C373 496 364 496 361 505C358 512 368 517 374 521C407 537 444 544 481 542C608 534 679 488 734 467C752 460 771 454 784 440C790 433 792 423 787 416C778 404 763 398 749 398C742 398 742 398 739 398Z"], median:[[376,512],[526,520],[777,426]] },
+    { outline:["M404 111C388 111 368 113 360 128C354 138 365 151 376 154C395 158 408 175 416 194C432 233 448 274 465 313C506 407 543 474 606 583C614 597 624 610 631 625C632 629 627 627 625 627C605 627 585 622 565 624C558 624 548 628 549 637C549 646 559 648 568 650C587 654 607 662 625 673C646 684 663 700 680 718C688 726 702 722 710 714C717 703 720 690 720 678C720 648 707 618 690 592C669 560 652 532 631 500C574 414 530 323 491 229C480 205 468 180 465 155C463 145 465 134 458 127C445 114 421 110 404 111Z"], median:[[367,135],[414,140],[688,620],[688,693],[636,653],[572,642]] },
+    { outline:["M303 721C291 723 284 735 277 744C267 756 261 771 261 787C260 824 282 858 311 878C351 908 401 917 449 923C509 930 570 929 631 926C641 926 653 924 659 914C666 904 660 890 651 882C640 874 627 869 614 864C599 858 582 857 567 862C514 871 459 867 405 858C371 851 336 842 309 820C297 809 290 791 293 775C294 760 305 748 310 734C312 729 310 721 303 721Z"], median:[[299,734],[273,794],[322,870],[628,903]] }
+  ],
+  'ぎ': [
+    { outline:["M640 222C624 222 613 236 599 244C558 271 512 290 463 302C412 314 359 318 307 314C298 314 286 312 279 321C275 328 283 335 289 339C316 356 349 359 380 361C424 362 469 354 511 340C563 324 613 303 662 280C673 274 687 266 688 251C688 238 675 229 664 226C656 223 648 222 640 222Z"], median:[[294,332],[433,342],[677,253]] },
+    { outline:["M739 398C728 398 718 403 710 410C643 458 553 488 481 494C448 496 415 494 382 496C373 496 364 496 361 505C358 512 368 517 374 521C407 537 444 544 481 542C608 534 679 488 734 467C752 460 771 454 784 440C790 433 792 423 787 416C778 404 763 398 749 398C742 398 742 398 739 398Z"], median:[[376,512],[526,520],[777,426]] },
+    { outline:["M404 111C388 111 368 113 360 128C354 138 365 151 376 154C395 158 408 175 416 194C432 233 448 274 465 313C506 407 543 474 606 583C614 597 624 610 631 625C632 629 627 627 625 627C605 627 585 622 565 624C558 624 548 628 549 637C549 646 559 648 568 650C587 654 607 662 625 673C646 684 663 700 680 718C688 726 702 722 710 714C717 703 720 690 720 678C720 648 707 618 690 592C669 560 652 532 631 500C574 414 530 323 491 229C480 205 468 180 465 155C463 145 465 134 458 127C445 114 421 110 404 111Z"], median:[[367,135],[414,140],[688,620],[688,693],[636,653],[572,642]] },
+    { outline:["M303 721C291 723 284 735 277 744C267 756 261 771 261 787C260 824 282 858 311 878C351 908 401 917 449 923C509 930 570 929 631 926C641 926 653 924 659 914C666 904 660 890 651 882C640 874 627 869 614 864C599 858 582 857 567 862C514 871 459 867 405 858C371 851 336 842 309 820C297 809 290 791 293 775C294 760 305 748 310 734C312 729 310 721 303 721Z"], median:[[299,734],[273,794],[322,870],[628,903]] },
+    { outline:["M739 154C730 155 727 170 735 174C749 185 764 194 776 207C797 229 811 257 829 281C836 289 851 293 859 284C870 272 867 255 865 241C862 219 850 197 830 186C807 172 781 164 755 156C750 155 745 155 739 154Z"], median:[[744,174],[833,218],[849,282]] },
+    { outline:["M807 86C798 85 795 101 803 105C818 116 835 125 846 140C867 162 881 189 898 214C906 223 922 224 929 213C940 199 935 180 932 164C927 145 916 126 897 117C873 102 846 94 819 87C815 86 811 85 807 86Z"], median:[[813,104],[897,150],[919,212]] }
+  ],
+  'く': [
+    { outline:["M554 99C543 100 538 115 545 122C555 140 556 163 543 180C509 237 469 290 427 341C392 385 355 426 321 470C311 485 308 505 316 522C326 549 350 569 366 592C442 691 512 794 578 900C586 912 598 924 613 923C634 920 650 900 649 880C650 861 642 843 631 828C577 744 507 673 441 600C414 571 384 544 363 511C358 498 368 485 376 476C444 400 511 324 581 250C598 234 616 219 636 207C645 198 642 183 636 173C621 147 602 122 576 106C569 102 562 100 554 99Z"], median:[[561,111],[605,180],[337,479],[346,523],[625,884.9]] }
+  ],
+  'ぐ': [
+    { outline:["M554 99C543 100 538 115 545 122C555 140 556 163 543 180C509 237 469 290 427 341C392 385 355 426 321 470C311 485 308 505 316 522C326 549 350 569 366 592C442 691 512 794 578 900C586 912 598 924 613 923C634 920 650 900 649 880C650 861 642 843 631 828C577 744 507 673 441 600C414 571 384 544 363 511C358 498 368 485 376 476C444 400 511 324 581 250C598 234 616 219 636 207C645 198 642 183 636 173C621 147 602 122 576 106C569 102 562 100 554 99Z"], median:[[566,111],[605,180],[337,479],[346,523],[625,884.9]] },
+    { outline:["M739 172C730 173 727 188 735 192C749 203 764 212 776 225C797 247 811 275 829 299C836 307 851 311 859 302C870 290 867 273 865 259C862 237 850 215 830 204C807 190 781 182 755 174C750 173 745 173 739 172Z"], median:[[744,184],[833,218],[849,282]] },
+    { outline:["M807 104C798 104 795 119 803 123C818 134 835 143 846 158C867 180 881 207 898 232C906 241 922 242 929 231C940 217 935 198 932 182C927 163 916 144 897 135C873 120 846 112 819 105C815 104 811 104 807 104Z"], median:[[813,114],[897,150],[919,212]] }
+  ],
+  'け': [
+    { outline:["M218 144C208 144 204 159 210 166C222 184 218 207 215 227C208 279 195 329 188 381C174 465 166 550 170 635C171 694 174 753 193 809C201 828 212 849 230 861C245 868 266 862 271 845C274 830 267 815 268 800C268 766 276 733 283 701C288 680 295 660 301 639C304 631 302 621 294 619C284 615 275 623 271 632C267 641 263 651 257 660C247 679 239 700 229 718C223 696 224 672 222 649C218 553 231 459 250 365C261 316 277 268 290 219C292 199 278 183 266 169C252 157 236 145 218 144Z"], median:[[217,156],[254,202],[180,714],[219,842],[237,847],[286,637]] },
+    { outline:["M811 311C749 316 691 336 630 346C563 360 496 369 428 380C420 382 408 385 407 396C407 407 420 413 428 417C446 425 468 428 488 421C584 400 681 392 779 382C808 380 836 378 865 375C877 370 878 352 870 343C857 323 834 311 811 311Z"], median:[[417,399],[786,347],[865,357]] },
+    { outline:["M646 105C636 106 624 112 624 123C626 133 636 138 643 146C659 163 658 188 660 210C662 253 661 298 662 341C662 463 663 585 640 705C626 776 597 844 553 903C549 911 549 922 559 925C572 927 582 916 590 908C638 849 682 784 702 709C720 635 722 559 725 484C727 387 724 289 727 192C729 182 738 172 734 161C729 146 716 136 704 127C687 115 667 105 646 105Z"], median:[[636,119],[707,152],[693,621],[659,790],[565,915]] }
+  ],
+  'げ': [
+    { outline:["M195 145C184 145 181 160 187 167C200 187 194 211 192 233C184 284 171 334 164 386C151 468 143 552 147 636C148 694 150 753 170 808C177 829 189 849 208 861C223 869 245 863 249 846C252 831 245 815 246 800C246 766 254 734 261 702C266 680 273 660 279 640C282 632 280 622 271 619C261 616 253 624 250 632C245 642 242 652 236 660C225 679 217 700 206 718C200 696 201 673 199 650C195 555 209 460 227 367C238 317 255 269 268 220C270 200 256 183 243 170C230 158 214 146 195 145Z"], median:[[195,157],[234,202],[157,716],[199,842],[217,847],[266,637]] },
+    { outline:["M794 315C731 321 670 341 608 352C542 365 474 374 407 385C398 387 387 390 386 400C386 411 398 417 407 421C426 430 447 433 467 427C520 414 574 407 627 400C692 393 756 387 821 382C831 381 841 381 850 379C861 373 862 357 854 348C841 329 818 316 794 315Z"], median:[[397,399],[766,347],[845,357]] },
+    { outline:["M628 106C618 106 605 112 605 123C607 133 618 138 624 146C640 162 640 186 642 208C644 251 643 296 644 340C644 462 645 585 622 705C607 776 578 845 534 904C530 911 531 924 541 926C554 927 563 916 571 907C621 849 665 783 684 708C702 635 704 559 707 484C710 387 706 290 710 192C712 182 721 173 717 162C712 147 698 138 686 128C670 115 649 105 628 106Z"], median:[[617,120],[687,152],[673,621],[639,790],[543,918]] },
+    { outline:["M789 123C780 123 777 138 785 142C799 152 814 161 826 174C847 195 861 222 879 245C886 253 901 256 909 247C920 236 917 220 915 206C912 185 900 164 880 153C857 140 831 132 805 125C800 124 795 123 789 123Z"], median:[[794,134],[883,178],[899,242]] },
+    { outline:["M857 54C848 54 845 69 853 72C868 83 884 92 896 106C916 127 931 153 948 178C956 186 972 187 979 177C990 163 985 145 982 130C977 111 966 93 947 84C923 70 895 62 868 55C864 54 861 54 857 54Z"], median:[[863,64],[947,110],[969,172]] }
+  ],
+  'こ': [
+    { outline:["M474 192C411 193 348 195 286 208C279 210 271 217 274 225C278 238 292 243 304 247C323 252 342 245 360 244C408 239 455 233 502 241C530 246 558 252 584 262C588 263 593 266 596 269C587 275 576 279 566 285C547 296 528 307 510 320C504 325 506 337 515 338C529 339 542 330 556 327C597 313 642 303 686 307C701 308 719 310 731 299C739 291 737 278 731 270C719 251 699 238 680 227C636 203 585 197 535 193C515 192 495 192 474 192Z"], median:[[288,222],[318,227],[536,214],[678,254],[715,283],[630,280],[518,327]] },
+    { outline:["M247 623C237 625 236 636 233 645C227 678 231 713 244 744C254 767 272 785 292 799C344 838 408 855 472 864C559 877 648 879 736 878C753 877 771 876 786 867C796 861 800 847 794 837C784 816 761 805 740 800C723 796 705 801 688 802C604 809 519 809 435 796C388 787 341 774 301 748C283 736 266 720 262 698C256 675 259 652 255 629C254 625 251 622 247 623Z"], median:[[248,635],[245,714],[312,792],[511,840],[704,838],[783,851]] }
+  ],
+  'ご': [
+    { outline:["M474 192C411 193 348 195 286 208C279 210 271 217 274 225C278 238 292 243 304 247C323 252 342 245 360 244C408 239 455 233 502 241C530 246 558 252 584 262C588 263 593 266 596 269C587 275 576 279 566 285C547 296 528 307 510 320C504 325 506 337 515 338C529 339 542 330 556 327C597 313 642 303 686 307C701 308 719 310 731 299C739 291 737 278 731 270C719 251 699 238 680 227C636 203 585 197 535 193C515 192 495 192 474 192Z"], median:[[288,222],[318,227],[536,214],[678,254],[715,283],[630,280],[518,327]] },
+    { outline:["M247 623C237 625 236 636 233 645C227 678 231 713 244 744C254 767 272 785 292 799C344 838 408 855 472 864C559 877 648 879 736 878C753 877 771 876 786 867C796 861 800 847 794 837C784 816 761 805 740 800C723 796 705 801 688 802C604 809 519 809 435 796C388 787 341 774 301 748C283 736 266 720 262 698C256 675 259 652 255 629C254 625 251 622 247 623Z"], median:[[248,635],[245,714],[312,792],[511,840],[704,838],[783,851]] },
+    { outline:["M769 160C760 161 757 176 765 180C779 191 794 200 806 213C827 235 841 263 859 287C866 295 881 299 889 290C900 278 897 261 895 247C892 225 880 203 860 192C837 178 811 170 785 162C780 161 775 161 769 160Z"], median:[[774,174],[863,218],[879,282]] },
+    { outline:["M837 92C828 91 825 107 833 111C848 122 865 131 876 146C897 168 911 195 928 220C936 229 952 230 959 219C970 205 965 186 962 170C957 151 946 132 927 123C903 108 876 100 849 93C845 92 841 91 837 92Z"], median:[[843,104],[927,150],[949,212]] }
+  ],
+  'さ': [
+    { outline:["M687 270C659 270 637 289 613 300C556 322 498 342 440 362C388 379 334 391 280 404C271 406 260 411 260 422C262 434 276 440 286 445C312 457 344 457 368 444C452 406 541 383 628 356C668 344 709 336 749 324C762 316 764 294 749 286C731 274 709 269 687 270Z"], median:[[274,415],[751,300]] },
+    { outline:["M422 105C405 106 386 105 372 115C364 122 370 134 378 139C394 147 415 151 424 168C441 200 457 234 472 268C504 336 552 415 591 469C616 503 635 533 661 566C635 567 609 560 584 562C577 563 569 569 571 576C576 586 590 587 600 590C618 595 635 601 653 608C683 620 709 640 732 663C743 670 757 659 757 647C758 622 751 596 742 572C729 546 711 528 692 507C636 444 543 298 508 192C501 171 499 148 489 128C479 111 456 107 437 106C432 105 427 105 422 105Z"], median:[[377,124],[430,125],[583,397],[738,574],[740,642],[678,591],[602,572]] },
+    { outline:["M321 700C301 701 287 717 277 731C265 747 260 768 266 787C276 819 303 843 331 861C387 898 455 915 522 919C575 923 629 925 683 921C693 920 705 912 703 901C699 877 680 855 655 852C629 848 602 856 576 854C497 855 418 844 345 814C327 806 309 792 304 772C299 757 308 740 319 729C324 722 330 712 327 703C326 701 323 700 321 700Z"], median:[[317,714],[284,756],[298,817],[466,898],[690,913]] }
+  ],
+  'ざ': [
+    { outline:["M687 270C659 270 637 289 613 300C556 322 498 342 440 362C388 379 334 391 280 404C271 406 260 411 260 422C262 434 276 440 286 445C312 457 344 457 368 444C452 406 541 383 628 356C668 344 709 336 749 324C762 316 764 294 749 286C731 274 709 269 687 270Z"], median:[[274,415],[751,300]] },
+    { outline:["M422 105C405 106 386 105 372 115C364 122 370 134 378 139C394 147 415 151 424 168C441 200 457 234 472 268C504 336 552 415 591 469C616 503 635 533 661 566C635 567 609 560 584 562C577 563 569 569 571 576C576 586 590 587 600 590C618 595 635 601 653 608C683 620 709 640 732 663C743 670 757 659 757 647C758 622 751 596 742 572C729 546 711 528 692 507C636 444 543 298 508 192C501 171 499 148 489 128C479 111 456 107 437 106C432 105 427 105 422 105Z"], median:[[377,124],[430,125],[583,397],[738,574],[740,642],[678,591],[602,572]] },
+    { outline:["M321 700C301 701 287 717 277 731C265 747 260 768 266 787C276 819 303 843 331 861C387 898 455 915 522 919C575 923 629 925 683 921C693 920 705 912 703 901C699 877 680 855 655 852C629 848 602 856 576 854C497 855 418 844 345 814C327 806 309 792 304 772C299 757 308 740 319 729C324 722 330 712 327 703C326 701 323 700 321 700Z"], median:[[317,714],[284,756],[298,817],[466,898],[690,913]] },
+    { outline:["M749 150C740 151 737 166 745 170C759 181 774 190 786 203C807 225 821 253 839 277C846 285 861 289 869 280C880 268 877 251 875 237C872 215 860 193 840 182C817 168 791 160 765 152C760 151 755 151 749 150Z"], median:[[753,164],[837,210],[859,272]] },
+    { outline:["M807 92C798 91 795 107 803 111C818 122 835 131 846 146C867 168 881 195 898 220C906 229 922 230 929 219C940 205 935 186 932 170C927 151 916 132 897 123C873 108 846 100 819 93C815 92 811 91 807 92Z"], median:[[813,104],[897,150],[919,212]] }
+  ],
+  'し': [
+    { outline:["M281 104C271 104 266 116 271 125C279 141 292 155 293 174C295 223 291 271 288 319C282 444 274 568 274 692C274 740 280 790 301 834C321 875 365 901 409 913C478 932 552 924 618 900C676 878 730 848 781 813C793 804 806 797 816 786C823 780 826 767 818 761C809 755 798 761 790 766C772 777 752 787 732 796C660 829 585 863 504 871C471 874 435 871 404 857C374 844 353 816 343 785C330 745 330 702 331 660C331 612 343 372 373 237C377 218 385 199 379 180C373 163 362 149 348 137C330 120 307 104 281 104Z"], median:[[287,128],[346,192],[299,732],[328,833],[411,894],[568,894],[674,855],[812,770]] }
+  ],
+  'じ': [
+    { outline:["M281 104C271 104 266 116 271 125C279 141 292 155 293 174C295 223 291 271 288 319C282 444 274 568 274 692C274 740 280 790 301 834C321 875 365 901 409 913C478 932 552 924 618 900C676 878 730 848 781 813C793 804 806 797 816 786C823 780 826 767 818 761C809 755 798 761 790 766C772 777 752 787 732 796C660 829 585 863 504 871C471 874 435 871 404 857C374 844 353 816 343 785C330 745 330 702 331 660C331 612 343 372 373 237C377 218 385 199 379 180C373 163 362 149 348 137C330 120 307 104 281 104Z"], median:[[287,128],[346,192],[299,732],[328,833],[411,894],[568,894],[674,855],[812,770]] },
+    { outline:["M679 220C670 221 667 236 675 240C689 251 704 260 716 273C737 295 751 323 769 347C776 355 791 359 799 350C810 338 807 321 805 307C802 285 790 263 770 252C747 238 721 230 695 222C690 221 685 221 679 220Z"], median:[[684,234],[773,278],[789,342]] },
+    { outline:["M747 152C738 151 735 167 743 171C758 182 775 191 786 206C807 228 821 255 838 280C846 289 862 290 869 279C880 265 875 246 872 230C867 211 856 192 837 183C813 168 786 160 759 153C755 152 751 152 747 152Z"], median:[[753,164],[837,210],[859,272]] }
+  ],
+  'す': [
+    { outline:["M800 241C771 243 746 258 718 260C573 283 427 299 281 318C250 322 219 327 187 326C165 327 143 326 121 330C114 332 109 338 113 344C119 356 132 362 143 370C162 381 183 390 205 390C223 388 240 379 257 375C402 337 551 327 700 316C745 314 791 312 837 316C855 318 872 323 890 320C903 317 909 299 900 289C888 271 868 260 848 250C833 244 816 241 800 241Z"], median:[[129,345],[195,368],[468,313],[790,275],[893,303]] },
+    { outline:["M530 107C520 107 506 106 500 117C496 126 504 140 512 143C528 155 532 176 532 194C533 299 531 393 534 499C534 537 536 575 536 613C533 623 521 626 512 625C487 625 462 618 438 611C421 605 402 595 396 576C390 563 388 548 388 534C388 517 337 517 337 534C337 566 344 603 366 627C390 652 426 661 460 668C490 673 520 679 550 679C565 678 582 677 591 664C599 654 600 641 597 630C584 528 592 427 589 325C588 281 591 248 594 204C596 189 599 175 603 161C606 148 599 136 589 129C572 116 551 107 530 107Z","M423 438C392 438 364 459 351 486C344 499 339 518 337 534C334 551 388 551 388 534C389 518 393 502 404 491C421 477 448 482 462 498C488 524 496 563 499 600C503 652 495 707 469 754C438 811 385 854 331 892C323 897 313 903 313 913C313 921 322 925 329 923C344 917 358 909 373 902C418 878 463 851 496 811C537 759 555 691 550 626C547 577 536 527 507 486C490 463 465 443 436 438C432 438 427 438 423 438Z"], median:[[507,119],[570,155],[561,240],[566,663],[442,654],[380,607],[361,526],[396,457],[446,457],[496,493],[523,576],[521,710],[471,828],[328,916]] }
+  ],
+  'ず': [
+    { outline:["M800 241C771 243 746 258 718 260C573 283 427 299 281 318C250 322 219 327 187 326C165 327 143 326 121 330C114 332 109 338 113 344C119 356 132 362 143 370C162 381 183 390 205 390C223 388 240 379 257 375C402 337 551 327 700 316C745 314 791 312 837 316C855 318 872 323 890 320C903 317 909 299 900 289C888 271 868 260 848 250C833 244 816 241 800 241Z"], median:[[129,345],[195,368],[468,313],[790,275],[893,303]] },
+    { outline:["M530 107C520 107 506 106 500 117C496 126 504 140 512 143C528 155 532 176 532 194C533 299 531 393 534 499C534 537 536 575 536 613C533 623 521 626 512 625C487 625 462 618 438 611C421 605 402 595 396 576C390 563 388 548 388 534C388 517 337 517 337 534C337 566 344 603 366 627C390 652 426 661 460 668C490 673 520 679 550 679C565 678 582 677 591 664C599 654 600 641 597 630C584 528 592 427 589 325C588 281 591 248 594 204C596 189 599 175 603 161C606 148 599 136 589 129C572 116 551 107 530 107Z","M423 438C392 438 364 459 351 486C344 499 339 518 337 534C334 551 388 551 388 534C389 518 393 502 404 491C421 477 448 482 462 498C488 524 496 563 499 600C503 652 495 707 469 754C438 811 385 854 331 892C323 897 313 903 313 913C313 921 322 925 329 923C344 917 358 909 373 902C418 878 463 851 496 811C537 759 555 691 550 626C547 577 536 527 507 486C490 463 465 443 436 438C432 438 427 438 423 438Z"], median:[[507,120],[570,155],[561,240],[566,663],[442,654],[380,607],[361,526],[396,457],[446,457],[496,493],[523,576],[521,710],[471,828],[328,916]] },
+    { outline:["M689 80C680 81 677 96 685 100C699 111 714 120 726 133C747 155 761 183 779 207C786 215 801 219 809 210C820 198 817 181 815 167C812 145 800 123 780 112C757 98 731 90 705 82C700 81 695 80 689 80Z"], median:[[694,94],[783,138],[799,202]] },
+    { outline:["M807 72C798 71 795 87 803 91C818 102 835 111 846 126C867 148 881 175 898 200C906 209 922 210 929 199C940 185 935 166 932 150C927 131 916 112 897 103C873 88 845 79 818 72C814 72 811 71 807 72Z"], median:[[813,84],[897,130],[919,192]] }
+  ],
+  'せ': [
+    { outline:["M845 376C815 378 787 396 757 398C578 423 403 467 232 525C192 537 151 548 110 560C101 564 89 567 85 577C84 586 91 594 97 600C113 614 138 619 159 613C176 609 190 598 206 590C261 564 320 548 378 531C483 503 591 480 699 464C746 457 793 452 840 454C870 455 900 461 930 462C947 463 957 439 948 426C930 403 904 388 877 380C867 377 856 375 845 376Z"], median:[[98,575],[146,578],[409,491],[824,412],[935,441]] },
+    { outline:["M649 108C640 108 628 108 624 118C621 128 631 136 637 142C652 160 652 185 652 208C650 300 641 391 632 482C626 533 622 586 610 635C606 651 601 667 592 679C583 686 571 680 561 680C551 678 539 673 530 681C525 685 526 695 532 699C543 709 554 719 562 731C571 742 577 754 586 764C593 769 603 766 609 760C630 744 644 719 654 695C672 647 677 595 684 544C695 455 698 365 709 277C712 250 715 221 723 195C727 187 735 181 734 170C732 152 717 139 704 128C688 117 669 108 649 108Z"], median:[[637,121],[696,174],[635,665],[607,722],[542,684]] },
+    { outline:["M310 185C298 186 290 204 300 213C320 237 323 270 323 301C324 417 326 532 325 648C326 700 329 754 347 803C361 837 384 869 417 885C461 909 511 916 559 921C626 926 694 924 762 917C776 915 793 914 803 902C813 892 808 877 800 868C788 857 773 848 758 844C739 838 719 840 701 846C663 858 624 860 586 860C552 859 519 857 486 849C455 843 423 828 406 800C394 779 393 755 390 731C384 674 387 617 386 560C386 467 386 374 389 282C392 268 401 255 395 240C388 218 368 204 348 192C336 187 323 185 310 185Z"], median:[[313,199],[368,260],[369,785],[434,860],[792,879]] }
+  ],
+  'ぜ': [
+    { outline:["M845 376C815 378 787 396 757 398C578 423 403 467 232 525C192 537 151 548 110 560C101 564 89 567 85 577C84 586 91 594 97 600C113 614 138 619 159 613C176 609 190 598 206 590C261 564 320 548 378 531C483 503 591 480 699 464C746 457 793 452 840 454C870 455 900 461 930 462C947 463 957 439 948 426C930 403 904 388 877 380C867 377 856 375 845 376Z"], median:[[98,575],[146,578],[409,491],[824,412],[935,441]] },
+    { outline:["M649 108C640 108 628 108 624 118C621 128 631 136 637 142C652 160 652 185 652 208C650 300 641 391 632 482C626 533 622 586 610 635C606 651 601 667 592 679C583 686 571 680 561 680C551 678 539 673 530 681C525 685 526 695 532 699C543 709 554 719 562 731C571 742 577 754 586 764C593 769 603 766 609 760C630 744 644 719 654 695C672 647 677 595 684 544C695 455 698 365 709 277C712 250 715 221 723 195C727 187 735 181 734 170C732 152 717 139 704 128C688 117 669 108 649 108Z"], median:[[637,121],[696,174],[635,665],[607,722],[545,686]] },
+    { outline:["M310 185C298 186 290 204 300 213C320 237 323 270 323 301C324 417 326 532 325 648C326 700 329 754 347 803C361 837 384 869 417 885C461 909 511 916 559 921C626 926 694 924 762 917C776 915 793 914 803 902C813 892 808 877 800 868C788 857 773 848 758 844C739 838 719 840 701 846C663 858 624 860 586 860C552 859 519 857 486 849C455 843 423 828 406 800C394 779 393 755 390 731C384 674 387 617 386 560C386 467 386 374 389 282C392 268 401 255 395 240C388 218 368 204 348 192C336 187 323 185 310 185Z"], median:[[313,199],[368,260],[369,785],[434,860],[792,879]] },
+    { outline:["M789 140C780 141 777 156 785 160C799 171 814 180 826 193C847 215 861 243 879 267C886 275 901 279 909 270C920 258 917 241 915 227C912 205 900 183 880 172C857 158 831 150 805 142C800 141 795 141 789 140Z"], median:[[794,154],[883,198],[899,262]] },
+    { outline:["M857 72C848 71 845 87 853 91C868 102 885 111 896 126C917 148 931 175 948 200C956 209 972 210 979 199C990 185 985 166 982 150C977 131 966 112 947 103C923 88 895 79 868 72C864 72 861 71 857 72Z"], median:[[863,84],[947,130],[969,192]] }
+  ],
+  'そ': [
+    { outline:["M598 106C574 108 552 121 529 128C475 147 421 167 366 183C341 190 315 194 291 205C284 209 278 218 282 225C289 238 302 246 314 252C342 263 374 254 398 237C425 219 454 206 483 193C510 182 537 172 564 164C542 196 515 225 492 255C409 357 320 453 215 532C203 542 194 559 201 575C208 591 224 600 239 608C256 619 279 621 298 614C318 607 337 597 356 590C439 554 521 518 603 483C554 533 506 588 479 654C468 683 466 716 478 744C495 787 531 819 567 846C599 870 631 894 667 913C684 920 703 928 722 924C730 922 736 915 737 906C743 882 730 856 710 842C697 832 680 828 664 824C627 812 596 786 565 764C545 748 525 731 517 707C509 680 521 651 536 628C557 594 587 565 616 537C658 500 707 467 761 451C769 447 781 446 785 437C789 428 786 418 778 412C766 401 752 391 737 385C720 382 704 392 689 398C650 417 611 434 571 449C469 489 365 525 259 553C268 546 278 538 287 531C356 476 420 415 482 353C533 301 584 248 634 194C642 185 652 175 658 163C662 149 652 135 640 126C628 116 615 106 598 106Z"], median:[[297,219],[343,235],[591,132],[621,154],[433,374],[226,558],[251,589],[731,415],[747,428],[665,471],[592,536],[521,616],[496,694],[507,749],[722,915]] }
+  ],
+  'ぞ': [
+    { outline:["M598 106C574 108 552 121 529 128C475 147 421 167 366 183C341 190 315 194 291 205C284 209 278 218 282 225C289 238 302 246 314 252C342 263 374 254 398 237C425 219 454 206 483 193C510 182 537 172 564 164C542 196 515 225 492 255C409 357 320 453 215 532C203 542 194 559 201 575C208 591 224 600 239 608C256 619 279 621 298 614C318 607 337 597 356 590C439 554 521 518 603 483C554 533 506 588 479 654C468 683 466 716 478 744C495 787 531 819 567 846C599 870 631 894 667 913C684 920 703 928 722 924C730 922 736 915 737 906C743 882 730 856 710 842C697 832 680 828 664 824C627 812 596 786 565 764C545 748 525 731 517 707C509 680 521 651 536 628C557 594 587 565 616 537C658 500 707 467 761 451C769 447 781 446 785 437C789 428 786 418 778 412C766 401 752 391 737 385C720 382 704 392 689 398C650 417 611 434 571 449C469 489 365 525 259 553C268 546 278 538 287 531C356 476 420 415 482 353C533 301 584 248 634 194C642 185 652 175 658 163C662 149 652 135 640 126C628 116 615 106 598 106Z"], median:[[297,219],[343,235],[591,132],[621,154],[433,374],[226,558],[251,589],[731,415],[747,428],[665,471],[592,536],[521,616],[496,694],[507,749],[720,915]] },
+    { outline:["M739 160C730 161 727 176 735 180C749 191 764 200 776 213C797 235 811 263 829 287C836 295 851 299 859 290C870 278 867 261 865 247C862 225 850 203 830 192C807 178 781 170 755 162C750 161 745 161 739 160Z"], median:[[744,174],[833,218],[849,282]] },
+    { outline:["M807 92C798 91 795 107 803 111C818 122 835 131 846 146C867 168 881 195 898 220C906 229 922 230 929 219C940 205 935 186 932 170C927 151 916 132 897 123C873 108 846 100 819 93C815 92 811 91 807 92Z"], median:[[813,104],[897,150],[919,212]] }
+  ],
+  'た': [
+    { outline:["M608 265C591 266 576 276 561 284C514 304 463 316 412 327C373 336 334 342 294 339C267 337 239 332 212 328C202 327 191 325 183 331C178 336 184 344 189 347C219 372 258 382 296 388C333 394 370 389 407 383C467 372 526 354 585 341C615 334 646 327 673 311C681 307 689 298 684 289C678 278 663 275 651 271C637 267 623 265 608 265Z"], median:[[194,339],[330,372],[676,290]] },
+    { outline:["M424 107C417 106 408 112 411 120C414 133 426 143 424 157C422 170 417 183 413 195C400 237 386 279 371 321C350 380 328 440 304 498C274 575 244 652 205 725C186 756 159 784 152 820C146 850 150 880 152 910C155 920 169 929 179 923C194 912 197 893 205 878C266 746 320 612 374 478C403 404 430 329 459 254C465 237 470 219 482 204C490 193 503 181 502 166C500 146 482 131 465 122C452 114 439 107 424 107Z"], median:[[424,116],[464,176],[172,916]] },
+    { outline:["M729 482C660 488 597 519 534 545C525 549 515 551 506 556C498 560 499 572 506 577C514 584 526 584 537 583C559 580 580 573 602 569C655 556 709 546 763 551C781 552 800 556 819 553C828 548 826 535 821 528C809 514 792 504 776 495C762 488 746 482 729 482Z"], median:[[516,563],[730,514],[811,533]] },
+    { outline:["M503 762C494 762 491 772 493 779C496 816 524 849 560 861C617 883 679 883 738 884C777 885 816 884 855 881C865 879 875 868 871 858C866 842 852 831 839 822C819 810 793 814 771 818C716 826 660 829 605 821C581 817 556 812 537 796C527 789 521 779 515 769C512 765 508 762 503 762Z"], median:[[505,776],[549,841],[858,868]] }
+  ],
+  'だ': [
+    { outline:["M608 265C591 266 576 276 561 284C514 304 463 316 412 327C373 336 334 342 294 339C267 337 239 332 212 328C202 327 191 325 183 331C178 336 184 344 189 347C219 372 258 382 296 388C333 394 370 389 407 383C467 372 526 354 585 341C615 334 646 327 673 311C681 307 689 298 684 289C678 278 663 275 651 271C637 267 623 265 608 265Z"], median:[[194,339],[330,372],[676,290]] },
+    { outline:["M424 107C417 106 408 112 411 120C414 133 426 143 424 157C422 170 417 183 413 195C400 237 386 279 371 321C350 380 328 440 304 498C274 575 244 652 205 725C186 756 159 784 152 820C146 850 150 880 152 910C155 920 169 929 179 923C194 912 197 893 205 878C266 746 320 612 374 478C403 404 430 329 459 254C465 237 470 219 482 204C490 193 503 181 502 166C500 146 482 131 465 122C452 114 439 107 424 107Z"], median:[[424,116],[464,176],[172,916]] },
+    { outline:["M729 482C660 488 597 519 534 545C525 549 515 551 506 556C498 560 499 572 506 577C514 584 526 584 537 583C559 580 580 573 602 569C655 556 709 546 763 551C781 552 800 556 819 553C828 548 826 535 821 528C809 514 792 504 776 495C762 488 746 482 729 482Z"], median:[[516,563],[730,514],[811,533]] },
+    { outline:["M503 762C494 762 491 772 493 779C496 816 524 849 560 861C617 883 679 883 738 884C777 885 816 884 855 881C865 879 875 868 871 858C866 842 852 831 839 822C819 810 793 814 771 818C716 826 660 829 605 821C581 817 556 812 537 796C527 789 521 779 515 769C512 765 508 762 503 762Z"], median:[[505,776],[549,841],[858,868]] },
+    { outline:["M739 160C730 161 727 176 735 180C749 191 764 200 776 213C797 235 811 263 829 287C836 295 851 299 859 290C870 278 867 261 865 247C862 225 850 203 830 192C807 178 781 170 755 162C750 161 745 161 739 160Z"], median:[[744,174],[833,218],[849,282]] },
+    { outline:["M807 92C798 91 795 107 803 111C818 122 835 131 846 146C867 168 881 195 898 220C906 229 922 230 929 219C940 205 935 186 932 170C927 151 916 132 897 123C873 108 846 100 819 93C815 92 811 91 807 92Z"], median:[[813,104],[897,150],[919,212]] }
+  ],
+  'ち': [
+    { outline:["M600 262C571 263 547 281 519 287C467 302 413 313 359 320C314 324 269 322 225 317C212 316 199 314 188 319C183 323 186 331 192 333C208 345 227 351 245 358C280 368 317 366 353 365C426 360 498 344 569 330C597 324 626 321 653 312C661 309 670 305 673 297C676 288 667 281 660 278C642 269 622 264 602 262C601 262 600 262 600 262Z"], median:[[199,326],[366,344],[666,291]] },
+    { outline:["M425 98C415 98 408 110 415 117C429 137 428 163 423 185C412 241 394 295 380 350C356 442 329 533 301 625C292 647 278 669 278 693C279 713 290 731 305 745C315 749 326 741 331 734C359 701 393 673 429 649C478 619 533 601 588 586C622 578 659 573 693 580C724 587 754 607 761 638C768 664 764 691 757 716C747 751 720 778 692 800C645 836 590 863 533 882C515 888 496 891 479 899C472 902 466 913 472 919C478 926 489 927 496 923C582 903 668 877 742 828C780 802 813 765 823 719C831 680 827 637 807 602C787 570 751 546 712 541C646 528 577 541 515 562C460 581 409 609 359 638C385 528 413 419 446 311C458 273 470 235 486 199C493 187 501 174 498 159C495 142 481 127 468 116C456 106 441 98 425 98Z"], median:[[425,108],[475,153],[311,679],[315,710],[516,575],[705,553],[793,614],[782,767],[663,864],[482,917]] }
+  ],
+  'ぢ': [
+    { outline:["M600 262C571 263 547 281 519 287C467 302 413 313 359 320C314 324 269 322 225 317C212 316 199 314 188 319C183 323 186 331 192 333C208 345 227 351 245 358C280 368 317 366 353 365C426 360 498 344 569 330C597 324 626 321 653 312C661 309 670 305 673 297C676 288 667 281 660 278C642 269 622 264 602 262C601 262 600 262 600 262Z"], median:[[199,326],[366,344],[666,291]] },
+    { outline:["M425 98C415 98 408 110 415 117C429 137 428 163 423 185C412 241 394 295 380 350C356 442 329 533 301 625C292 647 278 669 278 693C279 713 290 731 305 745C315 749 326 741 331 734C359 701 393 673 429 649C478 619 533 601 588 586C622 578 659 573 693 580C724 587 754 607 761 638C768 664 764 691 757 716C747 751 720 778 692 800C645 836 590 863 533 882C515 888 496 891 479 899C472 902 466 913 472 919C478 926 489 927 496 923C582 903 668 877 742 828C780 802 813 765 823 719C831 680 827 637 807 602C787 570 751 546 712 541C646 528 577 541 515 562C460 581 409 609 359 638C385 528 413 419 446 311C458 273 470 235 486 199C493 187 501 174 498 159C495 142 481 127 468 116C456 106 441 98 425 98Z"], median:[[425,108],[475,153],[311,679],[315,710],[516,575],[705,553],[793,614],[782,767],[663,864],[482,917]] },
+    { outline:["M739 160C730 161 727 176 735 180C749 191 764 200 776 213C797 235 811 263 829 287C836 295 851 299 859 290C870 278 867 261 865 247C862 225 850 203 830 192C807 178 781 170 755 162C750 161 745 161 739 160Z"], median:[[744,174],[833,218],[849,282]] },
+    { outline:["M807 92C798 91 795 107 803 111C818 122 835 131 846 146C867 168 881 195 898 220C906 229 922 230 929 219C940 205 935 186 932 170C927 151 916 132 897 123C873 108 846 100 819 93C815 92 811 91 807 92Z"], median:[[813,104],[897,150],[919,212]] }
+  ],
+  'っ': [
+    { outline:["M647 370C563 373 481 396 401 423C357 438 312 454 266 462C241 467 216 468 193 475C186 478 177 483 177 491C178 502 188 508 195 515C209 525 226 530 243 528C258 527 271 520 284 514C327 495 370 480 414 465C462 448 510 431 561 422C606 413 653 408 699 414C723 416 748 423 764 441C786 463 795 496 792 527C788 570 765 610 731 638C673 687 604 720 534 747C523 751 512 755 502 760C496 764 494 774 501 778C509 785 520 781 528 778C597 757 666 734 728 697C773 670 813 630 831 580C848 535 845 482 818 441C804 419 783 402 760 392C725 376 686 370 647 370Z"], median:[[185,489],[229,510],[537,391],[733,395],[813,470],[802,591],[646,717],[506,767]] }
+  ],
+  'つ': [
+    { outline:["M682 269C576 272 474 301 374 335C318 354 263 374 205 384C174 390 143 391 114 400C105 403 94 409 94 420C95 433 108 441 117 449C134 462 155 468 176 466C195 465 212 456 228 449C281 425 336 406 390 388C450 366 511 344 574 333C631 323 689 316 747 323C776 326 807 335 828 357C855 385 866 426 863 464C857 518 828 569 786 603C714 665 628 706 540 740C527 745 513 749 500 756C493 761 491 773 499 779C508 787 522 782 533 779C619 753 706 724 783 678C839 643 889 594 912 531C933 475 929 408 896 357C878 330 852 309 822 296C778 276 730 269 682 269Z"], median:[[107,418],[161,448],[547,300],[791,304],[891,398],[878,550],[683,707],[508,769]] }
+  ],
+  'づ': [
+    { outline:["M686 309C565 311 448 348 335 388C276 409 215 424 152 432C136 434 118 437 103 445C96 449 91 459 96 467C102 479 114 487 124 494C146 507 173 509 197 502C233 488 268 470 304 457C360 437 416 419 472 399C547 375 625 361 703 360C736 360 769 363 799 376C833 391 854 426 861 462C868 498 860 535 844 568C829 601 805 629 776 651C697 715 604 757 509 791C502 794 493 799 493 808C493 819 506 825 516 823C530 820 544 815 557 811C629 789 700 764 766 728C814 700 858 664 889 617C918 570 933 511 920 456C910 409 880 365 837 343C791 318 738 308 686 309Z"], median:[[104,461],[197,462],[501,359],[791,344],[891,438],[878,590],[683,747],[508,809]] },
+    { outline:["M803 189C786 190 766 187 750 196C744 202 748 213 757 213C772 219 789 222 804 230C831 244 854 265 879 282C888 287 903 287 908 276C916 263 909 247 902 235C892 215 874 197 851 193C835 190 819 189 803 189Z"], median:[[762,205],[860,216],[897,271]] },
+    { outline:["M867 100C848 102 829 100 811 107C804 111 806 123 814 124C834 131 854 135 871 146C897 160 919 179 942 196C953 201 970 195 972 182C975 164 963 148 954 133C943 119 928 107 910 104C896 101 881 100 867 100Z"], median:[[823,116],[917,130],[959,181]] }
+  ],
+  'て': [
+    { outline:["M755 129C736 130 727 152 709 157C658 179 604 194 552 213C439 253 326 291 211 327C191 332 169 333 149 324C142 322 131 322 128 331C125 342 135 351 141 358C159 378 180 398 207 403C227 406 245 393 263 386C292 372 321 358 350 346C450 302 551 260 653 224C661 220 656 225 653 228C629 253 605 277 584 303C532 363 488 431 470 509C453 583 462 664 503 729C537 781 587 821 637 857C665 876 694 893 727 901C742 904 761 902 769 888C776 877 773 863 767 852C762 837 754 820 737 815C713 804 687 797 664 783C616 756 573 720 541 676C505 619 504 547 527 485C544 440 570 399 600 360C629 324 662 290 698 261C730 238 766 220 805 215C817 212 828 201 824 189C820 175 808 166 799 156C788 146 778 135 765 130C762 129 758 128 755 129Z"], median:[[142,338],[222,380],[756,167],[786,192],[678,245],[518,431],[482,581],[531,734],[759,888]] }
+  ],
+  'で': [
+    { outline:["M756 172C740 173 730 187 718 196C700 206 681 211 662 219C533 264 404 308 274 350C250 358 226 367 201 372C183 376 163 375 146 367C138 364 126 370 127 380C129 392 139 399 146 408C164 427 187 444 213 447C234 447 251 434 269 426C333 394 400 367 466 340C530 314 594 289 658 265C636 289 613 312 592 336C556 375 521 416 498 463C469 520 455 584 464 647C471 695 490 743 524 778C550 806 581 829 612 851C645 873 681 891 719 903C734 906 752 908 765 898C776 887 774 870 767 858C762 844 757 827 742 820C715 808 684 808 658 795C612 775 573 742 543 703C527 682 518 657 514 632C507 592 512 550 529 513C547 467 574 425 608 390C635 360 665 332 696 306C727 282 763 265 801 259C812 257 824 250 824 238C824 223 811 214 802 203C790 192 778 180 763 173C761 173 759 172 756 172Z"], median:[[142,378],[222,420],[756,207],[786,232],[678,285],[518,461],[482,601],[531,754],[759,888]] },
+    { outline:["M799 110C790 111 787 126 795 130C809 141 824 150 836 163C857 185 871 213 889 237C896 245 911 249 919 240C930 228 927 211 925 197C922 175 910 153 890 142C867 128 841 120 815 112C810 111 805 111 799 110Z"], median:[[799,124],[883,178],[899,242]] },
+    { outline:["M867 42C858 41 855 57 863 61C878 72 894 81 906 96C926 118 941 145 958 170C966 179 982 180 989 169C1000 155 995 136 992 120C987 101 976 82 957 72C933 58 905 49 878 42C874 42 871 41 867 42Z"], median:[[868,54],[947,110],[969,172]] }
+  ],
+  'と': [
+    { outline:["M253 133C242 134 214 141 210 151C205 162 216 173 227 176C241 179 254 189 263 202C274 221 280 242 288 263C319 344 350 426 380 508C387 526 432 489 425 471C391 370 335 195 335 166C335 132 276 131 253 133Z"], median:[[221,157],[299,181],[407,492]] },
+    { outline:["M682 225C662 226 653 238 662 247C681 264 663 287 657 292C596 341 531 386 470 436C453 449 441 457 425 471C395 496 395 496 380 508C362 522 347 537 333 552C298 586 264 622 243 667C222 710 221 765 246 808C262 837 290 857 321 870C373 891 430 896 486 900C552 904 618 903 683 899C710 896 737 896 764 889C774 886 787 881 792 870C795 859 791 848 784 842C769 829 753 818 735 812C717 805 697 810 679 816C621 832 561 832 501 834C448 835 395 832 344 816C325 810 307 799 296 782C285 764 283 742 286 723C290 683 315 649 342 621C390 570 442 529 499 488C563 440 633 394 703 353C724 340 754 329 772 324C785 320 793 308 790 295C784 277 765 261 752 251C730 235 712 223 682 225Z"], median:[[675,242],[763,289],[408,522],[289,647],[259,718],[262,782],[286,818],[410,861],[775,865]] }
+  ]
+};
+
+// Nuqtalar ro'yxatidan silliq SVG path (kvadratik Bezier orqali) yasaydi - faqat
+// chizish animatsiyasi (median chiziq) uchun ishlatiladi, HARFNING KO'RINISHI esa
+// yuqoridagi haqiqiy "outline" (qalam yo'li) orqali clip-path bilan ta'minlanadi.
+function smoothPathFromPoints(pts) {
+  if (pts.length === 1) return `M${pts[0][0]},${pts[0][1]}`;
+  if (pts.length === 2) return `M${pts[0][0]},${pts[0][1]} L${pts[1][0]},${pts[1][1]}`;
+  let d = `M${pts[0][0]},${pts[0][1]}`;
+  for (let i = 1; i < pts.length - 1; i++) {
+    const mx = (pts[i][0] + pts[i+1][0]) / 2;
+    const my = (pts[i][1] + pts[i+1][1]) / 2;
+    d += ` Q${pts[i][0]},${pts[i][1]} ${mx},${my}`;
+  }
+  const last = pts[pts.length - 1];
+  d += ` L${last[0]},${last[1]}`;
+  return d;
+}
+
+function loadStrokesForFace2(char, forIdx) {
+  const strokes = STROKE_DATA[char];
+  if (forIdx !== curIdx) return;
+  if (!strokes) {
+    const label = document.querySelector('.f2-trace-label');
+    if (label) label.insertAdjacentHTML('beforebegin', '<div style="font-size:10px;color:#b09a6a;margin-top:6px;position:relative;z-index:2;">(strok animatsiyasi tez orada qo\'shiladi)</div>');
+    return;
+  }
+
+  const dList = strokes.map(s => smoothPathFromPoints(s.median));
+  const viewBox = '0 0 1024 1024';
+  const vbW = 1024;
+
+  const slot = document.getElementById('f2CharSlot');
+  if (!slot) return;
+  const nums = dList.map((_, i) => `<div class="stroke-num" id="sNum${i}">${i+1}</div>`).join('');
+  // Ikki xil manba: 1) HAQIQIY shrift konturi (outline) bor belgilar - to'g'ridan-to'g'ri
+  // TO'LDIRILADI (fill), aniqligi 100%. 2) outline yo'q belgilar (rasmdagi tartibga
+  // qarab qo'lda chizilgan) - qalin, yumaloq uchli chiziq sifatida chiziladi.
+  const fillsHtml = strokes.map((s,i) => {
+    const color = STROKE_COLORS[i % STROKE_COLORS.length];
+    if (s.outline && s.outline.length) {
+      return s.outline.map(d => `<path class="stroke-fill" data-stroke="${i}" d="${firstSubpath(d)}" fill="${color}" fill-opacity="0"/>`).join('');
+    }
+    return `<path class="stroke-fill stroke-drawn" data-stroke="${i}" d="${dList[i]}" fill="none" stroke="${color}" stroke-width="86" stroke-linecap="round" stroke-linejoin="round" opacity="0"/>`;
+  }).join('');
+  slot.outerHTML = `
+    <div class="hw-svg-box"><svg viewBox="${viewBox}" id="strokeSvg">
+      <g id="strokeGroup">${fillsHtml}</g>
+      ${dList.map((d,i) => `<path id="strokeMedian${i}" d="${d}" fill="none" stroke="none"/>`).join('')}
+    </svg></div>
+    <div class="stroke-nums" id="strokeNums">${nums}</div>
+    <button class="f2-replay" id="s2ReplayBtn">▶ Boshidan ko'rsatish</button>`;
+
+  // ①②③ rasmidagidek - har chiziq boshiga raqamli doira + yo'nalish o'qi qo'yamiz
+  buildStrokeOrderBadges(dList.length, vbW);
+
+  setTimeout(() => animateStrokes(dList.length), 200);
+  document.getElementById('s2ReplayBtn').addEventListener('click', () => animateStrokes(dList.length));
+}
+
+// Har bir chiziqning boshlanish nuqtasiga: kichik doira ichida tartib raqami + shu nuqtaga
+// kiruvchi qisqa o'q (①②③ rasmidagidek), rangi shtrixning rangi bilan bir xil.
+function buildStrokeOrderBadges(count, vbW) {
+  const svg = document.getElementById('strokeSvg');
+  if (!svg) return;
+  const paths = [];
+  for (let i = 0; i < count; i++) {
+    const p = document.getElementById('strokeMedian' + i);
+    if (p) paths.push(p);
+  }
+  const ns = 'http://www.w3.org/2000/svg';
+  const r = vbW * 0.075;          // doira radiusi
+  const off = vbW * 0.14;         // doira markazi shtrix boshidan qancha "tashqarida" tursin
+
+  paths.forEach((path, i) => {
+    const len = path.getTotalLength();
+    if (!len) return;
+    const p0 = path.getPointAtLength(0);
+    const p1 = path.getPointAtLength(Math.min(len, Math.max(len * 0.12, vbW * 0.05)));
+    let ang = Math.atan2(p1.y - p0.y, p1.x - p0.x);
+    if (!isFinite(ang)) ang = -Math.PI / 2;
+    const cx = p0.x - Math.cos(ang) * off;
+    const cy = p0.y - Math.sin(ang) * off;
+    const color = STROKE_COLORS[i % STROKE_COLORS.length];
+
+    // qisqa o'q: doira chetidan shtrix boshigacha
+    const ax1 = cx + Math.cos(ang) * r, ay1 = cy + Math.sin(ang) * r;
+    const ax2 = p0.x - Math.cos(ang) * (vbW * 0.02), ay2 = p0.y - Math.sin(ang) * (vbW * 0.02);
+    const tipX = p0.x, tipY = p0.y;
+    const perp = ang + Math.PI / 2, hw = vbW * 0.022;
+    const b1x = ax2 + Math.cos(perp) * hw, b1y = ay2 + Math.sin(perp) * hw;
+    const b2x = ax2 - Math.cos(perp) * hw, b2y = ay2 - Math.sin(perp) * hw;
+
+    const g = document.createElementNS(ns, 'g');
+    g.setAttribute('class', 'so-badge');
+    g.setAttribute('id', 'soBadge' + i);
+    g.innerHTML = `
+      <line x1="${ax1.toFixed(1)}" y1="${ay1.toFixed(1)}" x2="${ax2.toFixed(1)}" y2="${ay2.toFixed(1)}" stroke="${color}" stroke-width="${(vbW*0.016).toFixed(1)}" stroke-linecap="round"/>
+      <polygon points="${tipX.toFixed(1)},${tipY.toFixed(1)} ${b1x.toFixed(1)},${b1y.toFixed(1)} ${b2x.toFixed(1)},${b2y.toFixed(1)}" fill="${color}"/>
+      <circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${r.toFixed(1)}" fill="#fff" stroke="${color}" stroke-width="${(vbW*0.014).toFixed(1)}"/>
+      <text x="${cx.toFixed(1)}" y="${cy.toFixed(1)}" font-size="${(r*1.15).toFixed(1)}" fill="${color}" font-weight="900" text-anchor="middle" dominant-baseline="central">${i+1}</text>`;
+    svg.appendChild(g);
+  });
+}
+
+function animateStrokes(count) {
+  const svg = document.getElementById('strokeSvg');
+  if (!svg) return;
+  const allFills = svg.querySelectorAll('#strokeGroup path.stroke-fill');
+
+  // Barchasini boshlangich holatga qaytaramiz
+  allFills.forEach(p => {
+    p.style.transition = 'none';
+    if (p.classList.contains('stroke-drawn')) { p.style.opacity = '0'; }
+    else { p.style.fillOpacity = '0'; p.style.opacity = '1'; }
+  });
+  for (let i = 0; i < count; i++) {
+    const badge = document.getElementById('sNum' + i);
+    if (badge) { badge.classList.remove('active','done'); }
+    const soBadge = document.getElementById('soBadge' + i);
+    if (soBadge) { soBadge.style.opacity = '0.5'; soBadge.classList.remove('so-active'); }
+  }
+  svg.getBoundingClientRect(); // reflow
+
+  const STEP_GAP = 1150; // har chiziq uchun ajratilgan umumiy vaqt (sekinroq, aniq korinishi uchun)
+  for (let i = 0; i < count; i++) {
+    const pieces = svg.querySelectorAll(`#strokeGroup path.stroke-fill[data-stroke="${i}"]`);
+    setTimeout(() => {
+      const badge = document.getElementById('sNum' + i);
+      if (badge) badge.classList.add('active');
+      const soBadge = document.getElementById('soBadge' + i);
+      if (soBadge) { soBadge.style.opacity = '1'; soBadge.classList.add('so-active'); }
+      pieces.forEach(p => {
+        const isDrawn = p.classList.contains('stroke-drawn');
+        p.style.transition = (isDrawn ? 'opacity' : 'fill-opacity') + ' .55s ease';
+        if (isDrawn) p.style.opacity = '1'; else p.style.fillOpacity = '1';
+      });
+      setTimeout(() => {
+        if (badge) { badge.classList.remove('active'); badge.classList.add('done'); }
+      }, 550);
+    }, i * STEP_GAP + 150);
+  }
+}
+
+/* ================== ERKIN CHIZISH (tekshiruvsiz, tashqi manba yoq) ================== */
+function setupTraceCanvas(guideChar) {
+  const canvas = document.getElementById('traceCanvas');
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0,0,220,220);
+  ctx.font = '140px "Noto Serif JP", serif';
+  ctx.fillStyle = 'rgba(33,31,46,0.13)';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText(guideChar, 110, 118);
+  ctx.strokeStyle = '#c0483a'; ctx.lineWidth = 6; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+
+  let drawing = false;
+  function pos(e) {
+    const r = canvas.getBoundingClientRect();
+    const x = (e.touches ? e.touches[0].clientX : e.clientX);
+    const y = (e.touches ? e.touches[0].clientY : e.clientY);
+    return { x: (x - r.left) * (220/r.width), y: (y - r.top) * (220/r.height) };
+  }
+  function onDown(e) {
+    drawing = true; const p = pos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y);
+    s2Done = true; updateMainBtnState();
+    e.preventDefault();
+  }
+  function onMove(e) { if (!drawing) return; const p = pos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); e.preventDefault(); }
+  function onUp() { drawing = false; }
+
+  canvas.onpointerdown = onDown; canvas.onpointermove = onMove; canvas.onpointerup = onUp; canvas.onpointerleave = onUp;
+
+  document.getElementById('clearTraceBtn').onclick = () => setupTraceCanvas(guideChar);
+}
+
+/* ================== ZARIKNI AYLANTIRISH ================== */
+function renderCubeState() {
+  // Doimiy izometrik burchak (tepa + o'ng qirralar ko'rinishi uchun) + tomon almashtirish burilishi
+  document.getElementById('diceCube').style.transform = `rotateX(-15deg) rotateY(${-side*90 - 20}deg)`;
+
+  const row = document.getElementById('diceProgressRow');
+  row.innerHTML = [0,1,2,3].map(n => {
+    let cls = ''; if (n < side) cls='done'; else if (n===side) cls='active';
+    const sep = n < 3 ? '<div class="dp-sep"></div>' : '';
+    return `<div class="dp-node ${cls}">${n+1}</div>${sep}`;
+  }).join('');
+
+  document.getElementById('topBadgeNum').textContent = side + 1;
+  document.getElementById('topBadgeLabel').textContent = FACE_TAGS[side];
+
+  updateMainBtnState();
+}
+function updateMainBtnState() {
+  const btn = document.getElementById('diceMainBtn');
+  const textEl = document.getElementById('dmbTextLabel');
+  const subEl = document.getElementById('dmbSub');
+  if (side === 0) { btn.disabled = false; textEl.textContent = 'Aylantirish'; subEl.textContent = '(drag yoki tugma)'; }
+  else if (side === 1) { btn.disabled = !s2Done; textEl.textContent = s2Done ? 'Aylantirish' : "Avval yozib ko'ring"; subEl.textContent = s2Done ? '(drag yoki tugma)' : ''; }
+  else if (side === 2) { btn.disabled = !s3Answered; textEl.textContent = 'Aylantirish'; subEl.textContent = '(drag yoki tugma)'; }
+  else if (side === 3) { btn.disabled = !s4Answered; textEl.textContent = 'Yakunlash ✓'; subEl.textContent = ''; }
+}
+function goSide(delta) {
+  const newSide = side + delta;
+  if (newSide < 0) return;
+  if (newSide > 3) { finishCharacter(); return; }
+  if (delta > 0) {
+    if (side === 0) progress[curIdx].s1 = true;
+    if (side === 1 && s2Done) progress[curIdx].s2 = true;
+    if (side === 2 && s3Answered) progress[curIdx].s3 = true;
+  }
+  side = newSide; renderCubeState();
+}
+document.getElementById('diceMainBtn').addEventListener('click', () => {
+  if (side === 3) { progress[curIdx].s4 = true; finishCharacter(); return; }
+  goSide(1);
+});
+document.getElementById('diceArrowRight').addEventListener('click', () => goSide(1));
+document.getElementById('diceArrowLeft').addEventListener('click', () => goSide(-1));
+
+let sx = null;
+document.querySelector('.dice-scene').addEventListener('pointerdown', e => { if(e.target.id !== 'traceCanvas') sx = e.clientX; });
+document.querySelector('.dice-scene').addEventListener('pointerup', e => {
+  if (sx === null) return;
+  const dx = e.clientX - sx;
+  if (Math.abs(dx) > 50) goSide(dx < 0 ? 1 : -1);
+  sx = null;
+});
+
+function finishCharacter() {
+  const c = CHARS[curIdx];
+  document.getElementById('hiraganaDiceScreen').classList.add('hidden');
+  document.getElementById('masteredScreen').classList.remove('hidden');
+  document.getElementById('mCharDisplay').textContent = c.char;
+  document.getElementById('mSubText').textContent = `Ajoyib! Siz "${c.char}" (${c.romaji}) belgisini o'zlashtirdingiz.`;
+}
+document.getElementById('masteredNextBtn').addEventListener('click', () => {
+  document.getElementById('masteredScreen').classList.add('hidden');
+  document.getElementById('hiraganaJourneyScreen').classList.remove('hidden');
+  renderJourney();
+  if (curIdx + 1 < CHARS.length) setTimeout(() => openCharacter(curIdx + 1), 300);
+});
+
+/* ================== ASOSIY SAYTGA ULASH (Nippon.uz bosh sahifasi) ================== */
+function showHiraganaJourneyScreen() {
+  lessonListScreen.classList.add('hidden');
+  document.getElementById('hiraganaJourneyScreen').classList.remove('hidden');
+  renderJourney();
+}
+document.getElementById('hiraganaBackBtn').addEventListener('click', () => {
+  document.getElementById('hiraganaJourneyScreen').classList.add('hidden');
+  lessonListScreen.classList.remove('hidden');
+});
+const hiraganaCoverCard = document.getElementById('hiraganaCoverCard');
+if (hiraganaCoverCard) hiraganaCoverCard.addEventListener('click', showHiraganaJourneyScreen);
+</script>
+
+</body>
+</html>
         <div class="frp-label">\ud83c\uddef\ud83c\uddf5 Matn</div><div class="frp-jp">${escapeHtml(scriptText)}</div>
         <div class="frp-label">\ud83c\uddfa\ud83c\uddff Tarjima</div><div class="frp-uz">${escapeHtml(translationText)}</div>
       </div>`;
