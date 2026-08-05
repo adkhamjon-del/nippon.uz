@@ -623,6 +623,15 @@
   /* GRAMMATIKA DARSI EKRANI */
   .grammar-video-wrap { position: relative; width: 100%; padding-top: 56.25%; border-radius: 16px; overflow: hidden; margin-bottom: 16px; background: #000; }
   .grammar-video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+  .grammar-video-warn {
+    background: rgba(192,72,58,0.08); border: 1.5px solid rgba(192,72,58,0.25); border-radius: 12px;
+    padding: 10px 14px; font-size: 12.5px; font-weight: 700; color: var(--shu);
+    margin-bottom: 10px; line-height: 1.5;
+  }
+  .grammar-video-warn-bottom {
+    background: var(--ai-blue-soft); border-color: rgba(45,90,114,0.25); color: var(--ai-blue);
+    margin-bottom: 16px; margin-top: -6px;
+  }
   .grammar-guide-frame { width: 100%; height: 1400px; border: none; border-radius: 16px; margin-bottom: 16px; }
   .grammar-complete-btn {
     display: block; width: 100%; background: var(--shu); color: #fff; border: none; border-radius: 14px;
@@ -1474,9 +1483,15 @@ body { background:linear-gradient(180deg,#efe9e0,var(--washi)); font-family:'Zen
 
   <!-- GRAMMATIKA DARSI EKRANI (video + doska qollanma) -->
   <div id="grammarScreen" class="hidden">
+    <div class="grammar-video-warn hidden" id="grammarVideoWarnTop">
+      ⚠️ Server muammosi sababli video darsliklar hali yuklanmadi.
+    </div>
     <div class="grammar-video-wrap">
       <iframe id="grammarVideoFrame" class="grammar-video" src="" title="Video dars" frameborder="0"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
+    <div class="grammar-video-warn grammar-video-warn-bottom hidden" id="grammarVideoWarnBottom">
+      💡 Hozircha qo'llanmadan foydalanishingizni tavsiya qilamiz.
     </div>
     <iframe id="grammarGuideFrame" class="grammar-guide-frame" srcdoc=""></iframe>
     <button class="grammar-complete-btn" id="grammarCompleteBtn">✓ Darsni tugatdim</button>
@@ -2675,13 +2690,13 @@ function renderLevelContent() {
 
   if (selectedLevel === 'N5') {
     const gbInfo = getGrammarBankUnlockInfo();
-    if (gbInfo.visible) {
+    if (gbInfo.visible && currentTier === 'pro') {
       const gbStatusTxt = gbInfo.unlockedCount >= 132 ? "132/132 ochiq — to'liq bank sizniki! 🔓" : `🔒 ${gbInfo.unlockedCount}/132 ochilgan`;
       html += `
         <div class="gb-entry-card" id="gbEntryCta">
           <div class="gb-entry-emoji">📚</div>
           <div>
-            <div class="gb-entry-title">N5 Grammatika Banki</div>
+            <div class="gb-entry-title">N5 Grammatika Banki 💎</div>
             <div class="gb-entry-sub">${gbStatusTxt}</div>
           </div>
         </div>`;
@@ -2800,6 +2815,20 @@ function getGrammarBankLessonByDars(darsNum) {
 }
 
 function openGrammarBankScreen() {
+  if (currentTier !== 'pro') {
+    document.getElementById('paywallHeading').textContent = 'N5 Grammatika Banki faqat Premium obunada';
+    document.getElementById('tierOptions').innerHTML = `
+      <div class="tier-card tier-pro">
+        <div class="tier-card-top">
+          <div class="tier-card-name">💎 Premium obuna</div>
+          <div class="tier-card-price">250 000 so'm</div>
+        </div>
+        <div class="tier-card-desc">N5 dan N1 gacha barcha darslar + to'liq Grammatika Banki + mentorlik community</div>
+      </div>`;
+    document.getElementById('paywallCode').textContent = getPaymentCode();
+    document.getElementById('paywallOverlay').classList.add('open');
+    return;
+  }
   lessonListScreen.classList.add('hidden');
   grammarBankScreen.classList.remove('hidden');
   document.getElementById('gbSearchInput').value = '';
@@ -3169,6 +3198,8 @@ async function openGrammarLesson(lesson) {
 
   const isReview = lesson.lesson_subtype === 'review';
   document.querySelector('.grammar-video-wrap').classList.toggle('hidden', isReview);
+  document.getElementById('grammarVideoWarnTop').classList.add('hidden');
+  document.getElementById('grammarVideoWarnBottom').classList.add('hidden');
 
   // Tugmani 60 soniyaga qulflaymiz - video/qollanmani korish uchun minimal vaqt
   const btn = document.getElementById('grammarCompleteBtn');
@@ -3201,7 +3232,12 @@ async function openGrammarLesson(lesson) {
   }
 
   if (!isReview) {
-    document.getElementById('grammarVideoFrame').src = `https://www.youtube.com/embed/${data.video_id}`;
+    if (data.video_id) {
+      document.getElementById('grammarVideoFrame').src = `https://www.youtube.com/embed/${data.video_id}`;
+    } else {
+      document.getElementById('grammarVideoWarnTop').classList.remove('hidden');
+      document.getElementById('grammarVideoWarnBottom').classList.remove('hidden');
+    }
   }
 
   let guideHtml = data.guide_html || '';
