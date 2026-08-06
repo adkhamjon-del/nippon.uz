@@ -1332,6 +1332,16 @@ body { background:linear-gradient(180deg,#efe9e0,var(--washi)); font-family:'Zen
 .hcc-badge-new { font-size: 9px; font-weight: 900; letter-spacing: 0.04em; color: #fff; background: var(--shu); padding: 2px 6px; border-radius: 100px; }
 .hcc-sub { font-size: 11.5px; color: #8a8070; margin-top: 2px; }
 .hcc-chevron { font-size: 20px; color: #c9bfa8; flex-shrink: 0; }
+.kana-choice-wrap { padding: 4px 20px 24px; display: flex; flex-direction: column; gap: 14px; max-width: 480px; margin: 0 auto; }
+.kana-choice-card {
+  display: flex; align-items: center; gap: 16px;
+  background: linear-gradient(135deg, var(--paper), #faf6ec);
+  border: 1px solid var(--line); border-radius: 20px;
+  padding: 18px 18px; cursor: pointer; box-shadow: 0 4px 14px rgba(156,122,53,0.12);
+}
+.kana-choice-card .hcc-die { width: 64px; height: 64px; font-size: 30px; }
+.kana-choice-card .hcc-title { font-size: 16.5px; }
+.kana-choice-card .hcc-sub { font-size: 12.5px; }
 </style>
 </head>
 <body>
@@ -1845,12 +1855,40 @@ body { background:linear-gradient(180deg,#efe9e0,var(--washi)); font-family:'Zen
 </div>
 <div class="phone">
 
+  <!-- HIRAGANA / KATAKANA TANLASH EKRANI -->
+  <div id="kanaChoiceScreen" class="hidden">
+    <div class="j-header">
+      <div class="journey-back" id="kanaChoiceBackBtn" style="text-align:left;max-width:480px;margin:0 auto 8px;">← Bosh sahifa</div>
+      <div class="emoji">🀄</div>
+      <h1>Qaysi alifboni o'rganasiz?</h1>
+      <div class="sub">Zarikni aylantirib, ko'rish + eshitish + yozish orqali mashq qiling</div>
+    </div>
+    <div class="kana-choice-wrap">
+      <div class="kana-choice-card" id="kcHiragana">
+        <div class="hcc-die">あ</div>
+        <div class="hcc-info">
+          <div class="hcc-title">Hiragana</div>
+          <div class="hcc-sub">ひらがな — 58 ta harf</div>
+        </div>
+        <div class="hcc-chevron">›</div>
+      </div>
+      <div class="kana-choice-card" id="kcKatakana">
+        <div class="hcc-die">ア</div>
+        <div class="hcc-info">
+          <div class="hcc-title">Katakana <span class="hcc-badge-new">YANGI</span></div>
+          <div class="hcc-sub">カタカナ — chet so'zlar uchun</div>
+        </div>
+        <div class="hcc-chevron">›</div>
+      </div>
+    </div>
+  </div>
+
   <div id="hiraganaJourneyScreen" class="hidden">
     <div class="j-header">
-      <div class="journey-back" id="hiraganaBackBtn" style="text-align:left;max-width:480px;margin:0 auto 8px;">← Bosh sahifa</div>
-      <div class="emoji">🌱</div>
-      <h1>Hiragana sayohati</h1>
-      <div class="sub">Barcha 46 ta asosiy harf + 12 ta dakuten (jami 58 ta), 32 tasida to'liq strok animatsiyasi</div>
+      <div class="journey-back" id="hiraganaBackBtn" style="text-align:left;max-width:480px;margin:0 auto 8px;">← Orqaga</div>
+      <div class="emoji" id="jHeaderEmoji">🌱</div>
+      <h1 id="jHeaderTitle">Hiragana sayohati</h1>
+      <div class="sub" id="jHeaderSub">Barcha 46 ta asosiy harf + 12 ta dakuten (jami 58 ta), 32 tasida to'liq strok animatsiyasi</div>
     </div>
     <div class="j-progress-wrap">
       <div class="j-progress-label"><span>Progress</span><span id="jProgressText">0 / 5</span></div>
@@ -5599,7 +5637,7 @@ initApp();
 /* ================== MA'LUMOT ================== */
 // stroke: faqat 'a' uchun togri tekshirilgan SVG chiziq yoli mavjud.
 // Qolganlari uchun hozircha aniq chiziq malumoti yoq - shuning uchun animatsiyasiz, halol korsatiladi.
-const CHARS = [
+const HIRAGANA_CHARS = [
   { char:'あ', romaji:'a', word:'あめ', wordUz:"yomg'ir" },
   { char:'い', romaji:'i', word:'いぬ', wordUz:'it' },
   { char:'う', romaji:'u', word:'うみ', wordUz:'dengiz' },
@@ -5659,6 +5697,19 @@ const CHARS = [
   { char:'を', romaji:'wo', word:'を', wordUz:"zarracha (grammatik belgi)" },
   { char:'ん', romaji:'n', word:'ん', wordUz:"so'z oxiridagi tovush" },
 ];
+
+const KATAKANA_CHARS = [
+  { char:'ア', romaji:'a', word:'アイス', wordUz:'muzqaymoq' },
+  { char:'イ', romaji:'i', word:'インク', wordUz:'siyoh' },
+  { char:'ウ', romaji:'u', word:'ウール', wordUz:'jun (mato)' },
+  { char:'エ', romaji:'e', word:'エアコン', wordUz:'konditsioner' },
+  { char:'オ', romaji:'o', word:'オレンジ', wordUz:'apelsin' },
+  { char:'カ', romaji:'ka', word:'カメラ', wordUz:'fotoapparat' },
+  { char:'キ', romaji:'ki', word:'キロ', wordUz:'kilogramm' },
+];
+
+// Hozircha faol alifbo - Hiragana yoki Katakana tanlanganda shu almashadi
+let CHARS = HIRAGANA_CHARS;
 
 let progress = CHARS.map(() => ({ s1:false, s2:false, s3:false, s4:false }));
 let curIdx = 0, side = 0, s2Done = false, s3Answered = false, s4Answered = false;
@@ -5815,7 +5866,7 @@ const STROKE_COLORS = ['#a68a2e', '#8b2f2f', '#2f7d6b', '#2d5a72', '#7a4fa0', '#
 //  - outline: qalamning HAQIQIY qalinlik shakli (rasmiy manbadan, clip-path sifatida)
 //  - median: chizishni animatsiya qilish uchun markaziy chiziq
 // Manba: kana-svg-data (github.com/hy2k/kana-svg-data) -> animCJK (github.com/parsimonhi/animCJK)
-const STROKE_DATA = {
+const HIRAGANA_STROKE_DATA = {
   'あ': [
     { outline:["M660 211C637 211 616 221 597 232C570 245 542 252 514 261C464 274 414 285 363 291C319 294 273 293 231 278C211 270 195 254 174 248C167 248 162 257 167 263C181 293 209 313 239 325C284 343 335 344 384 340C462 332 538 307 615 290C639 284 665 281 686 267C695 261 705 254 709 244C712 234 706 224 697 221C685 215 672 211 660 211Z"], median:[[174,258],[251,308],[440,306],[697,241]] },
     { outline:["M334 128C328 130 318 134 320 143C325 154 337 158 346 165C356 171 369 178 369 192C370 213 365 233 363 254C347 370 335 488 345 606C349 642 354 679 366 715C376 742 389 768 410 788C422 797 441 795 449 781C459 764 457 743 448 726C439 710 424 699 415 682C402 655 399 624 396 595C388 503 397 411 415 321C422 287 429 252 447 223C454 208 462 192 459 175C455 160 441 152 427 147C398 136 366 130 334 128Z"], median:[[331,137],[420,185],[373,388],[367,632],[409,728],[431,777]] },
@@ -5992,6 +6043,44 @@ const STROKE_DATA = {
     { outline:["M682 225C662 226 653 238 662 247C681 264 663 287 657 292C596 341 531 386 470 436C453 449 441 457 425 471C395 496 395 496 380 508C362 522 347 537 333 552C298 586 264 622 243 667C222 710 221 765 246 808C262 837 290 857 321 870C373 891 430 896 486 900C552 904 618 903 683 899C710 896 737 896 764 889C774 886 787 881 792 870C795 859 791 848 784 842C769 829 753 818 735 812C717 805 697 810 679 816C621 832 561 832 501 834C448 835 395 832 344 816C325 810 307 799 296 782C285 764 283 742 286 723C290 683 315 649 342 621C390 570 442 529 499 488C563 440 633 394 703 353C724 340 754 329 772 324C785 320 793 308 790 295C784 277 765 261 752 251C730 235 712 223 682 225Z"], median:[[675,242],[763,289],[408,522],[289,647],[259,718],[262,782],[286,818],[410,861],[775,865]] }
   ]
 };
+
+const KATAKANA_STROKE_DATA = {
+  'ア': [
+    { outline:["M773 121C757 122 741 126 727 130C595 161 468 189 331 216C298 222 264 227 230 228C196 228 162 221 127 223C121 223 109 226 110 234C111 244 118 250 124 258C138 277 158 294 182 298C203 301 224 299 245 295C313 279 381 257 448 238C539 212 630 181 725 176C739 175 756 176 765 189C773 201 767 219 761 232C749 255 731 275 713 294C669 340 565 420 565 420C555 427 554 463 565 457C565 457 680 375 739 333C781 303 825 274 867 243C876 236 887 231 889 220C890 207 882 196 875 188C859 167 839 152 818 138C805 128 789 120 773 121Z"], median:[[125, 239], [278, 249], [783, 144], [847, 221], [589, 426]] },
+    { outline:["M489 378C481 378 471 385 473 394C482 459 475 537 456 606C439 664 410 717 380 770C355 814 324 856 301 901C297 907 291 917 297 924C302 929 311 923 316 920C342 901 363 876 384 852C416 814 447 774 472 730C507 665 531 594 549 522C554 500 561 472 565 457C567 445 571 431 565 420C557 406 531 386 509 381C501 379 496 378 489 378Z"], median:[[484, 388], [519, 444], [431, 755], [304, 917]] },
+  ],
+  'イ': [
+    { outline:["M681 84C672 83 665 92 668 100C668 112 661 123 657 133C635 175 599 207 567 241C494 316 411 379 330 444C274 487 213 523 156 563C150 569 149 581 157 584C172 589 186 579 199 574C294 530 386 476 467 410C479 401 490 393 502 384C531 359 531 359 546 347C577 320 606 295 637 268C666 245 695 221 727 202C742 194 758 189 769 176C773 166 765 155 760 146C748 126 730 110 711 95C703 88 692 83 681 84Z"], median:[[685, 105], [721, 166], [292, 506], [172, 575]] },
+    { outline:["M502 384C508 430 508 477 511 524C512 595 512 667 499 737C492 765 483 793 484 822C488 854 500 884 512 913C515 919 520 926 527 928C539 925 545 912 551 903C562 884 572 864 574 842C582 784 573 725 572 667C570 626 572 585 572 544C572 490 573 437 569 384C565 369 555 357 546 347C532 333 498 365 502 384Z"], median:[[535, 363], [531, 912]] },
+  ],
+  'ウ': [
+    { outline:["M445 95C442 118 456 139 461 162C469 200 471 252 473 291C473 308 524 298 524 281C522 253 526 216 532 191C536 172 548 153 545 133C542 120 528 112 517 106C485 89 447 75 445 95Z"], median:[[458, 99], [503, 151], [483, 281]] },
+    { outline:["M184 298C178 298 168 301 169 309C169 327 178 344 183 361C191 396 196 432 200 467C203 496 209 528 230 550C237 558 247 566 258 570C265 571 271 566 272 558C275 529 272 500 266 473C257 430 249 412 242 369C239 355 243 338 234 327C227 317 203 298 184 298Z"], median:[[182, 308], [258, 559]] },
+    { outline:["M735 220C711 224 689 234 667 242C619 257 554 275 524 281C490 288 490 288 473 291C425 300 376 307 328 314C298 318 264 323 234 327C220 329 228 369 242 369C282 370 326 368 366 359C455 338 546 318 637 308C665 304 693 301 722 306C731 307 742 313 745 325C749 342 742 361 736 378C717 430 691 478 665 527C607 630 553 716 374 895C349 919 349 937 384 916C522 830 647 675 679 628C722 563 754 494 790 427C802 402 816 378 836 359C843 350 855 341 856 329C856 310 842 295 832 283C810 258 785 236 755 224C749 221 741 218 735 220Z"], median:[[243, 333], [326, 336], [758, 251], [820, 318], [530, 776], [373, 915]] },
+  ],
+  'エ': [
+    { outline:["M524 407C565 401 592 399 636 392C673 386 694 380 700 375C705 371 707 366 704 361C701 353 690 347 672 342C654 336 636 338 618 343C576 356 548 363 502 371C452 380 413 382 355 386C332 387 329 394 344 406C367 422 396 427 432 421C451 417 463 416 476 414C508 409 508 409 524 407Z"], median:[[340, 394], [417, 402], [701, 362]] },
+    { outline:["M525 682C540 513 547 469 552 454C559 443 559 434 552 426C542 418 533 412 524 407C510 399 468 400 476 414C486 431 491 450 490 472C488 554 489 593 487 686C487 699 525 695 525 682Z"], median:[[484, 417], [523, 447], [503, 683]] },
+    { outline:["M571 724C649 720 728 721 807 731C822 733 831 732 835 726C840 718 839 711 832 703C813 685 791 669 764 657C755 653 743 655 727 658C688 667 648 672 608 676C562 680 556 680 525 682C500 685 500 685 487 686C417 691 398 692 362 694C323 697 275 701 216 700C208 700 203 703 202 710C201 718 207 727 218 736C228 744 243 752 262 760C269 763 278 761 289 757C299 753 324 750 365 743C420 734 528 726 571 724Z"], median:[[205, 709], [273, 730], [750, 690], [835, 718]] },
+  ],
+  'オ': [
+    { outline:["M796 281C739 285 601 312 588 315C553 321 553 321 536 324C461 336 388 353 313 362C260 368 206 365 154 356C149 355 139 354 139 361C139 366 145 369 148 372C165 389 186 402 207 413C234 427 265 432 296 426C335 418 372 405 412 399C452 392 493 380 535 376C569 372 569 372 586 370C768 348 796 352 856 346C867 344 866 334 865 331C855 307 835 289 812 282C807 280 801 280 796 281Z"], median:[[149, 363], [272, 399], [791, 317], [860, 340.1]] },
+    { outline:["M523 107C514 114 515 118 516 124C519 150 528 174 530 201C532 241 536 283 536 324C535 359 535 359 535 376C536 457 536 457 536 497C536 550 537 603 538 664C538 698 540 732 538 766C536 780 534 794 526 806C516 818 499 819 484 815C462 807 421 771 421 788C421 801 464 845 487 873C499 889 504 894 522 913C529 920 539 919 548 907C568 879 588 850 598 816C603 797 598 776 596 756C590 697 588 637 588 578C587 508 583 439 586 370C587 333 587 333 588 315C592 262 605 204 625 177C628 171 629 164 624 159C598 133 580 120 550 107C542 103 528 101 523 107Z"], median:[[524, 116], [577, 167], [538, 904], [429, 792.1]] },
+    { outline:["M535 376C524 403 498 442 479 472C417 569 325 662 211 765C180 791 202 789 230 772C294 730 358 690 413 637C461 590 512 530 536 497C560 465 550 339 535 376Z"], median:[[530, 407], [407, 619], [272, 732], [207, 777.8]] },
+  ],
+  'カ': [
+    { outline:["M521 375Q600 360 679 352Q704 351 709 363Q718 382 712 430Q693 607 656 700Q637 758 617 776Q604 789 576 780Q539 768 505 756Q480 749 497 771Q546 826 573 867Q583 891 606 884Q628 883 654 853Q732 778 767 479Q774 412 801 374Q820 349 810 337Q792 315 751 297Q723 281 691 295Q621 320 527 339C488 346 488 346 468 350Q303 369 241 368Q216 364 216 378Q215 390 240 408Q271 432 303 422Q382 401 461 386C501 379 501 379 521 375Z"], median:[[221, 376], [287, 396], [711, 322], [760, 354], [710, 636], [659, 783], [594, 834], [499, 762]] },
+    { outline:["M461 386Q392 669 161 812Q142 825 123 840Q107 852 123 854Q139 855 182 838Q267 799 330 739Q402 676 449 582Q507 455 521 375C525 351 525 351 527 339Q558 183 573 155Q585 133 565 122Q507 80 474 90Q458 96 466 114Q496 177 468 350C463 374 463 374 461 386Z"], median:[[470, 97], [528, 158], [489, 391], [439, 537], [313, 721], [121, 848]] },
+  ],
+  'キ': [
+    { outline:["M707 258C659 267 646 276 601 294C546 314 429 354 288 366C235 370 240 376 271 401C291 416 316 417 339 415C476 399 671 340 758 301C765 297 776 289 773 279C768 267 755 263 743 260C732 257 718 255 707 258Z"], median:[[262, 375], [425, 372], [760, 271]] },
+    { outline:["M824 482C788 484 752 498 716 506C620 526 525 549 429 572C344 592 259 604 173 621C167 623 156 625 156 634C159 643 168 649 174 657C188 671 206 686 228 685C259 683 287 667 317 657C386 631 457 615 529 599C628 576 728 559 830 554C857 552 885 552 912 550C920 549 930 543 928 534C925 521 912 514 902 506C879 492 852 482 824 482Z"], median:[[164, 634], [810, 519], [919, 534]] },
+    { outline:["M444 109C429 110 424 120 426 129C432 157 452 168 456 203C469 266 477 330 485 394C495 477 503 560 511 643C515 681 513 730 511 758C507 802 508 833 526 869C533 883 545 907 563 911C573 912 579 899 582 890C589 863 583 834 581 808C572 688 557 571 544 452C536 380 527 308 525 236C526 220 524 202 533 188C538 179 546 168 540 158C531 145 516 138 504 130C486 120 466 109 444 109Z"], median:[[441, 126], [494, 161], [565, 902]] },
+  ],
+};
+
+// Hozircha faol alifboning strok ma'lumoti - Hiragana yoki Katakana tanlanganda almashadi
+let STROKE_DATA = HIRAGANA_STROKE_DATA;
 
 // Nuqtalar ro'yxatidan silliq SVG path (kvadratik Bezier orqali) yasaydi - faqat
 // chizish animatsiyasi (median chiziq) uchun ishlatiladi, HARFNING KO'RINISHI esa
@@ -6234,17 +6323,44 @@ document.getElementById('masteredNextBtn').addEventListener('click', () => {
 });
 
 /* ================== ASOSIY SAYTGA ULASH (Nippon.uz bosh sahifasi) ================== */
-function showHiraganaJourneyScreen() {
-  lessonListScreen.classList.add('hidden');
+/* Hiragana / Katakana tanlash + almashtirish tizimi */
+function selectKanaSet(kind) {
+  if (kind === 'katakana') {
+    CHARS = KATAKANA_CHARS;
+    STROKE_DATA = KATAKANA_STROKE_DATA;
+    document.getElementById('jHeaderEmoji').textContent = '🎌';
+    document.getElementById('jHeaderTitle').textContent = 'Katakana sayohati';
+    document.getElementById('jHeaderSub').textContent = "Chet so'zlarni yozishda ishlatiladigan alifbo (hozircha 7 ta harf, tez orada to'liq bo'ladi)";
+  } else {
+    CHARS = HIRAGANA_CHARS;
+    STROKE_DATA = HIRAGANA_STROKE_DATA;
+    document.getElementById('jHeaderEmoji').textContent = '🌱';
+    document.getElementById('jHeaderTitle').textContent = 'Hiragana sayohati';
+    document.getElementById('jHeaderSub').textContent = "Barcha 46 ta asosiy harf + 12 ta dakuten (jami 58 ta), 32 tasida to'liq strok animatsiyasi";
+  }
+  progress = CHARS.map(() => ({ s1:false, s2:false, s3:false, s4:false }));
+  curIdx = 0; side = 0; s2Done = false; s3Answered = false; s4Answered = false;
+
+  document.getElementById('kanaChoiceScreen').classList.add('hidden');
   document.getElementById('hiraganaJourneyScreen').classList.remove('hidden');
   renderJourney();
 }
-document.getElementById('hiraganaBackBtn').addEventListener('click', () => {
-  document.getElementById('hiraganaJourneyScreen').classList.add('hidden');
+function showKanaChoiceScreen() {
+  lessonListScreen.classList.add('hidden');
+  document.getElementById('kanaChoiceScreen').classList.remove('hidden');
+}
+document.getElementById('kanaChoiceBackBtn').addEventListener('click', () => {
+  document.getElementById('kanaChoiceScreen').classList.add('hidden');
   lessonListScreen.classList.remove('hidden');
 });
+document.getElementById('kcHiragana').addEventListener('click', () => selectKanaSet('hiragana'));
+document.getElementById('kcKatakana').addEventListener('click', () => selectKanaSet('katakana'));
+document.getElementById('hiraganaBackBtn').addEventListener('click', () => {
+  document.getElementById('hiraganaJourneyScreen').classList.add('hidden');
+  document.getElementById('kanaChoiceScreen').classList.remove('hidden');
+});
 const hiraganaCoverCard = document.getElementById('hiraganaCoverCard');
-if (hiraganaCoverCard) hiraganaCoverCard.addEventListener('click', showHiraganaJourneyScreen);
+if (hiraganaCoverCard) hiraganaCoverCard.addEventListener('click', showKanaChoiceScreen);
 </script>
 
 </body>
