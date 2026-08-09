@@ -2019,10 +2019,26 @@ async function withRetry(queryFn, label, retries = 2) {
     } catch (e) {
       lastErr = e;
     }
-    console.warn(`[${label}] ${i + 1}-urinish muvaffaqiyatsiz:`, lastErr);
+    console.warn(`[${label}] ${i + 1}-urinish muvaffaqiyatsiz: ${describeSupabaseError(lastErr)}`);
     if (i < retries) await new Promise(r => setTimeout(r, 700 * (i + 1)));
   }
   return { data: null, error: lastErr };
+}
+
+// Xato obyektini o'qiladigan matnga aylantiradi (mobil konsollarda "[object Object]"
+// ko'rinishining oldini oladi - Supabase/PostgREST xatolari message/details/hint/code
+// maydonlarida keladi).
+function describeSupabaseError(err) {
+  if (!err) return "noma'lum xato";
+  if (typeof err === 'string') return err;
+  const parts = [];
+  if (err.message) parts.push(err.message);
+  if (err.code) parts.push(`code=${err.code}`);
+  if (err.details) parts.push(`details=${err.details}`);
+  if (err.hint) parts.push(`hint=${err.hint}`);
+  if (err.status) parts.push(`status=${err.status}`);
+  if (parts.length) return parts.join(' | ');
+  try { return JSON.stringify(err); } catch (e) { return String(err); }
 }
 
 
@@ -2191,7 +2207,7 @@ async function loadLessonList() {
   );
 
   if (error) {
-    levelContent.innerHTML = `<div class="empty-msg">Ulanishda muammo bo'ldi 😕<br><br><button class="retry-btn" onclick="loadLessonList()">↻ Qayta urinish</button></div>`;
+    levelContent.innerHTML = `<div class="empty-msg">Ulanishda muammo bo'ldi 😕<br><br><span style="font-size:10.5px;color:#a89e91;word-break:break-word;">${escapeHtml(describeSupabaseError(error))}</span><br><br><button class="retry-btn" onclick="loadLessonList()">↻ Qayta urinish</button></div>`;
     return;
   }
   allLessons = data || [];
@@ -3021,7 +3037,14 @@ function renderJourneyMap() {
 /* ================== OPEN LESSON: fetch kanji + combos + questions ================== */
 async function openLesson(lesson) {
   if (!canAccessLesson(lesson)) {
-    showPaywall(lesson);
+    if (!currentUser) {
+      openGuestSignupPrompt(
+        "Bu darsni ochish uchun ro'yxatdan o'ting",
+        "Bepul hisob oching va o'qishni davom ettiring"
+      );
+    } else {
+      showPaywall(lesson);
+    }
     return;
   }
   currentLesson = lesson;
@@ -3845,7 +3868,16 @@ async function showDone() {
 }
 
 async function saveLessonCompletion() {
-  if (!currentUser || !currentLesson) return;
+  if (!currentLesson) return;
+  if (!currentUser) {
+    // Mehmon (login qilmagan) foydalanuvchi darsni tugatdi - progress saqlanmaydi,
+    // shuning uchun buni tushuntirib, ro'yxatdan o'tishni taklif qilamiz.
+    setTimeout(() => openGuestSignupPrompt(
+      "Ajoyib ish! 🎉",
+      "Progressingizni saqlash uchun bepul ro'yxatdan o'ting"
+    ), 400);
+    return;
+  }
   try {
     const wasAlreadyDone = completedLessonIds.has(currentLesson.id);
 
@@ -4282,6 +4314,17 @@ authSwitchLink.addEventListener('click', () => {
   setAuthMode(authMode === 'login' ? 'register' : 'login');
 });
 
+function openGuestSignupPrompt(title, sub) {
+  authPanel.classList.remove('mandatory'); // yopish mumkin - majburiy emas
+  authPanel.classList.add('open');
+  clearAuthMessages();
+  authFormView.classList.remove('hidden');
+  authUserView.classList.add('hidden');
+  setAuthMode('register');
+  authFormTitle.textContent = title;
+  authFormSub.textContent = sub;
+}
+
 function openAuthPanel() {
   authPanel.classList.add('open');
   clearAuthMessages();
@@ -4371,10 +4414,8 @@ logoutBtn.addEventListener('click', async () => {
   await supabaseClient.auth.signOut();
   currentUser = null;
   updateAuthUI();
-  currentCoins = 0;
-  updateCoinBadge();
   showLessonListScreen();
-  showAuthGate();
+  await proceedAsGuest(); // mehmon rejimiga qaytadi - majburiy login emas
 });
 
 function updateAuthUI() {
@@ -5621,12 +5662,24 @@ async function checkVerifyUrlParam() {
   return true;
 }
 
+async function proceedAsGuest() {
+  // Login qilmagan foydalanuvchi ham bosh sahifani, N5 ro'yxatini va bepul
+  // (har kategoriyaning 1-3 darsi) darslarni ko'ra oladi va sinab ko'ra oladi.
+  // Progress saqlanmaydi - dars tugagach ro'yxatdan o'tish taklif qilinadi.
+  currentCoins = 0;
+  currentTier = 'free';
+  currentTermsAccepted = false;
+  updateCoinBadge();
+  updateAuthUI();
+  await loadLessonList();
+}
+
 async function initApp() {
   const isVerifyPage = await checkVerifyUrlParam();
   if (isVerifyPage) return;
   await initAuth();
   if (!currentUser) {
-    showAuthGate();
+    await proceedAsGuest();
     return;
   }
   await proceedAfterAuth();
@@ -5746,6 +5799,22 @@ const KATAKANA_CHARS = [
   { char:'フ', romaji:'fu', word:'フォーク', wordUz:'vilka' },
   { char:'ブ', romaji:'bu', word:'ブドウ', wordUz:'uzum' },
   { char:'プ', romaji:'pu', word:'プール', wordUz:'basseyn' },
+  { char:'マ', romaji:'ma', word:'マスク', wordUz:'niqob' },
+  { char:'ミ', romaji:'mi', word:'ミルク', wordUz:'sut' },
+  { char:'ム', romaji:'mu', word:'ムービー', wordUz:'kino' },
+  { char:'メ', romaji:'me', word:'メニュー', wordUz:'menyu' },
+  { char:'モ', romaji:'mo', word:'モデル', wordUz:'model' },
+  { char:'ヤ', romaji:'ya', word:'ヤード', wordUz:'yard' },
+  { char:'ユ', romaji:'yu', word:'ユーモア', wordUz:'yumor' },
+  { char:'ヨ', romaji:'yo', word:'ヨガ', wordUz:'yoga' },
+  { char:'ラ', romaji:'ra', word:'ラジオ', wordUz:'radio' },
+  { char:'リ', romaji:'ri', word:'リボン', wordUz:'lenta' },
+  { char:'ル', romaji:'ru', word:'ルール', wordUz:'qoida' },
+  { char:'レ', romaji:'re', word:'レモン', wordUz:'limon' },
+  { char:'ロ', romaji:'ro', word:'ロボット', wordUz:'robot' },
+  { char:'ワ', romaji:'wa', word:'ワイン', wordUz:'sharob' },
+  { char:'ヲ', romaji:'wo', word:'ヲ', wordUz:"zarracha (grammatik belgi)" },
+  { char:'ン', romaji:'n', word:'ン', wordUz:"so'z oxiridagi tovush" },
 ];
 
 // Hozircha faol alifbo - Hiragana yoki Katakana tanlanganda shu almashadi
@@ -6342,6 +6411,75 @@ const KATAKANA_STROKE_DATA = {
     { outline:["M730 178C686 178 647 205 606 216C532 233 478 246 404 259C326 272 247 285 168 295C161 295 153 300 156 308C160 320 171 328 182 335C199 346 219 353 241 351C273 347 304 331 335 322C375 310 415 302 456 294C530 279 583 265 658 253C668 251 682 248 691 256C701 263 695 276 693 286C659 406 552 543 474 625C421 679 362 729 305 778C282 796 260 813 242 835C237 839 231 846 236 851C240 856 249 852 254 851C288 839 317 818 347 798C418 750 486 697 548 638C593 594 632 545 669 495C715 432 737 365 780 300C786 289 797 281 808 275C820 266 831 250 826 235C821 222 809 214 799 207C780 192 759 178 734 178C731 178 731 178 730 178Z"], median:[[166, 304], [258, 303], [723, 209], [785, 253], [554, 584], [251, 841]] },
     { outline:["M905 24C865 27 826 55 815 95C802 136 820 185 858 207C891 227 935 224 967 203C988 190 1000 167 1005 144C1012 114 1005 80 983 58C965 37 938 24 909 24C908 24 907 23 905 24ZM908 69C930 68 955 82 961 105C967 126 962 152 943 166C916 185 874 176 860 146C854 131 856 114 861 100C868 81 887 68 908 69Z"], median:[[858, 44], [928, 80], [953, 140], [897, 192], [843, 140], [858, 90], [858, 44]] },
   ],
+  'ン': [
+    { outline:["M242 221C296 273 327 325 384 373C414 399 455 375 440 335C413 268 317 218 252 183C158 130 214 193 242 221Z"], median:[[214,175],[422,379]] },
+    { outline:["M769 315C646 461 524 610 359 710C313 737 273 750 222 759C175 768 233 816 253 836C272 855 304 880 330 857C507 702 663 551 785 338C818 282 796 282 769 315Z"], median:[[227,776],[306,814],[538,631],[791,308]] },
+  ],
+  /* Quyidagilar - font konturi manbasi topilmaguncha, sinchiklab qo'lda chizib, screenshot orqali tekshirilgan */
+  'マ': [
+    { median:[[180, 260], [600, 220], [750, 260], [320, 820]] },
+    { median:[[330, 470], [560, 450]] },
+  ],
+  'ミ': [
+    { median:[[250, 200], [450, 260]] },
+    { median:[[220, 450], [480, 520]] },
+    { median:[[200, 700], [550, 820]] },
+  ],
+  'ム': [
+    { median:[[520, 180], [350, 400], [230, 600]] },
+    { median:[[260, 480], [450, 470], [620, 560], [680, 780]] },
+  ],
+  'メ': [
+    { median:[[650, 200], [250, 800]] },
+    { median:[[220, 350], [700, 750]] },
+  ],
+  'モ': [
+    { median:[[250, 300], [650, 280]] },
+    { median:[[220, 500], [680, 480]] },
+    { median:[[450, 150], [430, 700], [550, 820]] },
+  ],
+  'ヤ': [
+    { median:[[300, 200], [600, 350], [350, 850]] },
+    { median:[[200, 450], [550, 400]] },
+  ],
+  'ユ': [
+    { median:[[280, 300], [620, 280]] },
+    { median:[[450, 180], [430, 500], [440, 650], [550, 720], [700, 650]] },
+  ],
+  'ヨ': [
+    { median:[[300, 200], [700, 180]] },
+    { median:[[250, 480], [650, 460]] },
+    { median:[[280, 750], [250, 500], [680, 720]] },
+  ],
+  'ラ': [
+    { median:[[300, 200], [600, 180]] },
+    { median:[[250, 400], [550, 380], [650, 550], [500, 750], [300, 820]] },
+  ],
+  'リ': [
+    { median:[[300, 250], [280, 650]] },
+    { median:[[550, 180], [530, 700], [600, 800]] },
+  ],
+  'ル': [
+    { median:[[300, 200], [280, 600], [350, 750]] },
+    { median:[[550, 180], [520, 550], [480, 750], [650, 820]] },
+  ],
+  'レ': [
+    { median:[[450, 150], [420, 650], [550, 780], [750, 700]] },
+  ],
+  'ロ': [
+    { median:[[250, 250], [250, 750]] },
+    { median:[[250, 250], [650, 250], [650, 700]] },
+    { median:[[250, 750], [650, 750]] },
+  ],
+  'ワ': [
+    { median:[[300, 200], [500, 280]] },
+    { median:[[250, 400], [600, 380], [680, 550], [500, 780], [300, 820]] },
+  ],
+  'ヲ': [
+    { median:[[250, 220], [650, 200]] },
+    { median:[[300, 450], [600, 430]] },
+    { median:[[500, 150], [470, 600], [350, 820]] },
+  ],
 };
 
 // Hozircha faol alifboning strok ma'lumoti - Hiragana yoki Katakana tanlanganda almashadi
@@ -6639,7 +6777,7 @@ async function selectKanaSet(kind) {
     STROKE_DATA = KATAKANA_STROKE_DATA;
     document.getElementById('jHeaderEmoji').textContent = '🎌';
     document.getElementById('jHeaderTitle').textContent = 'Katakana sayohati';
-    document.getElementById('jHeaderSub').textContent = "Chet so'zlarni yozishda ishlatiladigan alifbo — 47 ta harf, dakuten/handakuten bilan";
+    document.getElementById('jHeaderSub').textContent = "Chet so'zlarni yozishda ishlatiladigan alifbo — 46 ta asosiy harf + dakuten/handakuten (jami 63 ta)";
   } else {
     CHARS = HIRAGANA_CHARS;
     STROKE_DATA = HIRAGANA_STROKE_DATA;
