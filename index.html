@@ -2744,13 +2744,17 @@ function renderLevelContent() {
 
   if (selectedLevel === 'N5') {
     const gbInfo = getGrammarBankUnlockInfo();
-    if (gbInfo.visible && currentTier === 'pro') {
-      const gbStatusTxt = gbInfo.unlockedCount >= 132 ? "132/132 ochiq — to'liq bank sizniki! 🔓" : `🔒 ${gbInfo.unlockedCount}/132 ochilgan`;
+    const showAsGuestTeaser = !currentUser; // mehmonlarga - marketing uchun, progress talab qilinmaydi
+    const showAsProPerk = currentUser && currentTier === 'pro' && gbInfo.visible;
+    if (showAsGuestTeaser || showAsProPerk) {
+      const gbStatusTxt = showAsGuestTeaser
+        ? "132 ta mavzu — bepul ko'rib chiqing 👀"
+        : (gbInfo.unlockedCount >= 132 ? "132/132 ochiq — to'liq bank sizniki! 🔓" : `🔒 ${gbInfo.unlockedCount}/132 ochilgan`);
       html += `
         <div class="gb-entry-card" id="gbEntryCta">
           <div class="gb-entry-emoji">📚</div>
           <div>
-            <div class="gb-entry-title">N5 Grammatika Banki 💎</div>
+            <div class="gb-entry-title">N5 Grammatika Banki${showAsGuestTeaser ? '' : ' 💎'}</div>
             <div class="gb-entry-sub">${gbStatusTxt}</div>
           </div>
         </div>`;
@@ -2869,7 +2873,9 @@ function getGrammarBankLessonByDars(darsNum) {
 }
 
 function openGrammarBankScreen() {
-  if (currentTier !== 'pro') {
+  // Mehmon (login qilmagan) — bepul ko'ra oladi, bu marketing uchun.
+  // Ro'yxatdan o'tgan lekin Premium bo'lmagan foydalanuvchi — obuna talab qilinadi.
+  if (currentUser && currentTier !== 'pro') {
     document.getElementById('paywallHeading').textContent = 'N5 Grammatika Banki faqat Premium obunada';
     document.getElementById('tierOptions').innerHTML = `
       <div class="tier-card tier-pro">
@@ -2898,12 +2904,16 @@ function renderGrammarBankScreen() {
   const { pct, unlockedCount } = getGrammarBankUnlockInfo();
   const progressLabel = document.getElementById('gbProgressLabel');
   const progressFill = document.getElementById('gbProgressFill');
-  if (unlockedCount >= 132) {
+  if (!currentUser) {
+    progressLabel.textContent = "👀 Bepul ko'rib chiqing — birinchi 3 dars sinov uchun ochiq";
+    progressFill.style.width = '100%';
+  } else if (unlockedCount >= 132) {
     progressLabel.textContent = "132 / 132 — TO'LIQ OCHILDI 🔓";
+    progressFill.style.width = '100%';
   } else {
     progressLabel.textContent = `🔒 ${unlockedCount} / 132 ochilgan`;
+    progressFill.style.width = Math.round((unlockedCount / 132) * 100) + '%';
   }
-  progressFill.style.width = Math.round((unlockedCount / 132) * 100) + '%';
 
   const weeks = {};
   N5_GRAMMAR_BANK.forEach((card, idx) => {
@@ -2916,7 +2926,9 @@ function renderGrammarBankScreen() {
   weekNums.forEach(wk => {
     html += `<div class="gb-week-group"><div class="gb-week-header">📖 ${wk}-hafta</div>`;
     weeks[wk].forEach(card => {
-      const isLocked = card.globalIdx >= unlockedCount;
+      // Mehmonlar uchun progress-asosli qulf ko'rsatilmaydi - ular hammasini ko'ra oladi,
+      // haqiqiy cheklov darsni ochishga urinishda (openLesson orqali) ishlaydi.
+      const isLocked = currentUser ? (card.globalIdx >= unlockedCount) : false;
       const searchStr = `${card.s} ${card.m} ${card.e} ${card.d}-dars ${card.w}-hafta`.replace(/<[^>]+>/g, '').toLowerCase();
       html += `
         <div class="gb-card${isLocked ? ' locked' : ''}" data-search="${searchStr.replace(/"/g, '&quot;')}">
