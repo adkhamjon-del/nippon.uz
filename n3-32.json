@@ -1,0 +1,1090 @@
+{
+ "level": "N3",
+ "lesson": 32,
+ "range": "977–1000",
+ "kanji": [
+  {
+   "k": "柱",
+   "st": 9,
+   "mean": "ustun, tayanch",
+   "on": "チュウ",
+   "kun": "はしら",
+   "s": "古い家の柱は太くて丈夫だ。",
+   "t": "Eski uyning ustunlari yo'g'on va mustahkam.",
+   "w": [
+    [
+     "電柱",
+     "でんちゅう",
+     "elektr ustuni",
+     "電柱に猫が登っている。",
+     "Elektr ustuniga mushuk chiqib olibdi."
+    ],
+    [
+     "支柱",
+     "しちゅう",
+     "tayanch qoziq, tayanch ustun",
+     "トマトに支柱を立てる。",
+     "Pomidorga tayanch qoziq o'rnatmoq."
+    ],
+    [
+     "大黒柱",
+     "だいこくばしら",
+     "oilaning tayanchi, asosiy ustun",
+     "父は家族の大黒柱だ。",
+     "Dadam oilamizning tayanchi."
+    ],
+    [
+     "円柱",
+     "えんちゅう",
+     "silindr, dumaloq ustun",
+     "神殿には大きな円柱が並んでいる。",
+     "Ibodatxonada katta dumaloq ustunlar saf tortgan."
+    ]
+   ]
+  },
+  {
+   "k": "軒",
+   "st": 10,
+   "mean": "karniz; uylar sanog'i",
+   "on": "ケン",
+   "kun": "のき",
+   "s": "地震によって約300軒の家が被害を受けた。",
+   "t": "Zilzila sabab taxminan 300 ta uy zarar ko'rdi.",
+   "w": [
+    [
+     "一軒家",
+     "いっけんや",
+     "alohida turgan uy",
+     "郊外に一軒家を買った。",
+     "Shahar chetidan alohida uy sotib oldim."
+    ],
+    [
+     "軒先",
+     "のきさき",
+     "tom chetining ostida, ayvon old",
+     "雨が降ってきたので、軒先で雨宿りした。",
+     "Yomg'ir yog'ib qolgani uchun karniz ostida panoh topdik."
+    ],
+    [
+     "軒並み",
+     "のきなみ",
+     "qator-qator; deyarli hammasi",
+     "今月は物価が軒並み上がった。",
+     "Bu oy narxlar deyarli hammasi ko'tarildi."
+    ],
+    [
+     "何軒",
+     "なんげん",
+     "nechta uy / do'kon",
+     "この通りに店が何軒ありますか。",
+     "Bu ko'chada nechta do'kon bor?"
+    ]
+   ]
+  },
+  {
+   "k": "害",
+   "st": 10,
+   "mean": "zarar, ziyon",
+   "on": "ガイ",
+   "kun": "—",
+   "s": "タバコは体に害を与える。",
+   "t": "Sigaret tanaga zarar yetkazadi.",
+   "w": [
+    [
+     "公害",
+     "こうがい",
+     "ekologik ifloslanish (sanoat zarari)",
+     "工場による公害が問題になっている。",
+     "Zavodlardan kelib chiqqan ekologik ifloslanish muammoga aylanmoqda."
+    ],
+    [
+     "有害",
+     "ゆうがい",
+     "zararli",
+     "この物質は人体に有害だ。",
+     "Bu modda inson tanasi uchun zararli."
+    ],
+    [
+     "害虫",
+     "がいちゅう",
+     "zararkunanda hasharot",
+     "畑の害虫を退治する。",
+     "Dalaning zararkunandalarini yo'q qilmoq."
+    ],
+    [
+     "災害",
+     "さいがい",
+     "ofat, tabiiy ofat",
+     "災害に備えて水を買っておく。",
+     "Ofatga tayyorgarlik sifatida suv sotib qo'yaman."
+    ],
+    [
+     "障害",
+     "しょうがい",
+     "to'siq; nuqson",
+     "計画には多くの障害がある。",
+     "Rejada ko'p to'siqlar bor."
+    ]
+   ]
+  },
+  {
+   "k": "被",
+   "st": 10,
+   "mean": "zarar ko'rmoq; kiymoq",
+   "on": "ヒ",
+   "kun": "こうむ(る) · かぶ(る)",
+   "s": "台風で農作物が大きな被害を受けた。",
+   "t": "To'fon sababli ekinlar katta zarar ko'rdi.",
+   "w": [
+    [
+     "被害",
+     "ひがい",
+     "zarar, talofat",
+     "地震で多くの家が被害を受けた。",
+     "Zilzilada ko'p uylar zarar ko'rdi."
+    ],
+    [
+     "被害者",
+     "ひがいしゃ",
+     "jabrlanuvchi",
+     "事故の被害者は病院に運ばれた。",
+     "Voqea jabrlanuvchisi kasalxonaga olib borildi."
+    ],
+    [
+     "被る",
+     "こうむる · かぶる",
+     "zarar ko'rmoq (こうむる) · kiymoq, ustiga olmoq (かぶる)",
+     "会社は大きな損害を被った。<br>彼は帽子を被っている。",
+     "Kompaniya katta zarar ko'rdi (こうむる).<br>U shlyapa kiyib olgan (かぶる)."
+    ],
+    [
+     "被災",
+     "ひさい",
+     "ofatga uchramoq",
+     "被災地に支援物資を送る。",
+     "Ofat zonasiga yordam yuboramiz."
+    ],
+    [
+     "被告",
+     "ひこく",
+     "sudlanuvchi",
+     "被告は無罪を主張した。",
+     "Sudlanuvchi aybsizligini da'vo qildi."
+    ]
+   ]
+  },
+  {
+   "k": "損",
+   "st": 13,
+   "mean": "yo'qotish, zarar",
+   "on": "ソン",
+   "kun": "そこ(なう) · そこ(ねる)",
+   "s": "安いものを買って、結局は損をした。",
+   "t": "Arzon narsa sotib olib, oxir-oqibat zarar ko'rdim.",
+   "w": [
+    [
+     "損害",
+     "そんがい",
+     "zarar, talofat",
+     "火事で多額の損害が出た。",
+     "Yong'indan katta miqdorda zarar ko'rildi."
+    ],
+    [
+     "損得",
+     "そんとく",
+     "foyda va zarar",
+     "損得を考えずに友達を助けた。",
+     "Foyda-zararni o'ylamay do'stimga yordam berdim."
+    ],
+    [
+     "損失",
+     "そんしつ",
+     "yo'qotish, zarar (moliyaviy)",
+     "会社は大きな損失を出した。",
+     "Kompaniya katta zarar ko'rdi."
+    ],
+    [
+     "損なう",
+     "そこなう",
+     "buzmoq, putur yetkazmoq",
+     "無理をして健康を損なう。",
+     "Zo'riqib sog'liqni buzmoq."
+    ],
+    [
+     "損をする",
+     "そんをする",
+     "zarar ko'rmoq, yutqazmoq",
+     "今買わないと損をするよ。",
+     "Hozir olmasang, zarar ko'rasan."
+    ]
+   ]
+  },
+  {
+   "k": "濃",
+   "st": 16,
+   "mean": "quyuq, to'q",
+   "on": "ノウ",
+   "kun": "こ(い)",
+   "s": "地球温暖化の原因となるCO₂濃度が過去最高となった。",
+   "t": "Global isishning sababi bo'lgan CO₂ konsentratsiyasi rekord darajaga yetdi.",
+   "w": [
+    [
+     "濃い",
+     "こい",
+     "quyuq, to'q, kuchli",
+     "濃いコーヒーを飲むと眠れない。",
+     "Quyuq kofe ichsam, uxlay olmayman."
+    ],
+    [
+     "濃度",
+     "のうど",
+     "konsentratsiya, quyuqlik",
+     "アルコールの濃度を測る。",
+     "Spirt konsentratsiyasini o'lchamoq."
+    ],
+    [
+     "濃縮",
+     "のうしゅく",
+     "quyultirmoq, konsentratsiyalamoq",
+     "ジュースを濃縮する。",
+     "Sharbatni quyultirmoq."
+    ],
+    [
+     "濃厚",
+     "のうこう",
+     "to'yimli, boy (ta'm); kuchli (ehtimol)",
+     "このチーズは味が濃厚だ。",
+     "Bu pishloqning ta'mi to'yimli."
+    ]
+   ]
+  },
+  {
+   "k": "乱",
+   "st": 7,
+   "mean": "tartibsizlik, buzilish",
+   "on": "ラン",
+   "kun": "みだ(れる) · みだ(す)",
+   "s": "乱暴な運転をして電柱にぶつかった。",
+   "t": "Beparvo haydab, elektr ustuniga urilib ketdi.",
+   "w": [
+    [
+     "混乱",
+     "こんらん",
+     "chalkashlik, tartibsizlik",
+     "事故で駅が混乱している。",
+     "Voqea sabab bekat tartibsizlikda."
+    ],
+    [
+     "乱暴",
+     "らんぼう",
+     "qo'pol, zo'ravon",
+     "乱暴な言葉を使ってはいけない。",
+     "Qo'pol so'zlar ishlatmaslik kerak."
+    ],
+    [
+     "乱れる",
+     "みだれる",
+     "buzilmoq, tartibi buzilmoq",
+     "寝不足で生活リズムが乱れる。",
+     "Uyqusizlikdan kun tartibi buziladi."
+    ],
+    [
+     "乱用",
+     "らんよう",
+     "suiiste'mol qilmoq",
+     "薬の乱用は危険だ。",
+     "Dorini suiiste'mol qilish xavfli."
+    ],
+    [
+     "反乱",
+     "はんらん",
+     "qo'zg'olon",
+     "兵士たちが反乱を起こした。",
+     "Askarlar qo'zg'olon ko'tardi."
+    ]
+   ]
+  },
+  {
+   "k": "応",
+   "st": 7,
+   "mean": "javob bermoq, moslashmoq",
+   "on": "オウ",
+   "kun": "こた(える)",
+   "s": "資料は必要に応じて各々で準備してください。",
+   "t": "Materiallarni zarurat bo'yicha har kim o'zi tayyorlasin.",
+   "w": [
+    [
+     "応じる",
+     "おうじる",
+     "javob bermoq, rozi bo'lmoq, moslashmoq",
+     "お客さんの要望に応じる。",
+     "Mijozning talabiga javob bermoq."
+    ],
+    [
+     "応用",
+     "おうよう",
+     "amalda qo'llamoq",
+     "習った知識を仕事に応用する。",
+     "O'rgangan bilimni ishda qo'llamoq."
+    ],
+    [
+     "応募",
+     "おうぼ",
+     "ariza topshirmoq (tanlovga, ishga)",
+     "新しい仕事に応募した。",
+     "Yangi ishga ariza topshirdim."
+    ],
+    [
+     "反応",
+     "はんのう",
+     "reaksiya, munosabat",
+     "彼の反応が気になる。",
+     "Uning munosabati e'tiborimni tortyapti."
+    ],
+    [
+     "応援",
+     "おうえん",
+     "qo'llab-quvvatlamoq (jamoani)",
+     "友達のチームを応援する。",
+     "Do'stimning jamoasini qo'llab-quvvatlayman."
+    ],
+    [
+     "応える",
+     "こたえる",
+     "javob qaytarmoq (umidga)",
+     "ファンの期待に応える。",
+     "Muxlislarning umidini oqlamoq."
+    ]
+   ]
+  },
+  {
+   "k": "律",
+   "st": 9,
+   "mean": "qonun, tartib",
+   "on": "リツ",
+   "kun": "—",
+   "s": "規律正しい生活をする。",
+   "t": "Qat'iy tartib-intizomli hayot kechirmoq.",
+   "w": [
+    [
+     "法律",
+     "ほうりつ",
+     "qonun",
+     "法律を守らなければならない。",
+     "Qonunga rioya qilish kerak."
+    ],
+    [
+     "規律",
+     "きりつ",
+     "intizom, tartib",
+     "この学校は規律が厳しい。",
+     "Bu maktabda intizom qattiq."
+    ],
+    [
+     "自律",
+     "じりつ",
+     "o'zini o'zi boshqarish",
+     "自律した生活を送る。",
+     "O'zini o'zi boshqaradigan hayot kechirmoq."
+    ],
+    [
+     "一律",
+     "いちりつ",
+     "bir xil, hammaga teng",
+     "料金は一律千円です。",
+     "Narx hamma uchun bir xil, 1000 yen."
+    ],
+    [
+     "律儀",
+     "りちぎ",
+     "vijdonli, halol, so'zining ustidan chiqadigan",
+     "彼は律儀な人で、必ず約束を守る。",
+     "U vijdonli odam, va'dasini albatta bajaradi."
+    ]
+   ]
+  },
+  {
+   "k": "賛",
+   "st": 15,
+   "mean": "ma'qullamoq, qo'llab-quvvatlamoq",
+   "on": "サン",
+   "kun": "—",
+   "s": "賛成と答えた人が回答者の過半数を占めた。",
+   "t": "“Qo'llab-quvvatlayman” deb javob berganlar respondentlarning yarmidan ko'pini tashkil qildi.",
+   "w": [
+    [
+     "賛成",
+     "さんせい",
+     "rozilik, qo'llab-quvvatlash",
+     "その案に賛成します。",
+     "Bu taklifni qo'llab-quvvatlayman."
+    ],
+    [
+     "賛同",
+     "さんどう",
+     "qo'shilmoq, hamfikr bo'lmoq",
+     "多くの人が彼の考えに賛同した。",
+     "Ko'p odam uning fikriga qo'shildi."
+    ],
+    [
+     "賛否",
+     "さんぴ",
+     "rozilik va e'tiroz",
+     "この法案は賛否が分かれている。",
+     "Bu qonun loyihasi bo'yicha fikrlar bo'lingan."
+    ],
+    [
+     "称賛",
+     "しょうさん",
+     "maqtov, olqish",
+     "彼の勇気は称賛に値する。",
+     "Uning jasorati maqtovga loyiq."
+    ],
+    [
+     "自画自賛",
+     "じがじさん",
+     "o'zini o'zi maqtash",
+     "自画自賛ばかりしていると嫌われるよ。",
+     "Faqat o'zini maqtayversang, yoqtirmay qolishadi."
+    ]
+   ]
+  },
+  {
+   "k": "総",
+   "st": 14,
+   "mean": "umumiy, butun",
+   "on": "ソウ",
+   "kun": "—",
+   "s": "今回の総費用は十万円だった。",
+   "t": "Bu safargi umumiy xarajat 100 ming yen bo'ldi.",
+   "w": [
+    [
+     "総理大臣",
+     "そうりだいじん",
+     "bosh vazir",
+     "日本の総理大臣が来月アメリカを訪問する。",
+     "Yaponiya bosh vaziri kelasi oy AQShga tashrif buyuradi."
+    ],
+    [
+     "総合",
+     "そうごう",
+     "umumiy, kompleks",
+     "総合的に判断する。",
+     "Umumiy holda baholamoq."
+    ],
+    [
+     "総額",
+     "そうがく",
+     "umumiy summa",
+     "費用の総額は十万円だった。",
+     "Xarajatning umumiy summasi 100 ming yen bo'ldi."
+    ],
+    [
+     "総会",
+     "そうかい",
+     "umumiy yig'ilish",
+     "株主総会は来週開かれる。",
+     "Aksiyadorlar umumiy yig'ilishi kelasi hafta bo'ladi."
+    ],
+    [
+     "総人口",
+     "そうじんこう",
+     "umumiy aholi soni",
+     "日本の総人口は減っている。",
+     "Yaponiyaning umumiy aholisi kamayyapti."
+    ]
+   ]
+  },
+  {
+   "k": "臣",
+   "st": 7,
+   "mean": "vassal, xizmatkor; vazir (birikmada)",
+   "on": "シン · ジン",
+   "kun": "—",
+   "s": "今回の地震について、大臣が会見を開いた。",
+   "t": "Bu zilzila haqida vazir matbuot anjumani o'tkazdi.",
+   "w": [
+    [
+     "大臣",
+     "だいじん",
+     "vazir",
+     "新しい大臣が決まった。",
+     "Yangi vazir tayinlandi."
+    ],
+    [
+     "外務大臣",
+     "がいむだいじん",
+     "tashqi ishlar vaziri",
+     "外務大臣が各国を訪問する。",
+     "Tashqi ishlar vaziri bir necha davlatga tashrif buyuradi."
+    ],
+    [
+     "家臣",
+     "かしん",
+     "vassal, xizmatkor (feodal)",
+     "殿様は家臣を集めた。",
+     "Hukmdor vassallarini to'pladi."
+    ],
+    [
+     "臣下",
+     "しんか",
+     "fuqaro, hukmdorga qarashli odam",
+     "王は臣下の意見を聞いた。",
+     "Podshoh fuqarolarining fikrini tingladi."
+    ]
+   ]
+  },
+  {
+   "k": "政",
+   "st": 9,
+   "mean": "siyosat, boshqaruv",
+   "on": "セイ",
+   "kun": "—",
+   "s": "政治に関心がある若者が増えている。",
+   "t": "Siyosatga qiziqadigan yoshlar ko'paymoqda.",
+   "w": [
+    [
+     "政府",
+     "せいふ",
+     "hukumat",
+     "政府は新しい政策を発表した。",
+     "Hukumat yangi siyosat e'lon qildi."
+    ],
+    [
+     "政治家",
+     "せいじか",
+     "siyosatchi",
+     "彼は有名な政治家だ。",
+     "U mashhur siyosatchi."
+    ],
+    [
+     "行政",
+     "ぎょうせい",
+     "ma'muriyat, davlat boshqaruvi",
+     "行政の手続きは複雑だ。",
+     "Ma'muriy tartib-qoidalar murakkab."
+    ],
+    [
+     "財政",
+     "ざいせい",
+     "davlat moliyasi",
+     "国の財政は厳しい。",
+     "Davlat moliyasi og'ir ahvolda."
+    ],
+    [
+     "内政",
+     "ないせい",
+     "ichki siyosat",
+     "他国の内政に干渉してはいけない。",
+     "Boshqa davlatning ichki ishlariga aralashmaslik kerak."
+    ]
+   ]
+  },
+  {
+   "k": "治",
+   "st": 8,
+   "mean": "boshqarmoq; davolamoq, tuzalmoq",
+   "on": "ジ · チ",
+   "kun": "おさ(める) · おさ(まる) · なお(る) · なお(す)",
+   "s": "公害による病気が治らずに苦しむ人々がいる。",
+   "t": "Ekologik ifloslanishdan kelib chiqqan kasallik tuzalmay, azob chekayotgan odamlar bor.",
+   "w": [
+    [
+     "政治",
+     "せいじ",
+     "siyosat",
+     "彼は大学で政治を勉強している。",
+     "U universitetda siyosatni o'rganyapti."
+    ],
+    [
+     "自治",
+     "じち",
+     "o'zini o'zi boshqarish",
+     "その町は自治を認められている。",
+     "Bu shaharcha o'zini o'zi boshqarish huquqiga ega."
+    ],
+    [
+     "明治",
+     "めいじ",
+     "Meydzi davri (1868–1912)",
+     "明治時代は一八六八年に始まった。",
+     "Meydzi davri 1868-yilda boshlangan."
+    ],
+    [
+     "治る",
+     "なおる",
+     "tuzalmoq (kasallik)",
+     "風邪が治るまで休む。",
+     "Shamollash tuzalguncha dam olaman."
+    ],
+    [
+     "治す",
+     "なおす",
+     "davolamoq",
+     "医者は病気を治す。",
+     "Shifokor kasallikni davolaydi."
+    ],
+    [
+     "治める",
+     "おさめる",
+     "boshqarmoq (mamlakatni)",
+     "王が国を治める。",
+     "Podshoh mamlakatni boshqaradi."
+    ],
+    [
+     "治療",
+     "ちりょう",
+     "davolash, muolaja",
+     "病院で治療を受ける。",
+     "Kasalxonada davolanmoq."
+    ]
+   ]
+  },
+  {
+   "k": "済",
+   "st": 11,
+   "mean": "tugamoq, bitmoq",
+   "on": "サイ",
+   "kun": "す(む) · す(ます)",
+   "s": "用事が済んだら、すぐ帰ります。",
+   "t": "Ishim tugasa, darhol qaytaman.",
+   "w": [
+    [
+     "経済",
+     "けいざい",
+     "iqtisodiyot",
+     "経済発展と環境汚染の関係について述べる。",
+     "Iqtisodiy rivojlanish va atrof-muhit ifloslanishi o'rtasidagi bog'liqlikni bayon etmoq."
+    ],
+    [
+     "済む",
+     "すむ",
+     "tugamoq, bitmoq",
+     "宿題が済むまで遊べない。",
+     "Uy vazifasi tugamaguncha o'ynay olmayman."
+    ],
+    [
+     "済ます",
+     "すます",
+     "tugatmoq; o'tkazib yubormoq",
+     "昼ご飯は簡単に済ます。",
+     "Tushlikni oddiy qilib o'tkazib yuboraman."
+    ],
+    [
+     "返済",
+     "へんさい",
+     "qarzni qaytarish",
+     "借金を返済する。",
+     "Qarzni qaytarmoq."
+    ],
+    [
+     "救済",
+     "きゅうさい",
+     "yordam, najot berish",
+     "被災者を救済する。",
+     "Ofatdan zarar ko'rganlarga yordam bermoq."
+    ]
+   ]
+  },
+  {
+   "k": "軍",
+   "st": 9,
+   "mean": "armiya, harbiy",
+   "on": "グン",
+   "kun": "—",
+   "s": "軍の基地が町の近くにある。",
+   "t": "Harbiy baza shaharcha yaqinida joylashgan.",
+   "w": [
+    [
+     "軍隊",
+     "ぐんたい",
+     "armiya",
+     "軍隊を持つことに反対か賛成かと質問する。",
+     "Armiya saqlashga qarshimi yoki tarafdormi, deb so'raydi."
+    ],
+    [
+     "軍人",
+     "ぐんじん",
+     "harbiy, harbiy xizmatchi",
+     "祖父は軍人だった。",
+     "Bobom harbiy bo'lgan."
+    ],
+    [
+     "将軍",
+     "しょうぐん",
+     "general; syogun",
+     "徳川将軍は江戸に幕府を開いた。",
+     "Tokugava syoguni Edoda bakufu tuzgan."
+    ],
+    [
+     "海軍",
+     "かいぐん",
+     "harbiy-dengiz floti",
+     "海軍の船が港に入った。",
+     "Harbiy-dengiz kemasi portga kirdi."
+    ],
+    [
+     "軍事",
+     "ぐんじ",
+     "harbiy ishlar",
+     "軍事費が増えている。",
+     "Harbiy xarajatlar oshmoqda."
+    ]
+   ]
+  },
+  {
+   "k": "兵",
+   "st": 7,
+   "mean": "askar",
+   "on": "ヘイ",
+   "kun": "—",
+   "s": "兵が城を守っている。",
+   "t": "Askarlar qal'ani qo'riqlayapti.",
+   "w": [
+    [
+     "兵隊",
+     "へいたい",
+     "askar, harbiy qism",
+     "兵隊さんは敬礼をした。",
+     "Askar salom berdi."
+    ],
+    [
+     "兵士",
+     "へいし",
+     "askar",
+     "兵士たちは明日出発する。",
+     "Askarlar ertaga jo'nab ketadi."
+    ],
+    [
+     "兵器",
+     "へいき",
+     "qurol-yarog'",
+     "兵器の輸出を禁止する。",
+     "Qurol eksportini taqiqlamoq."
+    ],
+    [
+     "徴兵",
+     "ちょうへい",
+     "harbiy xizmatga chaqiruv",
+     "この国には徴兵制がある。",
+     "Bu mamlakatda harbiy xizmatga chaqiruv tizimi bor."
+    ],
+    [
+     "兵庫",
+     "ひょうご",
+     "Hyogo (prefektura nomi)",
+     "兵庫県の神戸は港町だ。",
+     "Hyogo prefekturasidagi Kobe port shahri."
+    ]
+   ]
+  },
+  {
+   "k": "権",
+   "st": 15,
+   "mean": "huquq, hokimiyat",
+   "on": "ケン · ゴン",
+   "kun": "—",
+   "s": "権利だけでなく義務についての意識も大切だ。",
+   "t": "Faqat huquq emas, majburiyat haqidagi ongga ega bo'lish ham muhim.",
+   "w": [
+    [
+     "権利",
+     "けんり",
+     "huquq",
+     "誰にでも教育を受ける権利がある。",
+     "Har kimning ta'lim olish huquqi bor."
+    ],
+    [
+     "人権",
+     "じんけん",
+     "inson huquqlari",
+     "人権を守る。",
+     "Inson huquqlarini himoya qilmoq."
+    ],
+    [
+     "権力",
+     "けんりょく",
+     "hokimiyat, kuch",
+     "権力を持つ人は責任も重い。",
+     "Hokimiyat egasining mas'uliyati ham og'ir."
+    ],
+    [
+     "政権",
+     "せいけん",
+     "hukumat, hokimiyat tepasidagi kuch",
+     "新しい政権が誕生した。",
+     "Yangi hukumat tuzildi."
+    ],
+    [
+     "著作権",
+     "ちょさくけん",
+     "mualliflik huquqi",
+     "著作権を守る。",
+     "Mualliflik huquqini himoya qilmoq."
+    ]
+   ]
+  },
+  {
+   "k": "郊",
+   "st": 9,
+   "mean": "shahar atrofi",
+   "on": "コウ",
+   "kun": "—",
+   "s": "週末は郊外のカフェでゆっくり過ごす。",
+   "t": "Dam olish kunlari shahar chetidagi kafeda bemalol vaqt o'tkazaman.",
+   "w": [
+    [
+     "郊外",
+     "こうがい",
+     "shahar atrofi, shahar chekkasi",
+     "郊外の広い家に住みたい。",
+     "Shahar chetidagi keng uyda yashashni xohlayman."
+    ],
+    [
+     "近郊",
+     "きんこう",
+     "shahar atrofi, yaqin tuman",
+     "東京近郊の町に引っ越した。",
+     "Tokio atrofidagi shaharchaga ko'chib o'tdim."
+    ]
+   ]
+  },
+  {
+   "k": "放",
+   "st": 8,
+   "mean": "qo'yib yubormoq, ozod qilmoq",
+   "on": "ホウ",
+   "kun": "はな(す) · はな(れる) · はな(つ)",
+   "s": "捕まえた魚を川に放した。",
+   "t": "Tutgan baliqni daryoga qo'yib yubordim.",
+   "w": [
+    [
+     "放送",
+     "ほうそう",
+     "efirga uzatish, eshittirish",
+     "ニュースを生放送で見る。",
+     "Yangiliklarni jonli efirda ko'rmoq."
+    ],
+    [
+     "解放",
+     "かいほう",
+     "ozod qilmoq, qutqarmoq",
+     "仕事から解放されて郊外に遊びに行く。",
+     "Ishdan bo'shab, shahar chetiga sayohatga boraman."
+    ],
+    [
+     "開放",
+     "かいほう",
+     "ochiq qoldirmoq, ochmoq",
+     "窓を開放して空気を入れ替える。",
+     "Derazani ochib havo almashtirmoq."
+    ],
+    [
+     "放す",
+     "はなす",
+     "qo'yib yubormoq",
+     "手を放すと風船が飛んでいく。",
+     "Qo'lingni qo'yib yuborsang, sharcha uchib ketadi."
+    ],
+    [
+     "放れる",
+     "はなれる",
+     "bo'shab chiqmoq, ozod bo'lmoq",
+     "犬が鎖から放れる。",
+     "It zanjirdan bo'shab chiqadi."
+    ],
+    [
+     "放課後",
+     "ほうかご",
+     "dars tugagandan keyin",
+     "放課後、友達と図書館へ行く。",
+     "Dars tugagach, do'stim bilan kutubxonaga boraman."
+    ]
+   ]
+  },
+  {
+   "k": "党",
+   "st": 10,
+   "mean": "partiya",
+   "on": "トウ",
+   "kun": "—",
+   "s": "朝刊に新しい政党が国を治める様子を紹介する記事があった。",
+   "t": "Ertalabki gazetada yangi partiyaning mamlakatni boshqarishi haqida maqola bor edi.",
+   "w": [
+    [
+     "政党",
+     "せいとう",
+     "siyosiy partiya",
+     "日本には多くの政党がある。",
+     "Yaponiyada ko'p siyosiy partiyalar bor."
+    ],
+    [
+     "与党",
+     "よとう",
+     "hukmron partiya",
+     "与党が選挙で勝った。",
+     "Hukmron partiya saylovda g'alaba qozondi."
+    ],
+    [
+     "野党",
+     "やとう",
+     "muxolifat partiyasi",
+     "野党は政府を批判した。",
+     "Muxolifat hukumatni tanqid qildi."
+    ],
+    [
+     "党首",
+     "とうしゅ",
+     "partiya rahbari",
+     "党首が記者会見を開く。",
+     "Partiya rahbari matbuot anjumani o'tkazadi."
+    ],
+    [
+     "党員",
+     "とういん",
+     "partiya a'zosi",
+     "彼は十年前に党員になった。",
+     "U o'n yil oldin partiya a'zosi bo'lgan."
+    ]
+   ]
+  },
+  {
+   "k": "毒",
+   "st": 8,
+   "mean": "zahar",
+   "on": "ドク",
+   "kun": "—",
+   "s": "フグという魚の毒についての記事を読んだ。",
+   "t": "Fugu degan baliqning zahari haqida maqola o'qidim.",
+   "w": [
+    [
+     "毒",
+     "どく",
+     "zahar",
+     "毒を持つ蛇もいる。",
+     "Zaharli ilonlar ham bor."
+    ],
+    [
+     "気の毒な",
+     "きのどくな",
+     "achinarli, rahmim keladigan",
+     "それは気の毒な話ですね。",
+     "Bu achinarli gap ekan."
+    ],
+    [
+     "消毒",
+     "しょうどく",
+     "dezinfeksiya qilmoq",
+     "傷口を消毒する。",
+     "Yara joyini dezinfeksiya qilmoq."
+    ],
+    [
+     "中毒",
+     "ちゅうどく",
+     "zaharlanish; qaramlik",
+     "ゲーム中毒になる。",
+     "O'yinga qaram bo'lib qolmoq."
+    ],
+    [
+     "食中毒",
+     "しょくちゅうどく",
+     "ovqatdan zaharlanish",
+     "夏は食中毒に気をつけよう。",
+     "Yozda ovqatdan zaharlanishdan ehtiyot bo'laylik."
+    ],
+    [
+     "有毒",
+     "ゆうどく",
+     "zaharli",
+     "この植物は有毒だ。",
+     "Bu o'simlik zaharli."
+    ]
+   ]
+  },
+  {
+   "k": "互",
+   "st": 4,
+   "mean": "o'zaro, bir-birini",
+   "on": "ゴ",
+   "kun": "たが(い)",
+   "s": "二つの政党は互いに協力するべきだ。",
+   "t": "Ikki partiya o'zaro hamkorlik qilishi kerak.",
+   "w": [
+    [
+     "互いに",
+     "たがいに",
+     "bir-biriga, o'zaro",
+     "互いに助け合う。",
+     "Bir-biriga yordam bermoq."
+    ],
+    [
+     "相互",
+     "そうご",
+     "o'zaro, ikki tomonlama",
+     "両国の相互理解を深める。",
+     "Ikki davlatning o'zaro tushunishini chuqurlashtirmoq."
+    ],
+    [
+     "交互",
+     "こうご",
+     "navbatma-navbat",
+     "二人で交互に運転する。",
+     "Ikkovimiz navbatma-navbat haydaymiz."
+    ],
+    [
+     "互角",
+     "ごかく",
+     "teng kuchli",
+     "二人の実力は互角だ。",
+     "Ikkalasining kuchi teng."
+    ]
+   ]
+  },
+  {
+   "k": "刊",
+   "st": 5,
+   "mean": "nashr etmoq, nashr",
+   "on": "カン",
+   "kun": "—",
+   "s": "この雑誌は毎月一日に刊行される。",
+   "t": "Bu jurnal har oyning birinchi kuni nashr etiladi.",
+   "w": [
+    [
+     "朝刊",
+     "ちょうかん",
+     "ertalabki gazeta",
+     "毎朝、朝刊を読む。",
+     "Har ertalab ertalabki gazetani o'qiyman."
+    ],
+    [
+     "夕刊",
+     "ゆうかん",
+     "kechki gazeta",
+     "夕刊は午後に配達される。",
+     "Kechki gazeta tushdan keyin yetkaziladi."
+    ],
+    [
+     "週刊",
+     "しゅうかん",
+     "haftalik nashr",
+     "週刊誌を買った。",
+     "Haftalik jurnal sotib oldim."
+    ],
+    [
+     "月刊",
+     "げっかん",
+     "oylik nashr",
+     "月刊誌に記事が載った。",
+     "Oylik jurnalda maqola chiqdi."
+    ],
+    [
+     "創刊",
+     "そうかん",
+     "nashrga asos solmoq",
+     "この雑誌は十年前に創刊された。",
+     "Bu jurnal o'n yil oldin asos solingan."
+    ]
+   ]
+  }
+ ]
+}
