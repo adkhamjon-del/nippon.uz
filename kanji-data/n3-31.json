@@ -1,0 +1,929 @@
+{
+ "level": "N3",
+ "lesson": 31,
+ "range": "953–976",
+ "kanji": [
+  {
+   "k": "与",
+   "st": 3,
+   "mean": "bermoq, ato etmoq",
+   "on": "ヨ",
+   "kun": "あた(える)",
+   "s": "先生は学生に宿題を与えた。",
+   "t": "O'qituvchi talabalarga uy vazifasi berdi.",
+   "w": [
+    [
+     "与える",
+     "あたえる",
+     "bermoq, yetkazmoq",
+     "この本は人々に夢を与える。",
+     "Bu kitob odamlarga orzu bag'ishlaydi."
+    ],
+    [
+     "給与",
+     "きゅうよ",
+     "ish haqi, maosh",
+     "給与は毎月二十五日に支払われる。",
+     "Maosh har oyning 25-kuni to'lanadi."
+    ],
+    [
+     "賞与",
+     "しょうよ",
+     "mukofot, bonus",
+     "賞与は年に二回ある。",
+     "Bonus yiliga ikki marta beriladi."
+    ],
+    [
+     "寄与",
+     "きよ",
+     "hissa qo'shmoq",
+     "この研究は科学の発展に寄与した。",
+     "Bu tadqiqot fanning rivojiga hissa qo'shdi."
+    ]
+   ]
+  },
+  {
+   "k": "炭",
+   "st": 9,
+   "mean": "ko'mir",
+   "on": "タン",
+   "kun": "—",
+   "s": "冬は炭火で焼いた魚がおいしい。",
+   "t": "Qishda ko'mir cho'g'ida pishirilgan baliq mazali.",
+   "w": [
+    [
+     "石炭",
+     "せきたん",
+     "tosh ko'mir",
+     "昔は石炭で汽車を走らせた。",
+     "Qadimda poyezdlar tosh ko'mirda yurgan."
+    ],
+    [
+     "炭酸",
+     "たんさん",
+     "karbonat, gazli",
+     "炭酸飲料を飲みすぎないでください。",
+     "Gazli ichimliklarni ko'p ichmang."
+    ],
+    [
+     "木炭",
+     "もくたん",
+     "yog'och ko'mir",
+     "木炭でバーベキューをする。",
+     "Ko'mirda barbekyu qilamiz."
+    ],
+    [
+     "炭素",
+     "たんそ",
+     "uglerod",
+     "二酸化炭素は地球温暖化の原因の一つだ。",
+     "Karbonat angidrid global isish sabablaridan biri."
+    ]
+   ]
+  },
+  {
+   "k": "鉱",
+   "st": 13,
+   "mean": "ruda, kon",
+   "on": "コウ",
+   "kun": "—",
+   "s": "山から貴重な鉱物が見つかった。",
+   "t": "Tog'dan qimmatli foydali qazilma topildi.",
+   "w": [
+    [
+     "炭鉱",
+     "たんこう",
+     "ko'mir koni",
+     "祖父は炭鉱で働いていた。",
+     "Bobom ko'mir konida ishlagan."
+    ],
+    [
+     "鉱物",
+     "こうぶつ",
+     "foydali qazilma, mineral",
+     "広い意味では石油や石炭も鉱物に含まれる。",
+     "Keng ma'noda neft va ko'mir ham mineralga kiradi."
+    ],
+    [
+     "鉱山",
+     "こうざん",
+     "kon, rudnik",
+     "この鉱山では金が採れる。",
+     "Bu konda oltin qazib olinadi."
+    ],
+    [
+     "鉱石",
+     "こうせき",
+     "ruda",
+     "鉱石から鉄を取り出す。",
+     "Rudadan temir ajratib olinadi."
+    ]
+   ]
+  },
+  {
+   "k": "型",
+   "st": 9,
+   "mean": "shakl, tur, qolip",
+   "on": "ケイ",
+   "kun": "かた",
+   "s": "新しい型のスマートフォンが発売された。",
+   "t": "Yangi modeldagi smartfon sotuvga chiqdi.",
+   "w": [
+    [
+     "典型的な",
+     "てんけいてきな",
+     "tipik, namunaviy",
+     "典型的な例をあげる。",
+     "Tipik misol keltirmoq."
+    ],
+    [
+     "大型",
+     "おおがた",
+     "katta o'lchamli, yirik",
+     "大型バスの駐車場は向こうだ。",
+     "Katta avtobuslar to'xtash joyi narigi tomonda."
+    ],
+    [
+     "血液型",
+     "けつえきがた",
+     "qon guruhi",
+     "血液型を調べる。",
+     "Qon guruhini tekshirmoq."
+    ],
+    [
+     "型",
+     "かた",
+     "qolip, shakl",
+     "型にはまった考え方はよくない。",
+     "Qolipga solingan fikrlash yaxshi emas."
+    ],
+    [
+     "新型",
+     "しんがた",
+     "yangi model",
+     "新型の車を買いたい。",
+     "Yangi modeldagi mashina sotib olmoqchiman."
+    ]
+   ]
+  },
+  {
+   "k": "標",
+   "st": 15,
+   "mean": "belgi, nishon",
+   "on": "ヒョウ",
+   "kun": "—",
+   "s": "今年の目標を立てる。",
+   "t": "Bu yilgi maqsadni belgilayman.",
+   "w": [
+    [
+     "目標",
+     "もくひょう",
+     "maqsad, nishon",
+     "目標に向かって努力する。",
+     "Maqsad sari harakat qilmoq."
+    ],
+    [
+     "標識",
+     "ひょうしき",
+     "belgi, yo'l belgisi",
+     "道路標識に書いてある速度を守りましょう。",
+     "Yo'l belgisida yozilgan tezlikka rioya qilaylik."
+    ],
+    [
+     "標準",
+     "ひょうじゅん",
+     "standart, me'yor",
+     "標準的なサイズを選ぶ。",
+     "Standart o'lchamni tanlayman."
+    ],
+    [
+     "標本",
+     "ひょうほん",
+     "namuna (ilmiy kolleksiya)",
+     "昆虫の標本を作る。",
+     "Hasharotlar namunalarini tayyorlayman."
+    ]
+   ]
+  },
+  {
+   "k": "農",
+   "st": 13,
+   "mean": "dehqonchilik",
+   "on": "ノウ",
+   "kun": "—",
+   "s": "父は農家で、米を作っている。",
+   "t": "Dadam dehqon, sholi yetishtiradi.",
+   "w": [
+    [
+     "農業",
+     "のうぎょう",
+     "qishloq xo'jaligi",
+     "海外で農業の技術指導をする。",
+     "Chet elda qishloq xo'jaligi texnologiyalarini o'rgatadi."
+    ],
+    [
+     "農家",
+     "のうか",
+     "dehqon, dehqon xonadoni",
+     "祖父の家は農家だ。",
+     "Bobomning uyi dehqon xonadoni."
+    ],
+    [
+     "農産物",
+     "のうさんぶつ",
+     "qishloq xo'jaligi mahsulotlari",
+     "農産物は市場で売られている。",
+     "Qishloq xo'jaligi mahsulotlari bozorda sotiladi."
+    ],
+    [
+     "農薬",
+     "のうやく",
+     "pestitsid, zaharli kimyo",
+     "農薬を使わない野菜を買う。",
+     "Pestitsid ishlatilmagan sabzavot sotib olaman."
+    ]
+   ]
+  },
+  {
+   "k": "漁",
+   "st": 14,
+   "mean": "baliq ovlash",
+   "on": "ギョ · リョウ",
+   "kun": "—",
+   "s": "港では朝早くから漁が始まる。",
+   "t": "Portda erta tongdan baliq ovi boshlanadi.",
+   "w": [
+    [
+     "漁業",
+     "ぎょぎょう",
+     "baliqchilik",
+     "漁業に関係した仕事をしたい。",
+     "Baliqchilik bilan bog'liq ish qilmoqchiman."
+    ],
+    [
+     "漁師",
+     "りょうし",
+     "baliqchi",
+     "祖父は漁師で、毎朝海に出る。",
+     "Bobom baliqchi, har tongda dengizga chiqadi."
+    ],
+    [
+     "漁船",
+     "ぎょせん",
+     "baliq ovlash kemasi",
+     "港に漁船が戻ってきた。",
+     "Portga baliqchi kemalari qaytib keldi."
+    ],
+    [
+     "大漁",
+     "たいりょう",
+     "katta ov, barakali ov",
+     "今日は大漁だった。",
+     "Bugun ov juda barakali bo'ldi."
+    ]
+   ]
+  },
+  {
+   "k": "努",
+   "st": 7,
+   "mean": "harakat qilmoq",
+   "on": "ド",
+   "kun": "つと(める)",
+   "s": "成功するためには努力が必要だ。",
+   "t": "Muvaffaqiyatga erishish uchun harakat kerak.",
+   "w": [
+    [
+     "努力",
+     "どりょく",
+     "harakat, g'ayrat",
+     "合格するために毎日努力している。",
+     "O'tish uchun har kuni harakat qilyapman."
+    ],
+    [
+     "努める",
+     "つとめる",
+     "intilmoq, harakat qilmoq",
+     "社員は各々、会社の発展に努める。",
+     "Xodimlarning har biri kompaniya rivoji uchun intiladi."
+    ],
+    [
+     "努力家",
+     "どりょくか",
+     "mehnatsevar kishi",
+     "彼は努力家で有名だ。",
+     "U mehnatsevarligi bilan mashhur."
+    ]
+   ]
+  },
+  {
+   "k": "複",
+   "st": 14,
+   "mean": "murakkab, ko'p",
+   "on": "フク",
+   "kun": "—",
+   "s": "複数の意見を聞いてから決める。",
+   "t": "Bir necha fikrni eshitib, keyin qaror qilaman.",
+   "w": [
+    [
+     "複雑な",
+     "ふくざつな",
+     "murakkab",
+     "複雑な給与制度を見直す。",
+     "Murakkab maosh tizimini qayta ko'rib chiqmoq."
+    ],
+    [
+     "複数",
+     "ふくすう",
+     "ko'plik, bir nechta",
+     "名詞の複数形を覚える。",
+     "Otning ko'plik shaklini yodlamoq."
+    ],
+    [
+     "複合",
+     "ふくごう",
+     "murakkab, aralash",
+     "駅前に複合施設ができた。",
+     "Stansiya oldida ko'p funksiyali majmua qurildi."
+    ],
+    [
+     "複写",
+     "ふくしゃ",
+     "nusxa ko'chirish",
+     "書類を複写する。",
+     "Hujjatdan nusxa ko'chirmoq."
+    ]
+   ]
+  },
+  {
+   "k": "制",
+   "st": 8,
+   "mean": "tizim, cheklash",
+   "on": "セイ",
+   "kun": "—",
+   "s": "学校の制服を着て出かける。",
+   "t": "Maktab formasini kiyib chiqaman.",
+   "w": [
+    [
+     "制度",
+     "せいど",
+     "tizim, qoida",
+     "新しい制度が来月から始まる。",
+     "Yangi tizim kelasi oydan boshlanadi."
+    ],
+    [
+     "制作",
+     "せいさく",
+     "yaratmoq, tayyorlamoq (asar)",
+     "友達と映画を制作する。",
+     "Do'stlarim bilan film yaratamiz."
+    ],
+    [
+     "体制",
+     "たいせい",
+     "tuzum, tashkiliy tizim",
+     "新しい体制で仕事を始める。",
+     "Yangi tizimda ishni boshlaymiz."
+    ],
+    [
+     "制限",
+     "せいげん",
+     "cheklov",
+     "速度制限を守る。",
+     "Tezlik cheklovga rioya qilmoq."
+    ]
+   ]
+  },
+  {
+   "k": "純",
+   "st": 10,
+   "mean": "sof, oddiy",
+   "on": "ジュン",
+   "kun": "—",
+   "s": "彼女は純な気持ちで人を信じる。",
+   "t": "U sof qalb bilan odamlarga ishonadi.",
+   "w": [
+    [
+     "単純な",
+     "たんじゅんな",
+     "oddiy, sodda",
+     "単純な作業を毎日くり返す。",
+     "Oddiy ishni har kuni takrorlayman."
+    ],
+    [
+     "純粋な",
+     "じゅんすいな",
+     "sof, beg'ubor",
+     "漁師になりたいと純粋な気持ちで思った。",
+     "Baliqchi bo'lishni beg'ubor niyat bilan xohladim."
+    ],
+    [
+     "純情",
+     "じゅんじょう",
+     "samimiy, beg'ubor tuyg'u",
+     "彼は純情な青年だ。",
+     "U samimiy, beg'ubor yigit."
+    ],
+    [
+     "純金",
+     "じゅんきん",
+     "sof oltin",
+     "純金の指輪を買った。",
+     "Sof oltin uzuk sotib oldim."
+    ]
+   ]
+  },
+  {
+   "k": "各",
+   "st": 6,
+   "mean": "har bir",
+   "on": "カク",
+   "kun": "おのおの",
+   "s": "各クラスから代表を一人選ぶ。",
+   "t": "Har bir sinfdan bitta vakil tanlanadi.",
+   "w": [
+    [
+     "各国",
+     "かっこく",
+     "har bir davlat",
+     "世界各国から留学生が集まる。",
+     "Dunyoning har bir mamlakatidan o'quvchilar to'planadi."
+    ],
+    [
+     "各々",
+     "おのおの",
+     "har biri",
+     "社員が、各々、会社の発展に努めた。",
+     "Xodimlarning har biri kompaniya rivoji uchun intildi."
+    ],
+    [
+     "各地",
+     "かくち",
+     "turli joylar",
+     "各地で大雨が降っている。",
+     "Turli joylarda kuchli yomg'ir yog'yapti."
+    ],
+    [
+     "各自",
+     "かくじ",
+     "har kim o'zi",
+     "昼ご飯は各自で用意してください。",
+     "Tushlikni har kim o'zi tayyorlasin."
+    ]
+   ]
+  },
+  {
+   "k": "層",
+   "st": 14,
+   "mean": "qatlam, tabaqa",
+   "on": "ソウ",
+   "kun": "—",
+   "s": "高層ビルが駅の近くに建っている。",
+   "t": "Stansiya yaqinida baland qavatli bino turibdi.",
+   "w": [
+    [
+     "高層",
+     "こうそう",
+     "ko'p qavatli, baland",
+     "高層マンションに住んでいる。",
+     "Ko'p qavatli uy-joyda yashayman."
+    ],
+    [
+     "階層",
+     "かいそう",
+     "qatlam, ijtimoiy tabaqa",
+     "社会にはさまざまな階層の人がいる。",
+     "Jamiyatda turli tabaqadagi odamlar bor."
+    ],
+    [
+     "地層",
+     "ちそう",
+     "yer qatlami",
+     "崖で地層が見える。",
+     "Jarlikda yer qatlamlari ko'rinadi."
+    ],
+    [
+     "断層",
+     "だんそう",
+     "yoriq (geologik)",
+     "断層が地震の原因になる。",
+     "Yoriq zilzilaga sabab bo'ladi."
+    ]
+   ]
+  },
+  {
+   "k": "訓",
+   "st": 10,
+   "mean": "o'rgatish; kun o'qilishi",
+   "on": "クン",
+   "kun": "—",
+   "s": "日本語の漢字には音と訓の読み方がある。",
+   "t": "Yapon kanjisida on va kun o'qilishlari bor.",
+   "w": [
+    [
+     "訓読み",
+     "くんよみ",
+     "kun'yomi (yaponcha o'qilishi)",
+     "漢字の音読みと訓読みを覚える。",
+     "Kanjining on va kun o'qilishini yodlamoq."
+    ],
+    [
+     "訓練",
+     "くんれん",
+     "mashq, tayyorgarlik",
+     "職業訓練を受けた人を雇う制度が始まる。",
+     "Kasbiy tayyorgarlik ko'rganlarni ishga olish tizimi boshlanadi."
+    ],
+    [
+     "教訓",
+     "きょうくん",
+     "saboq, o'git",
+     "失敗から教訓を学ぶ。",
+     "Muvaffaqiyatsizlikdan saboq olmoq."
+    ]
+   ]
+  },
+  {
+   "k": "造",
+   "st": 10,
+   "mean": "yaratmoq, qurmoq",
+   "on": "ゾウ",
+   "kun": "つく(る)",
+   "s": "日本には古い木造の建物が多い。",
+   "t": "Yaponiyada eski yog'och binolar ko'p.",
+   "w": [
+    [
+     "製造",
+     "せいぞう",
+     "ishlab chiqarmoq",
+     "自動車を製造し、輸出する。",
+     "Avtomobil ishlab chiqarib, eksport qiladi."
+    ],
+    [
+     "構造",
+     "こうぞう",
+     "tuzilma, struktura",
+     "建物の構造を調べる。",
+     "Binoning tuzilishini tekshirmoq."
+    ],
+    [
+     "造る",
+     "つくる",
+     "yasamoq, qurmoq (katta narsa)",
+     "酒を造る工場を見学した。",
+     "Spirtli ichimlik tayyorlaydigan zavodni ko'rdik."
+    ],
+    [
+     "木造",
+     "もくぞう",
+     "yog'ochdan qurilgan",
+     "木造の家は火事に弱い。",
+     "Yog'och uy yong'inga chidamsiz."
+    ]
+   ]
+  },
+  {
+   "k": "善",
+   "st": 12,
+   "mean": "yaxshi, ezgulik",
+   "on": "ゼン",
+   "kun": "—",
+   "s": "善いことをするのは気持ちがいい。",
+   "t": "Yaxshilik qilish yoqimli.",
+   "w": [
+    [
+     "改善",
+     "かいぜん",
+     "yaxshilash",
+     "労働条件の改善を要求する。",
+     "Mehnat sharoitlarini yaxshilashni talab qiladi."
+    ],
+    [
+     "善悪",
+     "ぜんあく",
+     "yaxshi va yomon",
+     "子どもに善悪を教える。",
+     "Bolaga yaxshi va yomonni o'rgatadi."
+    ],
+    [
+     "最善",
+     "さいぜん",
+     "eng yaxshi (harakat)",
+     "最善を尽くします。",
+     "Qo'limdan kelganini qilaman."
+    ],
+    [
+     "親善",
+     "しんぜん",
+     "do'stona munosabat",
+     "両国の親善を深める。",
+     "Ikki davlat o'rtasidagi do'stlikni mustahkamlamoq."
+    ]
+   ]
+  },
+  {
+   "k": "般",
+   "st": 10,
+   "mean": "umumiy",
+   "on": "ハン",
+   "kun": "—",
+   "s": "一般の人も入ることができる。",
+   "t": "Oddiy odamlar ham kira oladi.",
+   "w": [
+    [
+     "一般に",
+     "いっぱんに",
+     "umuman, odatda",
+     "一般に日本のカメラは優れていると言われる。",
+     "Odatda yapon kameralari a'lo deyiladi."
+    ],
+    [
+     "一般の",
+     "いっぱんの",
+     "umumiy, oddiy",
+     "この大学の図書館は一般の市民にも開放されている。",
+     "Bu universitet kutubxonasi oddiy fuqarolar uchun ham ochiq."
+    ],
+    [
+     "全般",
+     "ぜんぱん",
+     "umuman, umumiy jihatdan",
+     "経済全般について勉強する。",
+     "Iqtisodiyotni umuman o'rganaman."
+    ],
+    [
+     "一般的",
+     "いっぱんてき",
+     "umumiy, keng tarqalgan",
+     "一般的な方法を使う。",
+     "Keng tarqalgan usuldan foydalanamiz."
+    ]
+   ]
+  },
+  {
+   "k": "船",
+   "st": 11,
+   "mean": "kema",
+   "on": "セン",
+   "kun": "ふね · ふな",
+   "s": "船で島まで行く。",
+   "t": "Orolga kemada boramiz.",
+   "w": [
+    [
+     "船",
+     "ふね",
+     "kema",
+     "大きな船が港に入ってきた。",
+     "Katta kema portga kirib keldi."
+    ],
+    [
+     "船便",
+     "ふなびん",
+     "dengiz pochtasi",
+     "航空便ですか、船便ですか。",
+     "Aviapochtami yoki dengiz pochtasimi?"
+    ],
+    [
+     "造船",
+     "ぞうせん",
+     "kema qurish",
+     "この町は造船業がさかんだ。",
+     "Bu shaharda kema qurish sanoati rivojlangan."
+    ],
+    [
+     "乗船",
+     "じょうせん",
+     "kemaga chiqmoq",
+     "乗船券を買う。",
+     "Kema chiptasini sotib olaman."
+    ]
+   ]
+  },
+  {
+   "k": "完",
+   "st": 7,
+   "mean": "tugatmoq, to'liq",
+   "on": "カン",
+   "kun": "—",
+   "s": "工事は来月完了する予定だ。",
+   "t": "Qurilish ishlari kelasi oy tugatilishi rejalashtirilgan.",
+   "w": [
+    [
+     "完成",
+     "かんせい",
+     "tugallash, bitkazish",
+     "新しい橋が完成した。",
+     "Yangi ko'prik qurib bitkazildi."
+    ],
+    [
+     "完全な",
+     "かんぜんな",
+     "to'liq, mukammal",
+     "完全な計画を立てるのは難しい。",
+     "Mukammal reja tuzish qiyin."
+    ],
+    [
+     "完備",
+     "かんび",
+     "to'liq jihozlangan",
+     "この部屋は設備が完備している。",
+     "Bu xonaning jihozlari to'liq."
+    ]
+   ]
+  },
+  {
+   "k": "貿",
+   "st": 12,
+   "mean": "savdo",
+   "on": "ボウ",
+   "kun": "—",
+   "s": "日本は貿易で成り立っている国だ。",
+   "t": "Yaponiya savdoga tayanadigan davlat.",
+   "w": [
+    [
+     "貿易",
+     "ぼうえき",
+     "tashqi savdo",
+     "貧しい国の生産者を支える貿易を行う。",
+     "Kambag'al mamlakat ishlab chiqaruvchilarini qo'llab-quvvatlaydigan savdo olib boriladi."
+    ],
+    [
+     "貿易会社",
+     "ぼうえきがいしゃ",
+     "tashqi savdo kompaniyasi",
+     "貿易会社で働いている。",
+     "Tashqi savdo kompaniyasida ishlayman."
+    ],
+    [
+     "貿易赤字",
+     "ぼうえきあかじ",
+     "savdo defitsiti",
+     "貿易赤字が拡大している。",
+     "Savdo defitsiti kengaymoqda."
+    ],
+    [
+     "自由貿易",
+     "じゆうぼうえき",
+     "erkin savdo",
+     "自由貿易の協定を結ぶ。",
+     "Erkin savdo shartnomasi tuziladi."
+    ]
+   ]
+  },
+  {
+   "k": "革",
+   "st": 9,
+   "mean": "teri, charm; islohot",
+   "on": "カク",
+   "kun": "かわ",
+   "s": "革のかばんを大切に使っている。",
+   "t": "Charm sumkani ehtiyotkorlik bilan ishlataman.",
+   "w": [
+    [
+     "革",
+     "かわ",
+     "teri, charm",
+     "革のくつは長く使える。",
+     "Charm poyabzal uzoq xizmat qiladi."
+    ],
+    [
+     "革製品",
+     "かわせいひん",
+     "charm buyumlar",
+     "革製品や石油を輸入する。",
+     "Charm buyumlar va neftni import qiladi."
+    ],
+    [
+     "改革",
+     "かいかく",
+     "islohot",
+     "政府は教育の改革を進めている。",
+     "Hukumat ta'lim islohotini olib bormoqda."
+    ],
+    [
+     "革命",
+     "かくめい",
+     "inqilob",
+     "産業革命は十八世紀に始まった。",
+     "Sanoat inqilobi 18-asrda boshlangan."
+    ]
+   ]
+  },
+  {
+   "k": "輸",
+   "st": 16,
+   "mean": "tashimoq (eksport/import)",
+   "on": "ユ",
+   "kun": "—",
+   "s": "果物を外国から輸送する。",
+   "t": "Mevalarni chet eldan tashib keltirmoq.",
+   "w": [
+    [
+     "輸入",
+     "ゆにゅう",
+     "import",
+     "日本は石油を輸入している。",
+     "Yaponiya neftni import qiladi."
+    ],
+    [
+     "輸出",
+     "ゆしゅつ",
+     "eksport",
+     "日本は自動車を輸出している。",
+     "Yaponiya avtomobil eksport qiladi."
+    ],
+    [
+     "輸送",
+     "ゆそう",
+     "tashish, transport",
+     "荷物を船で輸送する。",
+     "Yukni kemada tashiymiz."
+    ],
+    [
+     "運輸",
+     "うんゆ",
+     "transport sohasi",
+     "運輸会社に就職した。",
+     "Transport kompaniyasiga ishga kirdim."
+    ]
+   ]
+  },
+  {
+   "k": "貧",
+   "st": 11,
+   "mean": "kambag'al",
+   "on": "ヒン · ビン",
+   "kun": "まず(しい)",
+   "s": "貧しい家に生まれたが、一生懸命勉強した。",
+   "t": "Kambag'al oilada tug'ilgan, lekin astoydil o'qidi.",
+   "w": [
+    [
+     "貧しい",
+     "まずしい",
+     "kambag'al",
+     "貧しい人々を助ける活動をしている。",
+     "Kambag'al odamlarga yordam beruvchi faoliyat bilan shug'ullanaman."
+    ],
+    [
+     "貧乏",
+     "びんぼう",
+     "kambag'allik",
+     "子どものころは貧乏だった。",
+     "Bolaligimda kambag'al edim."
+    ],
+    [
+     "貧困",
+     "ひんこん",
+     "qashshoqlik",
+     "貧困をなくす努力が必要だ。",
+     "Qashshoqlikni yo'qotish uchun harakat kerak."
+    ],
+    [
+     "貧富",
+     "ひんぷ",
+     "boy va kambag'al",
+     "貧富の差が広がっている。",
+     "Boylar va kambag'allar orasidagi farq kengaymoqda."
+    ]
+   ]
+  },
+  {
+   "k": "雇",
+   "st": 12,
+   "mean": "yollamoq",
+   "on": "コ",
+   "kun": "やと(う)",
+   "s": "会社は新しい社員を雇う。",
+   "t": "Kompaniya yangi xodim yollaydi.",
+   "w": [
+    [
+     "雇う",
+     "やとう",
+     "yollamoq",
+     "店は週末だけアルバイトを雇う。",
+     "Do'kon faqat dam olish kunlari vaqtinchalik xodim yollaydi."
+    ],
+    [
+     "雇用",
+     "こよう",
+     "bandlik, ish bilan ta'minlash",
+     "雇用を増やす政策を進める。",
+     "Bandlikni oshirish siyosatini olib boradi."
+    ],
+    [
+     "解雇",
+     "かいこ",
+     "ishdan bo'shatish",
+     "会社は社員を解雇した。",
+     "Kompaniya xodimni ishdan bo'shatdi."
+    ],
+    [
+     "雇い主",
+     "やといぬし",
+     "ish beruvchi",
+     "雇い主と契約を結んだ。",
+     "Ish beruvchi bilan shartnoma tuzdim."
+    ]
+   ]
+  }
+ ]
+}
