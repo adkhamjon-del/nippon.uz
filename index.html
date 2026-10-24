@@ -1342,6 +1342,100 @@ body { background:linear-gradient(180deg,#efe9e0,var(--washi)); font-family:'Zen
 .kana-choice-card .hcc-die { width: 64px; height: 64px; font-size: 30px; }
 .kana-choice-card .hcc-title { font-size: 16.5px; }
 .kana-choice-card .hcc-sub { font-size: 12.5px; }
+
+  /* ================= KANJI KARTOCHKALAR (kfc) ================= */
+  .cat-card.kfc { background: linear-gradient(120deg, #fdf0f3, #fbdfe6 65%, #fbdfe6); border-color: #f3ccd6; }
+  .cat-card.kfc::after { background: radial-gradient(circle, var(--sakura), transparent 70%); }
+  .cat-icon.kfc { background: linear-gradient(145deg, #f6b4c3, var(--sakura)); color: #fff; }
+  #kfcScreen { padding: 4px 2px 40px; max-width: 520px; margin: 0 auto; width: 100%; }
+  #kfcScreen .journey-back { color: var(--ai-blue); font-weight: 700; margin-bottom: 12px; }
+  .kfc-h { font-family: 'Noto Serif JP', serif; font-weight: 900; font-size: 20px; margin: 0 0 4px; }
+  .kfc-sub { font-size: 12px; color: #8a8070; margin-bottom: 14px; }
+  .kfc-note { font-size: 11.5px; color: #8a8070; text-align: center; margin-top: 14px; }
+  .kfc-lessons { display: flex; flex-direction: column; gap: 10px; }
+  .kfc-lesson { display: flex; align-items: center; gap: 14px; background: var(--paper); border: 1px solid var(--line);
+    border-radius: 16px; padding: 14px 16px; cursor: pointer; box-shadow: 0 3px 10px rgba(0,0,0,0.04); }
+  .kfc-lesson:active { transform: scale(.99); }
+  .kfc-num { font-family: 'Noto Serif JP', serif; font-weight: 900; font-size: 30px; color: var(--shu); min-width: 46px; text-align: center; line-height: 1; }
+  .kfc-num small { display: block; font-family: 'Zen Kaku Gothic New', sans-serif; font-size: 10px; font-weight: 700; color: #a89e91; margin-top: 3px; }
+  .kfc-linfo { flex: 1; min-width: 0; }
+  .kfc-ltitle { font-weight: 800; font-size: 14px; }
+  .kfc-lmeta { font-size: 11.5px; color: #8a8070; margin: 2px 0 7px; }
+  .kfc-chips { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 7px; }
+  .kfc-chip { font-size: 11px; font-weight: 700; padding: 2px 9px; border-radius: 99px; background: rgba(0,0,0,0.05); color: #6b6358; }
+  .kfc-chip.nw { background: var(--ai-blue-soft); color: var(--ai-blue); }
+  .kfc-chip.du { background: var(--shu-soft); color: var(--shu); }
+  .kfc-chip.ok { background: rgba(47,122,79,0.12); color: var(--ok); }
+  .kfc-bar { height: 5px; border-radius: 4px; background: rgba(0,0,0,0.08); overflow: hidden; }
+  .kfc-bar i { display: block; height: 100%; background: var(--ok); border-radius: 4px; }
+
+  .kfc-tools { display: grid; gap: 8px; margin-bottom: 12px; }
+  .kfc-row { display: flex; gap: 8px; }
+  .kfc-seg { display: flex; flex: 1; background: var(--paper); border: 1px solid var(--line); border-radius: 10px; padding: 3px; }
+  .kfc-seg button { flex: 1; border: 0; background: transparent; color: #8a8070; font: 700 12.5px 'Zen Kaku Gothic New', sans-serif; padding: 8px 4px; border-radius: 7px; cursor: pointer; }
+  .kfc-seg button[aria-pressed="true"] { background: var(--sumi); color: #fff; }
+  .kfc-sel, .kfc-toggle { flex: 1; min-width: 0; background: var(--paper); color: var(--sumi); border: 1px solid var(--line); border-radius: 10px; padding: 9px 10px; font: 600 12.5px 'Zen Kaku Gothic New', sans-serif; }
+  .kfc-toggle { flex: 0 0 auto; cursor: pointer; }
+  .kfc-toggle[aria-pressed="true"] { background: var(--sumi); color: #fff; }
+  .kfc-stats { display: flex; gap: 6px; flex-wrap: wrap; font-size: 11.5px; margin-bottom: 10px; }
+  .kfc-stats span { background: var(--paper); border: 1px solid var(--line); border-radius: 99px; padding: 2px 10px; color: #8a8070; }
+  .kfc-stats b { color: var(--sumi); }
+  .kfc-progress { height: 6px; background: var(--line); border-radius: 6px; overflow: hidden; }
+  .kfc-progress i { display: block; height: 100%; width: 0; background: var(--ok); transition: width .3s; }
+  .kfc-count { display: flex; justify-content: space-between; font-size: 12px; color: #8a8070; margin: 6px 2px 12px; }
+
+  .kfc-scene { perspective: 1400px; }
+  .kfc-card { position: relative; cursor: pointer; border-radius: 18px; }
+  .kfc-inner { display: grid; transition: transform .5s cubic-bezier(.3,.7,.2,1); transform-style: preserve-3d; }
+  .kfc-card.flipped .kfc-inner { transform: rotateY(180deg); }
+  .kfc-face { grid-area: 1/1; backface-visibility: hidden; -webkit-backface-visibility: hidden;
+    background: hsl(var(--h) 55% 96%); border: 1px solid var(--line); border-top: 9px solid hsl(var(--h) 58% 46%);
+    border-radius: 18px; padding: 16px 16px 18px; box-shadow: 0 6px 18px rgba(0,0,0,0.06); }
+  .kfc-back { transform: rotateY(180deg); }
+  .kfc-front { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 360px; text-align: center; }
+  .kfc-tag { align-self: flex-start; font-size: 11px; font-weight: 800; padding: 3px 10px; border-radius: 99px; background: hsl(var(--h) 55% 46%); color: #fff; }
+  .kfc-front .kfc-tag { position: absolute; top: 18px; left: 16px; }
+  .kfc-big { font-family: 'Noto Serif JP', 'Hiragino Mincho ProN', serif; font-weight: 600; line-height: 1.15; word-break: keep-all; }
+  .kfc-big.k { font-size: clamp(7.5rem, 42vw, 11.5rem); }
+  .kfc-big.w { font-size: clamp(3.4rem, 17vw, 5.2rem); }
+  .kfc-big.w.long { font-size: clamp(2.4rem, 11.5vw, 3.6rem); }
+  .kfc-hint { position: absolute; bottom: 14px; left: 0; right: 0; font-size: 11.5px; color: #8a8070; }
+  .kfc-head { display: flex; align-items: center; gap: 14px; margin: 8px 0 12px; }
+  .kfc-glyph { font-family: 'Noto Serif JP', serif; font-size: 3.6rem; font-weight: 600; line-height: 1; }
+  .kfc-meaning { font-size: 16px; font-weight: 800; }
+  .kfc-strokes { font-size: 12px; color: #8a8070; }
+  .kfc-rd { display: flex; gap: 8px; margin: 0 0 12px; }
+  .kfc-rd div { flex: 1; background: var(--paper); border: 1px solid var(--line); border-radius: 10px; padding: 7px 10px; }
+  .kfc-rd small { display: block; font-size: 11px; color: #8a8070; font-weight: 700; }
+  .kfc-rd b { font-family: 'Noto Serif JP', serif; font-size: 17px; }
+  .kfc-rd .o { border-left: 5px solid var(--shu); } .kfc-rd .o b { color: var(--shu); }
+  .kfc-rd .u { border-left: 5px solid var(--ok); } .kfc-rd .u b { color: var(--ok); }
+  .kfc-sent { background: var(--paper); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; margin: 0 0 12px; }
+  .kfc-sent .jp { font-family: 'Noto Serif JP', serif; font-size: 17px; line-height: 1.6; }
+  .kfc-sent .uz { font-size: 13px; color: #8a8070; margin-top: 3px; }
+  .kfc-card mark { background: hsl(var(--h) 80% 62% / .45); color: inherit; border-radius: 3px; padding: 0 2px; }
+  .kfc-sec { font-size: 11.5px; font-weight: 800; color: #8a8070; margin: 2px 0 6px; }
+  .kfc-cmp { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+  .kfc-cmp li { display: grid; grid-template-columns: auto 1fr; column-gap: 10px; align-items: baseline; background: var(--paper); border: 1px solid var(--line); border-radius: 10px; padding: 7px 10px; }
+  .kfc-cmp .w { font-family: 'Noto Serif JP', serif; font-size: 19px; font-weight: 600; }
+  .kfc-cmp .r { font-size: 12.5px; color: var(--shu); font-weight: 700; }
+  .kfc-cmp .t { grid-column: 2; font-size: 13px; }
+  .kfc-reading { font-family: 'Noto Serif JP', serif; font-size: 2rem; font-weight: 600; color: var(--shu); margin: 6px 0 0; }
+  .kfc-wmean { font-size: 17px; font-weight: 800; margin: 2px 0 12px; }
+  .kfc-parts { display: flex; flex-wrap: wrap; gap: 6px; }
+  .kfc-parts span { background: var(--paper); border: 1px solid var(--line); border-radius: 10px; padding: 5px 10px; font-size: 13px; }
+  .kfc-parts b { font-family: 'Noto Serif JP', serif; font-size: 17px; margin-right: 4px; }
+  .kfc-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+  .kfc-actions button { border: 0; border-radius: 12px; padding: 15px 10px; font: 800 15px 'Zen Kaku Gothic New', sans-serif; cursor: pointer; color: #fff; }
+  .kfc-actions .again { background: var(--bad); } .kfc-actions .known { background: var(--ok); }
+  .kfc-actions button:active { transform: scale(.98); }
+  .kfc-keys { margin-top: 10px; font-size: 11px; color: #a89e91; text-align: center; }
+  .kfc-done { text-align: center; padding: 40px 16px; background: var(--paper); border: 1px solid var(--line); border-radius: 18px; }
+  .kfc-done h2 { margin: 0 0 6px; font-size: 20px; }
+  .kfc-done p { margin: 0 0 16px; color: #8a8070; font-size: 13px; }
+  .kfc-done button { border: 0; background: var(--sumi); color: #fff; font: 800 14px 'Zen Kaku Gothic New', sans-serif; padding: 12px 20px; border-radius: 12px; cursor: pointer; margin: 0 4px 6px; }
+  .kfc-toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: var(--sumi); color: #fff; font-size: 12.5px; padding: 9px 16px; border-radius: 99px; z-index: 9999; max-width: 90vw; }
+  @media (prefers-reduced-motion: reduce) { .kfc-inner, .kfc-progress i { transition: none; } }
 </style>
 </head>
 <body>
@@ -1479,6 +1573,9 @@ body { background:linear-gradient(180deg,#efe9e0,var(--washi)); font-family:'Zen
     </div>
     <div id="catScreenContent"></div>
   </div>
+
+  <!-- KANJI KARTOCHKALAR (SRS) EKRANI -->
+  <div id="kfcScreen" class="hidden"></div>
 
   <!-- YON DAFTARCHA MODAL (varaqlanadigan) -->
   <div class="notebook-overlay" id="notebookOverlay">
@@ -2197,6 +2294,326 @@ const CATEGORY_META = {
   listening: { label: 'Tinglash', icon: '🎧', cls: 'listening' },
 };
 
+/* ================== KANJI KARTOCHKALAR (SRS, Supabase'da saqlanadi) ================== */
+// Kartochka ma'lumotlari: /kanji-data/manifest.json va /kanji-data/n3-<dars>.json
+// Natijalar: Supabase `kanji_card_progress` jadvali (SQL: kanji_card_progress.sql)
+const KFC_PUBLIC = false;          // false = faqat ADMIN_EMAIL ko'radi. Hamma uchun ochish: true
+const KFC_LEVEL = 'N3';
+const KFC_DIR = 'kanji-data/';
+const KFC_INTERVALS = [0, 1, 3, 7, 14, 30];   // quti -> necha kundan keyin qaytadi
+const kfcScreen = document.getElementById('kfcScreen');
+
+let kfcManifest = null;
+let kfcProgress = new Map();       // card_id -> {box, due}
+let kfcLesson = null;              // {n, range, file, cards...}
+let kfcData = null;                // yuklangan dars JSON
+let kfcCards = [];
+let kfcSt = { scope: 'due', mode: 'all', kanji: 'all', shuffle: true };
+let kfcQueue = [], kfcPos = 0, kfcTotal = 0, kfcKnown = 0, kfcLapsed = new Set();
+let kfcKeyHandler = null;
+
+function kfcAllowed() {
+  if (KFC_PUBLIC) return true;
+  try {
+    return !!(currentUser && currentUser.email && currentUser.email.toLowerCase() === ADMIN_EMAIL.toLowerCase());
+  } catch (e) { return false; }
+}
+function kfcCtaBlock() {
+  if (selectedLevel !== KFC_LEVEL || !kfcAllowed()) return '';
+  return `<div class="cat-list"><div class="cat-card kfc" id="kfcEntryCta">
+    <div class="cat-icon kfc">🗂</div>
+    <div class="cat-info"><div class="cat-title">Kanji kartochkalar</div>
+    <div class="cat-sub" style="margin-bottom:0">Eslab qolish mashqi · 32-darsdan 1-gacha</div></div>
+    <div class="cat-chevron">›</div></div></div>`;
+}
+function kfcBindCta() {
+  const el = document.getElementById('kfcEntryCta');
+  if (el) el.addEventListener('click', kfcOpen);
+}
+
+const kfcToday = () => { const d = new Date(); return Math.floor((d.getTime() - d.getTimezoneOffset() * 6e4) / 864e5); };
+function kfcToast(msg) {
+  const t = document.createElement('div');
+  t.className = 'kfc-toast'; t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3500);
+}
+function kfcHl(s, w) { const i = s.indexOf(w); return i < 0 ? s : s.slice(0, i) + '<mark>' + w + '</mark>' + s.slice(i + w.length); }
+function kfcShuf(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+
+/* ---------- ochish / yopish ---------- */
+async function kfcOpen() {
+  lessonListScreen.classList.add('hidden');
+  categoryScreen.classList.add('hidden');
+  kfcScreen.classList.remove('hidden');
+  headerEyebrow.textContent = `${KFC_LEVEL} レベル`;
+  headerTitle.textContent = 'Kanji kartochkalar';
+  window.scrollTo(0, 0);
+  kfcScreen.innerHTML = '<div class="loading-msg">Yuklanmoqda...</div>';
+  try {
+    if (!kfcManifest) {
+      const r = await fetch(KFC_DIR + 'manifest.json', { cache: 'no-cache' });
+      if (!r.ok) throw new Error('manifest.json topilmadi (' + r.status + ')');
+      kfcManifest = await r.json();
+    }
+    await kfcLoadProgress();
+    kfcShowLessons();
+  } catch (e) { kfcShowError(e); }
+}
+function kfcClose() {
+  kfcDetachKeys();
+  kfcScreen.classList.add('hidden');
+  headerEyebrow.textContent = '日本語レッスン';
+  headerTitle.textContent = "Darslar ro'yxati";
+  lessonListScreen.classList.remove('hidden');
+}
+function kfcShowError(e) {
+  const msg = (typeof describeSupabaseError === 'function' && e && (e.code || e.details || e.hint)) ? describeSupabaseError(e) : (e && e.message) || String(e);
+  kfcScreen.innerHTML = `<div class="journey-back" id="kfcBackBtn">← Ortga</div>
+    <div class="empty-msg">Kartochkalarni yuklab bo'lmadi 😕<br><br>
+    <span style="font-size:10.5px;color:#a89e91;word-break:break-word;">${escapeHtml(msg)}</span></div>`;
+  document.getElementById('kfcBackBtn').onclick = kfcClose;
+}
+
+/* ---------- progress (Supabase / mehmon uchun localStorage) ---------- */
+async function kfcLoadProgress() {
+  kfcProgress = new Map();
+  if (currentUser) {
+    const step = 1000;
+    for (let from = 0; ; from += step) {
+      const { data, error } = await withRetry(
+        () => supabaseClient.from('kanji_card_progress').select('card_id, box, due_day')
+          .eq('user_id', currentUser.id).like('card_id', KFC_LEVEL.toLowerCase() + ':%').range(from, from + step - 1),
+        'kartochka progressini yuklash'
+      );
+      if (error) throw error;
+      (data || []).forEach(r => kfcProgress.set(r.card_id, { box: r.box, due: r.due_day }));
+      if (!data || data.length < step) break;
+    }
+  } else {
+    try {
+      const raw = JSON.parse(localStorage.getItem('kfc.guest.v1') || '{}');
+      Object.keys(raw).forEach(k => kfcProgress.set(k, raw[k]));
+    } catch (e) { /* ruxsat yo'q */ }
+  }
+}
+async function kfcSave(cardId, rec) {
+  kfcProgress.set(cardId, rec);
+  if (!currentUser) {
+    try {
+      const o = {}; kfcProgress.forEach((v, k) => { o[k] = v; });
+      localStorage.setItem('kfc.guest.v1', JSON.stringify(o));
+    } catch (e) { /* e'tiborsiz */ }
+    return;
+  }
+  const { error } = await supabaseClient.from('kanji_card_progress').upsert(
+    { user_id: currentUser.id, card_id: cardId, box: rec.box, due_day: rec.due, updated_at: new Date().toISOString() },
+    { onConflict: 'user_id,card_id' }
+  );
+  if (error) { console.warn('[kfc] saqlanmadi:', error); kfcToast('Natija saqlanmadi. Internetni tekshiring.'); }
+}
+
+/* ---------- darslar ro'yxati (eng yangisi tepada) ---------- */
+function kfcShowLessons() {
+  kfcDetachKeys();
+  kfcLesson = null; kfcData = null;
+  headerTitle.textContent = 'Kanji kartochkalar';
+  const t = kfcToday();
+  const lessons = kfcManifest.lessons.slice().sort((a, b) => b.n - a.n);
+  const rows = lessons.map(L => {
+    const prefix = `${KFC_LEVEL.toLowerCase()}:${L.n}:`;
+    let seen = 0, mast = 0, due = 0;
+    kfcProgress.forEach((r, id) => {
+      if (!id.startsWith(prefix)) return;
+      seen++; if (r.box >= 3) mast++; if (r.due <= t) due++;
+    });
+    const nw = Math.max(L.cards - seen, 0);
+    const pct = Math.round(mast / L.cards * 100);
+    return `<div class="kfc-lesson" data-n="${L.n}">
+      <div class="kfc-num">${L.n}<small>dars</small></div>
+      <div class="kfc-linfo">
+        <div class="kfc-ltitle">${L.n}-dars · ${L.range}</div>
+        <div class="kfc-lmeta">${L.kanji} kanji · ${L.cards} kartochka</div>
+        <div class="kfc-chips"><span class="kfc-chip nw">Yangi ${nw}</span><span class="kfc-chip du">Takror ${due}</span><span class="kfc-chip ok">Yodlangan ${mast}</span></div>
+        <div class="kfc-bar"><i style="width:${pct}%"></i></div>
+      </div></div>`;
+  }).join('');
+  kfcScreen.innerHTML = `<div class="journey-back" id="kfcBackBtn">← Ortga</div>
+    <h2 class="kfc-h">Kanji kartochkalar</h2>
+    <div class="kfc-sub">Kitob darslari, eng yangisidan boshlab. Darsni tanlang.</div>
+    <div class="kfc-lessons">${rows}</div>
+    <div class="kfc-note">Qolgan darslar ketma-ket qo'shiladi.</div>`;
+  document.getElementById('kfcBackBtn').onclick = kfcClose;
+  kfcScreen.querySelectorAll('.kfc-lesson').forEach(el => el.onclick = () => kfcOpenLesson(+el.dataset.n));
+}
+
+/* ---------- dars ichida ---------- */
+async function kfcOpenLesson(n) {
+  const L = kfcManifest.lessons.find(x => x.n === n); if (!L) return;
+  kfcScreen.innerHTML = '<div class="loading-msg">Yuklanmoqda...</div>';
+  try {
+    const r = await fetch(KFC_DIR + L.file, { cache: 'no-cache' });
+    if (!r.ok) throw new Error(L.file + ' topilmadi (' + r.status + ')');
+    kfcData = await r.json();
+  } catch (e) { kfcShowError(e); return; }
+  kfcLesson = L;
+  kfcCards = [];
+  const pre = `${KFC_LEVEL.toLowerCase()}:${L.n}:`;
+  kfcData.kanji.forEach((d, ki) => {
+    const h = (ki * 15) % 360;
+    kfcCards.push({ type: 'kanji', ki, h, d, id: pre + d.k });
+    d.w.forEach(w => kfcCards.push({ type: 'word', ki, h, d, w, id: pre + d.k + ':' + w[0] }));
+  });
+  kfcSt.kanji = 'all';
+  headerTitle.textContent = `${L.n}-dars · ${L.range}`;
+  kfcScreen.innerHTML = `
+    <div class="journey-back" id="kfcBackBtn">← Darslar</div>
+    <div class="kfc-tools">
+      <div class="kfc-row">
+        <div class="kfc-seg" role="group" aria-label="Qaysi kartochkalar">
+          <button data-scope="due">Bugungi</button><button data-scope="all">Hammasi</button>
+        </div>
+        <button class="kfc-toggle" id="kfcShuf">Aralashtirish</button>
+      </div>
+      <div class="kfc-row"><div class="kfc-seg" role="group" aria-label="Kartochka turi">
+        <button data-mode="all">Kanji + birikma</button><button data-mode="kanji">Kanji</button><button data-mode="word">Birikma</button>
+      </div></div>
+      <div class="kfc-row"><select class="kfc-sel" id="kfcKanjiSel" aria-label="Kanji tanlash">
+        <option value="all">Hamma kanji</option>
+        ${kfcData.kanji.map((d, i) => `<option value="${i}">${d.k} · ${d.mean}</option>`).join('')}
+      </select></div>
+    </div>
+    <div class="kfc-stats" id="kfcStats"></div>
+    <div class="kfc-progress"><i id="kfcBar"></i></div>
+    <div class="kfc-count"><span id="kfcC1"></span><span id="kfcC2"></span></div>
+    <div id="kfcStage"></div>
+    <div class="kfc-actions" id="kfcActions">
+      <button class="again" id="kfcAgain">Yana ko'rsat</button>
+      <button class="known" id="kfcKnown">Esladim</button>
+    </div>
+    <div class="kfc-keys">Bosing yoki Space: aylantirish · 1 / ←: yana ko'rsat · 2 / →: esladim</div>`;
+  document.getElementById('kfcBackBtn').onclick = () => { kfcShowLessons(); };
+  kfcScreen.querySelectorAll('[data-scope]').forEach(b => b.onclick = () => { kfcSt.scope = b.dataset.scope; kfcBuild(); });
+  kfcScreen.querySelectorAll('[data-mode]').forEach(b => b.onclick = () => { kfcSt.mode = b.dataset.mode; kfcBuild(); });
+  document.getElementById('kfcKanjiSel').onchange = e => { kfcSt.kanji = e.target.value; kfcBuild(); };
+  document.getElementById('kfcShuf').onclick = () => { kfcSt.shuffle = !kfcSt.shuffle; kfcBuild(); };
+  document.getElementById('kfcAgain').onclick = kfcAgain;
+  document.getElementById('kfcKnown').onclick = kfcKnownFn;
+  kfcAttachKeys();
+  kfcBuild();
+}
+
+function kfcPool() {
+  return kfcCards.filter(c => (kfcSt.mode === 'all' || c.type === kfcSt.mode) && (kfcSt.kanji === 'all' || c.ki === +kfcSt.kanji));
+}
+function kfcIsDue(c) { const r = kfcProgress.get(c.id); return !r || r.due <= kfcToday(); }
+
+function kfcBuild() {
+  kfcScreen.querySelectorAll('[data-scope]').forEach(b => b.setAttribute('aria-pressed', b.dataset.scope === kfcSt.scope));
+  kfcScreen.querySelectorAll('[data-mode]').forEach(b => b.setAttribute('aria-pressed', b.dataset.mode === kfcSt.mode));
+  document.getElementById('kfcShuf').setAttribute('aria-pressed', kfcSt.shuffle);
+  document.getElementById('kfcKanjiSel').value = kfcSt.kanji;
+  let list = kfcPool();
+  if (kfcSt.scope === 'due') list = list.filter(kfcIsDue);
+  kfcQueue = kfcSt.shuffle ? kfcShuf(list.slice()) : list.slice();
+  kfcPos = 0; kfcTotal = kfcQueue.length; kfcKnown = 0; kfcLapsed = new Set();
+  kfcRender();
+}
+
+function kfcFront(c) {
+  if (c.type === 'kanji') return `<span class="kfc-tag">Kanji</span><div class="kfc-big k">${c.d.k}</div><div class="kfc-hint">O'qilishi, ma'nosi va birikmalarini eslang</div>`;
+  const long = c.w[0].length >= 4 ? ' long' : '';
+  return `<span class="kfc-tag">Birikma</span><div class="kfc-big w${long}">${c.w[0]}</div><div class="kfc-hint">O'qilishi va ma'nosini eslang</div>`;
+}
+function kfcBack(c) {
+  const d = c.d;
+  if (c.type === 'kanji') {
+    const cmp = d.w.map(w => `<li><span class="w">${w[0]}</span><span class="r">${w[1]}</span><span class="t">${w[2]}</span></li>`).join('');
+    return `<div class="kfc-head"><div class="kfc-glyph">${d.k}</div><div><div class="kfc-meaning">${d.mean}</div><div class="kfc-strokes">${d.st} chiziq</div></div></div>
+      <div class="kfc-rd"><div class="o"><small>On'yomi</small><b>${d.on}</b></div><div class="u"><small>Kun'yomi</small><b>${d.kun}</b></div></div>
+      <div class="kfc-sent"><div class="jp">${kfcHl(d.s, d.k)}</div><div class="uz">${d.t}</div></div>
+      <div class="kfc-sec">Birikmalar</div><ul class="kfc-cmp">${cmp}</ul>`;
+  }
+  const w = c.w;
+  const parts = [...new Set(w[0].split(''))].map(ch => {
+    const kd = kfcData.kanji.find(x => x.k === ch);
+    return kd ? `<span><b>${kd.k}</b>${kd.mean}</span>` : '';
+  }).join('');
+  return `<span class="kfc-tag">Birikma</span><div class="kfc-reading">${w[1]}</div><div class="kfc-wmean">${w[2]}</div>
+    <div class="kfc-sent"><div class="jp">${kfcHl(w[3], w[0])}</div><div class="uz">${w[4]}</div></div>
+    ${parts ? `<div class="kfc-sec">Tarkibidagi kanjilar</div><div class="kfc-parts">${parts}</div>` : ''}`;
+}
+
+function kfcStats() {
+  const p = kfcPool(), t = kfcToday(); let nw = 0, due = 0, mast = 0;
+  p.forEach(c => { const r = kfcProgress.get(c.id); if (!r) nw++; else if (r.due <= t) due++; if (r && r.box >= 3) mast++; });
+  document.getElementById('kfcStats').innerHTML = `<span>Yangi <b>${nw}</b></span><span>Takrorlash <b>${due}</b></span><span>Yodlangan <b>${mast}</b> / ${p.length}</span>`;
+}
+
+function kfcRender() {
+  const stage = document.getElementById('kfcStage'), actions = document.getElementById('kfcActions');
+  kfcStats();
+  document.getElementById('kfcBar').style.width = kfcTotal ? (kfcKnown / kfcTotal * 100) + '%' : '0';
+  document.getElementById('kfcC1').textContent = `Esladim: ${kfcKnown} / ${kfcTotal}`;
+  document.getElementById('kfcC2').textContent = `Navbatda: ${Math.max(kfcQueue.length - kfcPos, 0)}`;
+  if (kfcPos >= kfcQueue.length) {
+    actions.style.display = 'none';
+    if (!kfcTotal) {
+      stage.innerHTML = `<div class="kfc-done"><h2>Bugun takrorlash yo'q</h2><p>Bu tanlov bo'yicha hamma kartochka o'z vaqtini kutyapti.</p><button id="kfcAllBtn">Baribir hammasini ko'rish</button></div>`;
+      document.getElementById('kfcAllBtn').onclick = () => { kfcSt.scope = 'all'; kfcBuild(); };
+    } else {
+      stage.innerHTML = `<div class="kfc-done"><h2>Tugadi! 🎉</h2><p>${kfcTotal} ta kartochkani yakunladingiz.</p><button id="kfcRestart">Qaytadan</button><button id="kfcToList">Darslar ro'yxati</button></div>`;
+      document.getElementById('kfcRestart').onclick = kfcBuild;
+      document.getElementById('kfcToList').onclick = kfcShowLessons;
+    }
+    return;
+  }
+  actions.style.display = 'grid';
+  const c = kfcQueue[kfcPos];
+  stage.innerHTML = `<div class="kfc-scene"><div class="kfc-card" id="kfcCard" role="button" tabindex="0" aria-pressed="false" style="--h:${c.h}">
+    <div class="kfc-inner"><div class="kfc-face kfc-front">${kfcFront(c)}</div><div class="kfc-face kfc-back" aria-hidden="true">${kfcBack(c)}</div></div></div></div>`;
+  const card = document.getElementById('kfcCard');
+  card.onclick = kfcFlip;
+  card.focus({ preventScroll: true });
+}
+
+function kfcFlip() {
+  const card = document.getElementById('kfcCard'); if (!card) return;
+  const f = !card.classList.contains('flipped');
+  card.classList.toggle('flipped', f);
+  card.setAttribute('aria-pressed', f);
+}
+function kfcAgain() {
+  if (kfcPos >= kfcQueue.length) return;
+  const c = kfcQueue[kfcPos];
+  kfcLapsed.add(c.id);
+  kfcSave(c.id, { box: 0, due: kfcToday() });
+  kfcQueue.push(c); kfcPos++; kfcRender();
+}
+function kfcKnownFn() {
+  if (kfcPos >= kfcQueue.length) return;
+  const c = kfcQueue[kfcPos], r = kfcProgress.get(c.id) || { box: 0 };
+  const box = kfcLapsed.has(c.id) ? 1 : Math.min((r.box || 0) + 1, 5);
+  kfcSave(c.id, { box, due: kfcToday() + KFC_INTERVALS[box] });
+  kfcKnown++; kfcPos++; kfcRender();
+}
+
+function kfcAttachKeys() {
+  kfcDetachKeys();
+  kfcKeyHandler = e => {
+    if (kfcScreen.classList.contains('hidden') || !document.getElementById('kfcCard') && !document.getElementById('kfcActions')) return;
+    const t = e.target.tagName;
+    if (t === 'SELECT' || t === 'BUTTON' || t === 'INPUT' || t === 'TEXTAREA') return;
+    if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); kfcFlip(); }
+    else if (e.key === '1' || e.key === 'ArrowLeft') kfcAgain();
+    else if (e.key === '2' || e.key === 'ArrowRight') kfcKnownFn();
+  };
+  document.addEventListener('keydown', kfcKeyHandler);
+}
+function kfcDetachKeys() {
+  if (kfcKeyHandler) { document.removeEventListener('keydown', kfcKeyHandler); kfcKeyHandler = null; }
+}
+
 /* ================== LOAD LESSONS + COMPLETIONS ================== */
 async function loadLessonList() {
   levelContent.innerHTML = '<div class="loading-msg">Yuklanmoqda...</div>';
@@ -2700,7 +3117,8 @@ function renderLevelContent() {
   const levelLessons = allLessons.filter(l => l.jlpt_level === selectedLevel);
 
   if (levelLessons.length === 0) {
-    levelContent.innerHTML = `<div class="empty-msg">${selectedLevel} darajasida hozircha darslar yo'q. Tez orada qo'shiladi 🌱</div>`;
+    levelContent.innerHTML = kfcCtaBlock() + `<div class="empty-msg">${selectedLevel} darajasida hozircha darslar yo'q. Tez orada qo'shiladi 🌱</div>`;
+    kfcBindCta();
     return;
   }
 
@@ -2740,6 +3158,7 @@ function renderLevelContent() {
   });
   html += `</div>`;
 
+  html += kfcCtaBlock();
   html += renderFinalTestCard();
 
   if (selectedLevel === 'N5') {
@@ -2771,9 +3190,10 @@ function renderLevelContent() {
     </div>`;
 
   levelContent.innerHTML = html;
+  kfcBindCta();
 
   // Event listenerlar
-  levelContent.querySelectorAll('.cat-card:not(.disabled)').forEach(card => {
+  levelContent.querySelectorAll('.cat-card[data-cat]:not(.disabled)').forEach(card => {
     card.addEventListener('click', () => {
       openCategoryScreen(card.dataset.cat);
     });
@@ -2798,6 +3218,8 @@ async function showLessonListScreen() {
   if (grammarUnlockTimer) { clearInterval(grammarUnlockTimer); grammarUnlockTimer = null; }
   quizScreen.classList.add('hidden');
   journeyScreen.classList.add('hidden');
+  kfcScreen.classList.add('hidden');
+  kfcDetachKeys();
   categoryScreen.classList.add('hidden');
   grammarBankScreen.classList.add('hidden');
   grammarScreen.classList.add('hidden');
