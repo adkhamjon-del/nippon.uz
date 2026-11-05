@@ -1,0 +1,964 @@
+{
+ "level": "N3",
+ "lesson": 29,
+ "range": "905–928",
+ "kanji": [
+  {
+   "k": "亡",
+   "st": 3,
+   "mean": "vafot etmoq, yo'qolmoq",
+   "on": "ボウ",
+   "kun": "な(くなる) · な(くす)",
+   "s": "有名な作家が亡くなった。",
+   "t": "Mashhur yozuvchi vafot etdi.",
+   "w": [
+    [
+     "死亡",
+     "しぼう",
+     "o'lim, vafot",
+     "死亡率が下がっている。",
+     "O'lim ko'rsatkichi pasayib bormoqda."
+    ],
+    [
+     "亡くなる",
+     "なくなる",
+     "vafot etmoq",
+     "社長が亡くなると、会社は大きく変わった。",
+     "Direktor vafot etgach, kompaniya katta o'zgardi."
+    ],
+    [
+     "亡くす",
+     "なくす",
+     "(yaqinini) yo'qotmoq",
+     "早く両親を亡くす子どもを支援する団体がある。",
+     "Ota-onasini erta yo'qotgan bolalarni qo'llaydigan tashkilot bor."
+    ],
+    [
+     "亡命",
+     "ぼうめい",
+     "boshqa mamlakatga panoh izlab ketish",
+     "その政治家は外国に亡命した。",
+     "Bu siyosatchi chet elga panoh izlab ketdi."
+    ],
+    [
+     "滅亡",
+     "めつぼう",
+     "halokat, qulash",
+     "古代の王国は滅亡した。",
+     "Qadimiy qirollik qulab tushdi."
+    ]
+   ]
+  },
+  {
+   "k": "展",
+   "st": 10,
+   "mean": "ochmoq, rivojlanmoq, ko'rgazma",
+   "on": "テン",
+   "kun": "—",
+   "s": "駅の近くで美術展が開かれている。",
+   "t": "Stansiya yaqinida san'at ko'rgazmasi o'tkazilmoqda.",
+   "w": [
+    [
+     "発展",
+     "はってん",
+     "rivojlanish",
+     "危ない自転車の乗り方は事故に発展する恐れがある。",
+     "Xavfli velosiped haydash baxtsiz hodisaga olib kelishi mumkin."
+    ],
+    [
+     "展覧会",
+     "てんらんかい",
+     "ko'rgazma",
+     "美術の知識がある友人と展覧会に行く。",
+     "San'atdan xabardor do'stim bilan ko'rgazmaga boraman."
+    ],
+    [
+     "展示",
+     "てんじ",
+     "ko'rgazmaga qo'yish",
+     "新しい車を展示する。",
+     "Yangi mashinani ko'rgazmaga qo'yadi."
+    ],
+    [
+     "展開",
+     "てんかい",
+     "rivojlanish (voqea), ochilish",
+     "物語は意外な展開になった。",
+     "Hikoya kutilmagan tus oldi."
+    ]
+   ]
+  },
+  {
+   "k": "捕",
+   "st": 10,
+   "mean": "tutmoq, qo'lga olmoq",
+   "on": "ホ",
+   "kun": "と(る) · とら(える) · つか(まる) · つか(まえる)",
+   "s": "犯人はすぐに捕まった。",
+   "t": "Jinoyatchi tezda qo'lga olindi.",
+   "w": [
+    [
+     "逮捕",
+     "たいほ",
+     "hibsga olish",
+     "宝石を盗んだ泥棒が逮捕された。",
+     "Zargarlik buyumlarini o'g'irlagan o'g'ri hibsga olindi."
+    ],
+    [
+     "捕まる",
+     "つかまる",
+     "tutilmoq, qo'lga tushmoq",
+     "泥棒が警察に捕まる。",
+     "O'g'ri politsiyaga tutiladi."
+    ],
+    [
+     "捕まえる",
+     "つかまえる",
+     "ushlamoq, tutmoq",
+     "網で虫を捕まえる。",
+     "To'r bilan hasharot tutadi."
+    ],
+    [
+     "捕らえる",
+     "とらえる",
+     "tutmoq; anglamoq",
+     "問題の本質を捕らえる。",
+     "Muammoning mohiyatini anglaydi."
+    ],
+    [
+     "捕る",
+     "とる",
+     "(ov, baliq) tutmoq",
+     "川で魚を捕る。",
+     "Daryoda baliq tutadi."
+    ]
+   ]
+  },
+  {
+   "k": "宝",
+   "st": 8,
+   "mean": "xazina, qadriyat",
+   "on": "ホウ",
+   "kun": "たから",
+   "s": "宝の地図を見つけた。",
+   "t": "Xazina xaritasini topdi.",
+   "w": [
+    [
+     "宝石",
+     "ほうせき",
+     "qimmatbaho tosh",
+     "宝石のネックレスを買った。",
+     "Qimmatbaho toshli marjon sotib oldi."
+    ],
+    [
+     "宝",
+     "たから",
+     "xazina, qadriyat",
+     "健康な体は私の宝だ。",
+     "Sog'lom tana mening xazinam."
+    ],
+    [
+     "宝くじ",
+     "たからくじ",
+     "lotereya",
+     "宝くじで一万円当たった。",
+     "Lotereyada 10 ming yen yutdi."
+    ],
+    [
+     "宝物",
+     "たからもの",
+     "qadrli buyum",
+     "祖母からもらった宝物を大切にする。",
+     "Buvisidan olgan qadrli buyumini asraydi."
+    ]
+   ]
+  },
+  {
+   "k": "棒",
+   "st": 12,
+   "mean": "tayoq, hassa",
+   "on": "ボウ",
+   "kun": "—",
+   "s": "長い棒で木の実を落とす。",
+   "t": "Uzun tayoq bilan mevani tushiradi.",
+   "w": [
+    [
+     "棒",
+     "ぼう",
+     "tayoq",
+     "旗を棒につける。",
+     "Bayroqni tayoqqa mahkamlaydi."
+    ],
+    [
+     "泥棒",
+     "どろぼう",
+     "o'g'ri",
+     "泥棒が店に入った。",
+     "O'g'ri do'konga kirdi."
+    ],
+    [
+     "鉄棒",
+     "てつぼう",
+     "turnik",
+     "公園の鉄棒で遊ぶ。",
+     "Bog'dagi turnikda o'ynaydi."
+    ],
+    [
+     "棒グラフ",
+     "ぼうグラフ",
+     "ustunli diagramma",
+     "棒グラフで売り上げを示す。",
+     "Sotuvlarni ustunli diagramma bilan ko'rsatadi."
+    ]
+   ]
+  },
+  {
+   "k": "輪",
+   "st": 15,
+   "mean": "halqa, g'ildirak",
+   "on": "リン",
+   "kun": "わ",
+   "s": "自転車の輪が回っている。",
+   "t": "Velosiped g'ildiragi aylanyapti.",
+   "w": [
+    [
+     "車輪",
+     "しゃりん",
+     "g'ildirak",
+     "この工場では電車の車輪を生産している。",
+     "Bu zavodda poyezd g'ildiraklari ishlab chiqariladi."
+    ],
+    [
+     "輪",
+     "わ",
+     "halqa, doira",
+     "子どもたちが輪になって座る。",
+     "Bolalar doira bo'lib o'tirishadi."
+    ],
+    [
+     "指輪",
+     "ゆびわ",
+     "uzuk",
+     "指輪をなくして探した。",
+     "Uzukni yo'qotib, qidirdi."
+    ],
+    [
+     "輪ゴム",
+     "わゴム",
+     "rezina halqa",
+     "輪ゴムで書類をまとめる。",
+     "Hujjatlarni rezina bilan bog'laydi."
+    ],
+    [
+     "五輪",
+     "ごりん",
+     "Olimpiada",
+     "五輪で金メダルを取った。",
+     "Olimpiadada oltin medal oldi."
+    ]
+   ]
+  },
+  {
+   "k": "爆",
+   "st": 19,
+   "mean": "portlamoq",
+   "on": "バク",
+   "kun": "—",
+   "s": "大きな爆発音が聞こえた。",
+   "t": "Katta portlash ovozi eshitildi.",
+   "w": [
+    [
+     "爆発",
+     "ばくはつ",
+     "portlash",
+     "ちょっとした操作ミスで大きい爆発が起こった。",
+     "Kichik operatsion xato katta portlashga sabab bo'ldi."
+    ],
+    [
+     "爆弾",
+     "ばくだん",
+     "bomba",
+     "古い爆弾が見つかった。",
+     "Eski bomba topildi."
+    ],
+    [
+     "爆笑",
+     "ばくしょう",
+     "qah-qah urib kulish",
+     "コメディーを見て爆笑した。",
+     "Komediya ko'rib qah-qah urib kuldi."
+    ]
+   ]
+  },
+  {
+   "k": "原",
+   "st": 10,
+   "mean": "asl, dala, boshlang'ich",
+   "on": "ゲン",
+   "kun": "はら",
+   "s": "子どもたちが原っぱで遊んでいる。",
+   "t": "Bolalar maysazorda o'ynayapti.",
+   "w": [
+    [
+     "原料",
+     "げんりょう",
+     "xomashyo",
+     "プラスチックの原料は石油です。",
+     "Plastmassaning xomashyosi neft."
+    ],
+    [
+     "原",
+     "はら",
+     "dala, tekislik",
+     "広い原に花が咲いている。",
+     "Keng dalada gullar ochilgan."
+    ],
+    [
+     "原則",
+     "げんそく",
+     "tamoyil, qoida",
+     "原則として、遅刻は認めない。",
+     "Qoidaga ko'ra, kechikish qabul qilinmaydi."
+    ],
+    [
+     "秋葉原",
+     "あきはばら",
+     "Akixabara (Tokio tumani)",
+     "秋葉原で地下鉄に乗り換える。",
+     "Akixabarada metroga o'tiriladi."
+    ],
+    [
+     "原稿",
+     "げんこう",
+     "qo'lyozma, matn",
+     "原稿を書き終えた。",
+     "Qo'lyozmani yozib tugatdi."
+    ]
+   ]
+  },
+  {
+   "k": "因",
+   "st": 6,
+   "mean": "sabab",
+   "on": "イン",
+   "kun": "—",
+   "s": "不注意が因で事故が起きた。",
+   "t": "Ehtiyotsizlik sababli baxtsiz hodisa yuz berdi.",
+   "w": [
+    [
+     "原因",
+     "げんいん",
+     "sabab",
+     "その人は原因不明の恐ろしい病気で亡くなった。",
+     "U odam sababi noma'lum dahshatli kasallikdan vafot etdi."
+    ],
+    [
+     "要因",
+     "よういん",
+     "asosiy omil",
+     "成功の要因を分析する。",
+     "Muvaffaqiyat omillarini tahlil qiladi."
+    ],
+    [
+     "因果",
+     "いんが",
+     "sabab va oqibat",
+     "因果関係を調べる。",
+     "Sabab-oqibat aloqasini tekshiradi."
+    ],
+    [
+     "敗因",
+     "はいいん",
+     "mag'lubiyat sababi",
+     "敗因を分析する。",
+     "Mag'lubiyat sababini tahlil qiladi."
+    ]
+   ]
+  },
+  {
+   "k": "捜",
+   "st": 10,
+   "mean": "qidirmoq",
+   "on": "ソウ",
+   "kun": "さが(す)",
+   "s": "警察が行方不明の人を捜している。",
+   "t": "Politsiya bedarak yo'qolgan odamni qidirmoqda.",
+   "w": [
+    [
+     "捜す",
+     "さがす",
+     "qidirmoq (yo'qolganni)",
+     "落とした鍵を捜す。",
+     "Tushirib qo'ygan kalitni qidiradi."
+    ],
+    [
+     "捜査",
+     "そうさ",
+     "tergov",
+     "警察が事件を捜査している。",
+     "Politsiya ish bo'yicha tergov olib bormoqda."
+    ],
+    [
+     "捜索",
+     "そうさく",
+     "qidiruv ishlari",
+     "行方不明の登山者の捜索が続いている。",
+     "Bedarak yo'qolgan alpinistni qidirish davom etmoqda."
+    ]
+   ]
+  },
+  {
+   "k": "救",
+   "st": 11,
+   "mean": "qutqarmoq",
+   "on": "キュウ",
+   "kun": "すく(う)",
+   "s": "救急車がすぐに来た。",
+   "t": "Tez yordam mashinasi tez yetib keldi.",
+   "w": [
+    [
+     "救助",
+     "きゅうじょ",
+     "qutqarish",
+     "犬が人の救助を手伝う。",
+     "It odamlarni qutqarishda yordam beradi."
+    ],
+    [
+     "救う",
+     "すくう",
+     "qutqarmoq",
+     "人のいのちを救う仕事をする。",
+     "Odamlar hayotini qutqaradigan ish qiladi."
+    ],
+    [
+     "救急",
+     "きゅうきゅう",
+     "shoshilinch tibbiy yordam",
+     "救急車を呼んだ。",
+     "Tez yordam chaqirdi."
+    ],
+    [
+     "救命",
+     "きゅうめい",
+     "hayotni saqlab qolish",
+     "救命胴衣を着る。",
+     "Qutqaruv jiletini kiyadi."
+    ]
+   ]
+  },
+  {
+   "k": "識",
+   "st": 19,
+   "mean": "bilim, anglash",
+   "on": "シキ",
+   "kun": "—",
+   "s": "先生は豊富な知識を持っている。",
+   "t": "O'qituvchining bilimi boy.",
+   "w": [
+    [
+     "知識",
+     "ちしき",
+     "bilim",
+     "美術の知識がある友人と展覧会に行く。",
+     "San'atdan xabardor do'sti bilan ko'rgazmaga boradi."
+    ],
+    [
+     "意識",
+     "いしき",
+     "ong, anglash",
+     "環境についての意識を高める。",
+     "Atrof-muhit haqidagi ongni oshiradi."
+    ],
+    [
+     "常識",
+     "じょうしき",
+     "sog'lom fikr, umumiy bilim",
+     "常識のある人は大声で話さない。",
+     "Odobli odam baland ovozda gapirmaydi."
+    ],
+    [
+     "認識",
+     "にんしき",
+     "tan olish, anglash",
+     "問題の重大さを認識する。",
+     "Muammoning jiddiyligini anglaydi."
+    ]
+   ]
+  },
+  {
+   "k": "居",
+   "st": 8,
+   "mean": "bo'lmoq, yashamoq",
+   "on": "キョ",
+   "kun": "い(る)",
+   "s": "一人で居る時間が好きだ。",
+   "t": "Yolg'iz o'tkazadigan vaqtni yoqtiradi.",
+   "w": [
+    [
+     "住居",
+     "じゅうきょ",
+     "turar joy",
+     "住居を移す手続きをする。",
+     "Turar joyni ko'chirish rasmiyatlarini bajaradi."
+    ],
+    [
+     "居間",
+     "いま",
+     "mehmonxona, yashash xonasi",
+     "家族で居間でテレビを見る。",
+     "Oila bo'lib mehmonxonada televizor ko'radi."
+    ],
+    [
+     "居眠り",
+     "いねむり",
+     "mudramoq",
+     "居眠り運転が原因で起こる事故を防ぐ。",
+     "Mudrab haydash sabab bo'ladigan baxtsiz hodisalarning oldini oladi."
+    ],
+    [
+     "居場所",
+     "いばしょ",
+     "turgan joy, o'z o'rni",
+     "子どもの居場所を作る。",
+     "Bolalar uchun o'z joyini yaratadi."
+    ]
+   ]
+  },
+  {
+   "k": "疑",
+   "st": 14,
+   "mean": "shubha qilmoq",
+   "on": "ギ",
+   "kun": "うたが(う)",
+   "s": "彼の話を疑う人は少ない。",
+   "t": "Uning gapiga shubha qiladiganlar kam.",
+   "w": [
+    [
+     "疑問",
+     "ぎもん",
+     "savol, shubha",
+     "疑問に思うことをノートに書き留める。",
+     "Savol tug'dirgan narsalarni daftarga yozib qo'yadi."
+    ],
+    [
+     "疑う",
+     "うたがう",
+     "shubhalanmoq",
+     "友達を疑うのはよくない。",
+     "Do'stga shubha qilish yaxshi emas."
+    ],
+    [
+     "疑い",
+     "うたがい",
+     "shubha, gumon",
+     "犯罪の疑いで調べられた。",
+     "Jinoyat shubhasi bilan tekshirildi."
+    ],
+    [
+     "疑惑",
+     "ぎわく",
+     "gumon, shubha (jiddiy)",
+     "その政治家の疑惑が報道された。",
+     "Bu siyosatchi haqidagi gumonlar xabar qilindi."
+    ]
+   ]
+  },
+  {
+   "k": "反",
+   "st": 4,
+   "mean": "qarshi, teskari",
+   "on": "ハン",
+   "kun": "—",
+   "s": "私は彼の意見に反対だ。",
+   "t": "Men uning fikriga qarshiman.",
+   "w": [
+    [
+     "反対する",
+     "はんたいする",
+     "qarshi chiqmoq",
+     "新しい計画に反対する人が多い。",
+     "Yangi rejaga qarshi chiqadiganlar ko'p."
+    ],
+    [
+     "違反",
+     "いはん",
+     "buzish (qoidani)",
+     "道路交通法違反で逮捕する。",
+     "Yo'l harakati qonunini buzgani uchun hibsga oladi."
+    ],
+    [
+     "反省",
+     "はんせい",
+     "o'z xatosini anglash",
+     "失敗を反省する。",
+     "Xatosini o'ylab ko'radi."
+    ],
+    [
+     "反論",
+     "はんろん",
+     "e'tiroz bildirish",
+     "相手の意見に反論する。",
+     "Raqibning fikriga e'tiroz bildiradi."
+    ]
+   ]
+  },
+  {
+   "k": "罪",
+   "st": 13,
+   "mean": "jinoyat, gunoh",
+   "on": "ザイ",
+   "kun": "つみ",
+   "s": "罪を認めて謝った。",
+   "t": "Aybini tan olib kechirim so'radi.",
+   "w": [
+    [
+     "犯罪",
+     "はんざい",
+     "jinoyat",
+     "お金を払わずに店の品物を持っていくのは犯罪だ。",
+     "To'lamay do'kon mollarini olib ketish jinoyatdir."
+    ],
+    [
+     "罪",
+     "つみ",
+     "gunoh, ayb",
+     "罪のない人を疑ってはいけない。",
+     "Gunohsiz odamga shubha qilmaslik kerak."
+    ],
+    [
+     "無罪",
+     "むざい",
+     "aybsiz",
+     "裁判で無罪になった。",
+     "Sudda aybsiz deb topildi."
+    ],
+    [
+     "罪悪感",
+     "ざいあくかん",
+     "aybdorlik hissi",
+     "嘘をついて罪悪感を覚えた。",
+     "Yolg'on gapirib aybdorlik his qildi."
+    ]
+   ]
+  },
+  {
+   "k": "叫",
+   "st": 6,
+   "mean": "qichqirmoq",
+   "on": "キョウ",
+   "kun": "さけ(ぶ)",
+   "s": "「助けて」と叫ぶ声が聞こえた。",
+   "t": "“Yordam bering” deb qichqirgan ovoz eshitildi.",
+   "w": [
+    [
+     "叫ぶ",
+     "さけぶ",
+     "qichqirmoq",
+     "大きな声で名前を叫ぶ。",
+     "Baland ovozda ismini qichqiradi."
+    ],
+    [
+     "叫び声",
+     "さけびごえ",
+     "qichqiriq",
+     "夜中に叫び声が聞こえた。",
+     "Yarim kechasi qichqiriq eshitildi."
+    ],
+    [
+     "絶叫",
+     "ぜっきょう",
+     "baqirib yubormoq",
+     "ジェットコースターで絶叫した。",
+     "Amerikan tog'larida baqirib yubordi."
+    ]
+   ]
+  },
+  {
+   "k": "況",
+   "st": 8,
+   "mean": "holat, ahvol",
+   "on": "キョウ",
+   "kun": "—",
+   "s": "道路の状況を確認する。",
+   "t": "Yo'l holatini tekshiradi.",
+   "w": [
+    [
+     "状況",
+     "じょうきょう",
+     "vaziyat, holat",
+     "現場の状況から原因を調べる。",
+     "Voqea joyidagi holatdan sababini aniqlaydi."
+    ],
+    [
+     "近況",
+     "きんきょう",
+     "so'nggi ahvol",
+     "友達に近況を報告する。",
+     "Do'stiga so'nggi ahvolini xabar qiladi."
+    ],
+    [
+     "不況",
+     "ふきょう",
+     "iqtisodiy tanazzul",
+     "不況で仕事が減った。",
+     "Iqtisodiy tanazzul tufayli ish kamaydi."
+    ],
+    [
+     "好況",
+     "こうきょう",
+     "iqtisodiy yuksalish",
+     "好況で売り上げが伸びた。",
+     "Iqtisodiy yuksalishda sotuvlar oshdi."
+    ],
+    [
+     "実況",
+     "じっきょう",
+     "jonli reportaj",
+     "試合を実況で見る。",
+     "O'yinni jonli reportajda ko'radi."
+    ]
+   ]
+  },
+  {
+   "k": "殺",
+   "st": 10,
+   "mean": "o'ldirmoq",
+   "on": "サツ",
+   "kun": "ころ(す)",
+   "s": "蚊を殺す薬を買った。",
+   "t": "Chivinni yo'qotadigan dori sotib oldi.",
+   "w": [
+    [
+     "殺す",
+     "ころす",
+     "o'ldirmoq",
+     "殺虫剤で虫を殺す。",
+     "Hasharotlarni insektitsid bilan yo'q qiladi."
+    ],
+    [
+     "殺人",
+     "さつじん",
+     "qotillik",
+     "殺人事件の裁判が始まった。",
+     "Qotillik ishi bo'yicha sud boshlandi."
+    ],
+    [
+     "自殺",
+     "じさつ",
+     "o'z joniga qasd qilish",
+     "自殺を防ぐための相談窓口がある。",
+     "O'z joniga qasd qilishning oldini olish uchun maslahat xizmatlari mavjud."
+    ],
+    [
+     "殺到",
+     "さっとう",
+     "ommaviy shoshilish, yopirilish",
+     "申し込みが殺到した。",
+     "Arizalar yopirilib keldi."
+    ]
+   ]
+  },
+  {
+   "k": "追",
+   "st": 9,
+   "mean": "quvmoq",
+   "on": "ツイ",
+   "kun": "お(う)",
+   "s": "前を走る車を追う。",
+   "t": "Oldinda ketayotgan mashinani quvadi.",
+   "w": [
+    [
+     "追加",
+     "ついか",
+     "qo'shimcha, qo'shish",
+     "レストランで追加の注文をする。",
+     "Restoranda qo'shimcha buyurtma beradi."
+    ],
+    [
+     "追う",
+     "おう",
+     "quvmoq, ortidan bormoq",
+     "夢を追う若者が増えている。",
+     "Orzu ortidan quvayotgan yoshlar ko'paymoqda."
+    ],
+    [
+     "追い越す",
+     "おいこす",
+     "quvib o'tmoq",
+     "トラックを追い越す。",
+     "Yuk mashinasini quvib o'tadi."
+    ],
+    [
+     "追いかける",
+     "おいかける",
+     "ortidan quvmoq",
+     "犬が猫を追いかける。",
+     "It mushukni quvadi."
+    ],
+    [
+     "追いつく",
+     "おいつく",
+     "yetib olmoq",
+     "走って友達に追いつく。",
+     "Yugurib do'stiga yetib oladi."
+    ]
+   ]
+  },
+  {
+   "k": "婦",
+   "st": 11,
+   "mean": "ayol, xotin",
+   "on": "フ",
+   "kun": "—",
+   "s": "婦人服売り場は二階です。",
+   "t": "Ayollar kiyimi bo'limi 2-qavatda.",
+   "w": [
+    [
+     "婦人",
+     "ふじん",
+     "ayol, xonim",
+     "婦人用の傘を買う。",
+     "Ayollar uchun soyabon sotib oladi."
+    ],
+    [
+     "主婦",
+     "しゅふ",
+     "uy bekasi",
+     "主婦向けの料理教室に通う。",
+     "Uy bekalari uchun oshpazlik kursiga qatnaydi."
+    ],
+    [
+     "夫婦",
+     "ふうふ",
+     "er-xotin",
+     "夫婦で旅行に行く。",
+     "Er-xotin sayohatga boradi."
+    ]
+   ]
+  },
+  {
+   "k": "途",
+   "st": 10,
+   "mean": "yo'l, yo'nalish",
+   "on": "ト",
+   "kun": "—",
+   "s": "帰る途中で雨が降り出した。",
+   "t": "Qaytayotganda yomg'ir yog'a boshladi.",
+   "w": [
+    [
+     "途中で",
+     "とちゅうで",
+     "yo'lda, o'rtasida",
+     "彼女は用事ができて、会議の途中で帰った。",
+     "U ish chiqib qolib, yig'ilish o'rtasida ketdi."
+    ],
+    [
+     "用途",
+     "ようと",
+     "qo'llanish maqsadi",
+     "用途に合わせて道具を選ぶ。",
+     "Maqsadga mos asbob tanlaydi."
+    ],
+    [
+     "途上国",
+     "とじょうこく",
+     "rivojlanayotgan davlat",
+     "途上国を支援する。",
+     "Rivojlanayotgan davlatlarni qo'llab-quvvatlaydi."
+    ],
+    [
+     "中途",
+     "ちゅうと",
+     "yarim yo'l",
+     "勉強を中途でやめた。",
+     "O'qishni yarim yo'lda tashladi."
+    ]
+   ]
+  },
+  {
+   "k": "灰",
+   "st": 6,
+   "mean": "kul",
+   "on": "カイ",
+   "kun": "はい",
+   "s": "火事のあと、灰だけが残った。",
+   "t": "Yong'indan keyin faqat kul qoldi.",
+   "w": [
+    [
+     "灰皿",
+     "はいざら",
+     "kuldon",
+     "灰皿をテーブルに置く。",
+     "Kuldonni stolga qo'yadi."
+    ],
+    [
+     "灰色",
+     "はいいろ",
+     "kulrang",
+     "灰色の毛の猫を探しています。",
+     "Kulrang junli mushukni qidiryapman."
+    ],
+    [
+     "灰",
+     "はい",
+     "kul",
+     "火山の灰が降ってきた。",
+     "Vulqon kuli yog'ildi."
+    ],
+    [
+     "石灰",
+     "せっかい",
+     "ohak",
+     "石灰を畑にまく。",
+     "Dalaga ohak sepadi."
+    ]
+   ]
+  },
+  {
+   "k": "暴",
+   "st": 15,
+   "mean": "zo'ravonlik, shiddat",
+   "on": "ボウ",
+   "kun": "あば(れる)",
+   "s": "犬が突然暴れ出した。",
+   "t": "It birdan o'zini tuta olmay qoldi.",
+   "w": [
+    [
+     "乱暴な",
+     "らんぼうな",
+     "qo'pol, shafqatsiz",
+     "子供が真似をするから、乱暴な言葉は使わない。",
+     "Bolalar taqlid qilgani uchun qo'pol so'zlarni ishlatmaymiz."
+    ],
+    [
+     "暴れる",
+     "あばれる",
+     "shovqin-suron qilib jahli chiqmoq",
+     "酔った男が店で暴れる。",
+     "Mast erkak do'konda shovqin ko'taradi."
+    ],
+    [
+     "暴力",
+     "ぼうりょく",
+     "zo'ravonlik",
+     "暴力は許されない。",
+     "Zo'ravonlikka yo'l qo'yilmaydi."
+    ],
+    [
+     "暴風",
+     "ぼうふう",
+     "bo'ron",
+     "暴風で電車が止まった。",
+     "Bo'ron tufayli poyezd to'xtadi."
+    ],
+    [
+     "暴露",
+     "ばくろ",
+     "fosh qilish",
+     "秘密が暴露された。",
+     "Sir fosh qilindi."
+    ]
+   ]
+  }
+ ]
+}
