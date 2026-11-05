@@ -1,0 +1,950 @@
+{
+ "level": "N3",
+ "lesson": 30,
+ "range": "929–952",
+ "kanji": [
+  {
+   "k": "民",
+   "st": 5,
+   "mean": "xalq, fuqaro",
+   "on": "ミン",
+   "kun": "—",
+   "s": "市民の声を聞く会が開かれた。",
+   "t": "Fuqarolar ovozini tinglash yig'ilishi o'tkazildi.",
+   "w": [
+    [
+     "国民",
+     "こくみん",
+     "xalq, millat",
+     "国民の多くが新しい法律に賛成した。",
+     "Xalqning ko'pchiligi yangi qonunni qo'llab-quvvatladi."
+    ],
+    [
+     "市民",
+     "しみん",
+     "shahar fuqarosi",
+     "市役所に投書箱を置いて、市民の声を聞く。",
+     "Shahar hokimiyatiga xat qutisi qo'yib, fuqarolar ovozini tinglaymiz."
+    ],
+    [
+     "民主主義",
+     "みんしゅしゅぎ",
+     "demokratiya",
+     "民主主義では国民が政治を決める。",
+     "Demokratiyada siyosatni xalq belgilaydi."
+    ],
+    [
+     "民間",
+     "みんかん",
+     "xususiy sektor, fuqarolik",
+     "民間の会社で働いている。",
+     "Xususiy kompaniyada ishlayman."
+    ]
+   ]
+  },
+  {
+   "k": "録",
+   "st": 16,
+   "mean": "yozib olmoq, qayd etmoq",
+   "on": "ロク",
+   "kun": "—",
+   "s": "新しい世界記録が生まれた。",
+   "t": "Yangi jahon rekordi o'rnatildi.",
+   "w": [
+    [
+     "記録する",
+     "きろくする",
+     "yozib qo'ymoq; rekord o'rnatmoq",
+     "観察した結果を記録する。",
+     "Kuzatuv natijasini yozib qo'yadi."
+    ],
+    [
+     "録音",
+     "ろくおん",
+     "ovoz yozish",
+     "先生の話を録音して、あとで聞く。",
+     "O'qituvchining gapini yozib olib, keyin tinglayman."
+    ],
+    [
+     "登録",
+     "とうろく",
+     "ro'yxatdan o'tkazish",
+     "新しいアプリにメールアドレスを登録した。",
+     "Yangi ilovaga email manzilini ro'yxatdan o'tkazdi."
+    ],
+    [
+     "録画",
+     "ろくが",
+     "video yozib olish",
+     "試合を録画しておく。",
+     "O'yinni videoga yozib qo'yaman."
+    ]
+   ]
+  },
+  {
+   "k": "位",
+   "st": 7,
+   "mean": "daraja, o'rin, mavqe",
+   "on": "イ",
+   "kun": "くらい",
+   "s": "チームは三位だった。",
+   "t": "Jamoa 3-o'rinni egalladi.",
+   "w": [
+    [
+     "単位",
+     "たんい",
+     "birlik; kredit (o'quv)",
+     "秒は時間の単位です。",
+     "Soniya vaqt birligi."
+    ],
+    [
+     "地位",
+     "ちい",
+     "mavqe, lavozim",
+     "彼女には地位も財産も優れた才能もある。",
+     "Unda mavqe ham, boylik ham, ajoyib iste'dod ham bor."
+    ],
+    [
+     "位",
+     "くらい",
+     "daraja, martaba",
+     "王の位を継ぐ。",
+     "Shoh martabasini meros qilib oladi."
+    ],
+    [
+     "順位",
+     "じゅんい",
+     "o'rin, reyting",
+     "大会の順位が発表された。",
+     "Musobaqa o'rinlari e'lon qilindi."
+    ]
+   ]
+  },
+  {
+   "k": "秒",
+   "st": 9,
+   "mean": "soniya",
+   "on": "ビョウ",
+   "kun": "—",
+   "s": "百メートルを十二秒で走った。",
+   "t": "100 metrni 12 soniyada yugurdi.",
+   "w": [
+    [
+     "秒速",
+     "びょうそく",
+     "soniyadagi tezlik",
+     "秒速十メートルの風が吹く。",
+     "Soniyasiga 10 metr tezlikda shamol esadi."
+    ],
+    [
+     "秒針",
+     "びょうしん",
+     "soniya mili",
+     "時計の秒針が動いている。",
+     "Soatning soniya mili yurib turibdi."
+    ],
+    [
+     "数秒",
+     "すうびょう",
+     "bir necha soniya",
+     "数秒だけ待ってください。",
+     "Bir necha soniya kuting."
+    ],
+    [
+     "秒読み",
+     "びょうよみ",
+     "orqaga sanash",
+     "新年までの秒読みが始まった。",
+     "Yangi yilgacha orqaga sanash boshlandi."
+    ]
+   ]
+  },
+  {
+   "k": "優",
+   "st": 17,
+   "mean": "a'lo; mehribon",
+   "on": "ユウ",
+   "kun": "やさ(しい) · すぐ(れる)",
+   "s": "彼女は誰にでも優しい。",
+   "t": "U hammaga mehribon.",
+   "w": [
+    [
+     "優秀な",
+     "ゆうしゅうな",
+     "a'lo, iqtidorli",
+     "優秀な学生が奨学金をもらった。",
+     "A'lochi talaba stipendiya oldi."
+    ],
+    [
+     "俳優",
+     "はいゆう",
+     "aktyor",
+     "好きな俳優の映画を見に行く。",
+     "Sevimli aktyorimning filmini ko'rgani boraman."
+    ],
+    [
+     "優しい",
+     "やさしい",
+     "mehribon, muloyim",
+     "優しい先生に出会えてよかった。",
+     "Mehribon o'qituvchiga duch kelganim yaxshi bo'ldi."
+    ],
+    [
+     "優れた",
+     "すぐれた",
+     "a'lo, ustun",
+     "彼は優れた才能を持っている。",
+     "U ajoyib iste'dodga ega."
+    ],
+    [
+     "優先",
+     "ゆうせん",
+     "ustuvorlik",
+     "急ぎの仕事を優先する。",
+     "Shoshilinch ishni birinchi o'ringa qo'yaman."
+    ]
+   ]
+  },
+  {
+   "k": "勝",
+   "st": 12,
+   "mean": "g'alaba qozonmoq",
+   "on": "ショウ",
+   "kun": "か(つ)",
+   "s": "昨日の試合でうちのチームが勝った。",
+   "t": "Kechagi o'yinda jamoamiz g'alaba qozondi.",
+   "w": [
+    [
+     "勝つ",
+     "かつ",
+     "g'alaba qozonmoq",
+     "最後まで頑張れば必ず勝つ。",
+     "Oxirigacha harakat qilsang, albatta g'alaba qilasan."
+    ],
+    [
+     "優勝",
+     "ゆうしょう",
+     "chempion bo'lish",
+     "優勝したチームには勢いがあった。",
+     "Chempion bo'lgan jamoada shiddat bor edi."
+    ],
+    [
+     "勝手に",
+     "かってに",
+     "o'zboshimchalik bilan",
+     "医師の許可なく、勝手に退院はできない。",
+     "Shifokor ruxsatisiz o'zboshimchalik bilan chiqib ketib bo'lmaydi."
+    ],
+    [
+     "勝利",
+     "しょうり",
+     "g'alaba",
+     "勝利の喜びを分かち合う。",
+     "G'alaba quvonchini baham ko'ramiz."
+    ]
+   ]
+  },
+  {
+   "k": "退",
+   "st": 9,
+   "mean": "chekinmoq, tark etmoq",
+   "on": "タイ",
+   "kun": "—",
+   "s": "祖父は去年会社を退職した。",
+   "t": "Bobom o'tgan yili kompaniyadan nafaqaga chiqdi.",
+   "w": [
+    [
+     "退院する",
+     "たいいんする",
+     "kasalxonadan chiqmoq",
+     "患者さんは明日退院する。",
+     "Bemor ertaga kasalxonadan chiqadi."
+    ],
+    [
+     "引退",
+     "いんたい",
+     "faoliyatni tugatmoq (nafaqaga chiqish)",
+     "投げても打ってもすばらしい選手が引退した。",
+     "Tashlashi ham, urishi ham a'lo o'yinchi faoliyatini tugatdi."
+    ],
+    [
+     "退職",
+     "たいしょく",
+     "ishdan ketmoq, nafaqaga chiqmoq",
+     "退職金で旅行に行く。",
+     "Nafaqa puliga sayohatga boraman."
+    ],
+    [
+     "後退",
+     "こうたい",
+     "orqaga chekinish",
+     "車が後退する。",
+     "Mashina orqaga yuradi."
+    ],
+    [
+     "退屈",
+     "たいくつ",
+     "zerikarli",
+     "退屈な授業で眠くなった。",
+     "Zerikarli darsdan uyqum keldi."
+    ]
+   ]
+  },
+  {
+   "k": "勢",
+   "st": 13,
+   "mean": "kuch, shiddat",
+   "on": "セイ",
+   "kun": "いきお(い)",
+   "s": "火の勢いが強くなった。",
+   "t": "Olovning kuchi ortdi.",
+   "w": [
+    [
+     "大勢",
+     "おおぜい",
+     "ko'p odam",
+     "頼もしい仲間が大勢いる。",
+     "Ishonchli hamrohlarim ko'p."
+    ],
+    [
+     "姿勢",
+     "しせい",
+     "qomat; munosabat",
+     "姿勢をよくして座る。",
+     "Qomatni tik tutib o'tirmoq."
+    ],
+    [
+     "勢い",
+     "いきおい",
+     "shiddat, kuch",
+     "勢いよくドアを開けた。",
+     "Shiddat bilan eshikni ochdi."
+    ],
+    [
+     "勢力",
+     "せいりょく",
+     "ta'sir kuchi",
+     "台風の勢力が弱まった。",
+     "To'fonning kuchi susaydi."
+    ]
+   ]
+  },
+  {
+   "k": "仲",
+   "st": 6,
+   "mean": "o'zaro munosabat",
+   "on": "チュウ",
+   "kun": "なか",
+   "s": "二人は仲がいい。",
+   "t": "Ikkovi yaxshi munosabatda.",
+   "w": [
+    [
+     "仲間",
+     "なかま",
+     "hamroh, do'st, hamkasb",
+     "同じ趣味の仲間が集まった。",
+     "Bir xil qiziqishdagi do'stlar to'plandi."
+    ],
+    [
+     "仲よし",
+     "なかよし",
+     "yaqin do'st",
+     "仲よしの友達と旅行に行く。",
+     "Yaqin do'stlarim bilan sayohatga boramiz."
+    ],
+    [
+     "仲直り",
+     "なかなおり",
+     "yarashish",
+     "けんかしたあと、すぐに仲直りした。",
+     "Janjaldan keyin tezda yarashdik."
+    ],
+    [
+     "仲介",
+     "ちゅうかい",
+     "vositachilik",
+     "不動産会社が仲介する。",
+     "Ko'chmas mulk kompaniyasi vositachilik qiladi."
+    ]
+   ]
+  },
+  {
+   "k": "打",
+   "st": 5,
+   "mean": "urmoq",
+   "on": "ダ",
+   "kun": "う(つ)",
+   "s": "彼は釘を打っている。",
+   "t": "U mix qoqyapti.",
+   "w": [
+    [
+     "打つ",
+     "うつ",
+     "urmoq",
+     "野球選手がボールを打つ。",
+     "Beysbolchi to'pni uradi."
+    ],
+    [
+     "打ち合わせ",
+     "うちあわせ",
+     "oldindan kelishuv, uchrashuv",
+     "明日の朝、打ち合わせがある。",
+     "Ertaga ertalab muhokama uchrashuvi bor."
+    ],
+    [
+     "打撃",
+     "だげき",
+     "zarba, talofat",
+     "地震は経済に大きな打撃を与えた。",
+     "Zilzila iqtisodiyotga katta zarba berdi."
+    ]
+   ]
+  },
+  {
+   "k": "投",
+   "st": 7,
+   "mean": "otmoq, tashlamoq",
+   "on": "トウ",
+   "kun": "な(げる)",
+   "s": "子どもたちが石を投げて遊んでいる。",
+   "t": "Bolalar tosh otib o'ynayapti.",
+   "w": [
+    [
+     "投書",
+     "とうしょ",
+     "xat yuborish (gazeta, tashkilotga)",
+     "市役所に投書箱を置いて、市民の声を聞く。",
+     "Shahar hokimiyatiga xat qutisi qo'yib, fuqarolar ovozini tinglaymiz."
+    ],
+    [
+     "投げる",
+     "なげる",
+     "otmoq, uloqtirmoq",
+     "投手がボールを投げる。",
+     "Pitcher to'pni uloqtiradi."
+    ],
+    [
+     "投票",
+     "とうひょう",
+     "ovoz berish",
+     "選挙で投票する。",
+     "Saylovda ovoz beradi."
+    ],
+    [
+     "投資",
+     "とうし",
+     "investitsiya",
+     "株に投資する。",
+     "Aksiyaga sarmoya kiritadi."
+    ]
+   ]
+  },
+  {
+   "k": "頼",
+   "st": 16,
+   "mean": "ishonmoq, iltimos qilmoq",
+   "on": "ライ",
+   "kun": "たの(む) · たの(もしい) · たよ(る)",
+   "s": "友達に頼まれて引っ越しを手伝った。",
+   "t": "Do'stimning iltimosi bilan ko'chishda yordam berdim.",
+   "w": [
+    [
+     "信頼",
+     "しんらい",
+     "ishonch",
+     "信頼できる人に相談する。",
+     "Ishonchli odamdan maslahat so'rayman."
+    ],
+    [
+     "頼む",
+     "たのむ",
+     "iltimos qilmoq",
+     "友達に買い物を頼む。",
+     "Do'stimdan xarid qilib berishni iltimos qilaman."
+    ],
+    [
+     "頼もしい",
+     "たのもしい",
+     "ishonchli, tayanch bo'ladigan",
+     "頼もしい仲間が大勢いる。",
+     "Ishonchli hamrohlarim ko'p."
+    ],
+    [
+     "頼る",
+     "たよる",
+     "tayanmoq, suyanmoq",
+     "いつも人に頼るのはよくない。",
+     "Doim boshqalarga tayanish yaxshi emas."
+    ]
+   ]
+  },
+  {
+   "k": "戦",
+   "st": 13,
+   "mean": "urush, jang, kurashmoq",
+   "on": "セン",
+   "kun": "たたか(う)",
+   "s": "二つの国が戦っている。",
+   "t": "Ikki davlat urushayapti.",
+   "w": [
+    [
+     "戦争",
+     "せんそう",
+     "urush",
+     "『戦争と平和』という本を読んだ。",
+     "'Urush va tinchlik' degan kitobni o'qidim."
+    ],
+    [
+     "戦う",
+     "たたかう",
+     "kurashmoq, jang qilmoq",
+     "最後まで戦う。",
+     "Oxirigacha kurashadi."
+    ],
+    [
+     "挑戦",
+     "ちょうせん",
+     "sinovga tashlanmoq, bellashuv",
+     "新しいことに挑戦する。",
+     "Yangi narsani sinab ko'radi."
+    ],
+    [
+     "作戦",
+     "さくせん",
+     "reja, taktika",
+     "試合の作戦を考える。",
+     "O'yin taktikasini o'ylaymiz."
+    ],
+    [
+     "決勝戦",
+     "けっしょうせん",
+     "final o'yin",
+     "決勝戦は明日だ。",
+     "Final o'yin ertaga."
+    ]
+   ]
+  },
+  {
+   "k": "延",
+   "st": 8,
+   "mean": "cho'zilmoq, kechiktirmoq",
+   "on": "エン",
+   "kun": "の(びる) · の(ばす)",
+   "s": "雨で試合が一日延びた。",
+   "t": "Yomg'ir sababli o'yin bir kunga kechiktirildi.",
+   "w": [
+    [
+     "延期する",
+     "えんきする",
+     "kechiktirmoq (muddatni)",
+     "台風で試合を延期する。",
+     "To'fon tufayli o'yinni kechiktiradi."
+    ],
+    [
+     "延長する",
+     "えんちょうする",
+     "uzaytirmoq",
+     "会議の時間を延長する。",
+     "Yig'ilish vaqtini uzaytiradi."
+    ],
+    [
+     "延びる",
+     "のびる",
+     "kechikmoq, uzaymoq",
+     "吹雪のため、飛行機の出発が延びる。",
+     "Qor bo'roni sababli samolyot jo'nashi kechikadi."
+    ],
+    [
+     "延ばす",
+     "のばす",
+     "kechiktirmoq, uzaytirmoq",
+     "出発を一日延ばす。",
+     "Jo'nashni bir kunga kechiktiradi."
+    ]
+   ]
+  },
+  {
+   "k": "負",
+   "st": 9,
+   "mean": "yutqazmoq; yuk",
+   "on": "フ",
+   "kun": "ま(ける)",
+   "s": "昨日の試合で負けてしまった。",
+   "t": "Kechagi o'yinda yutqazib qo'ydik.",
+   "w": [
+    [
+     "勝負",
+     "しょうぶ",
+     "bellashuv, g'alaba yoki mag'lubiyat",
+     "最後まで勝負はわからない。",
+     "Oxirigacha natija noma'lum."
+    ],
+    [
+     "負担",
+     "ふたん",
+     "yuk, majburiyat (xarajat)",
+     "費用を半分ずつ負担する。",
+     "Xarajatni yarim-yarimdan ko'taramiz."
+    ],
+    [
+     "負ける",
+     "まける",
+     "yutqazmoq",
+     "相手チームに負ける。",
+     "Raqib jamoaga yutqazadi."
+    ],
+    [
+     "負傷",
+     "ふしょう",
+     "jarohat olmoq",
+     "選手が試合中に負傷した。",
+     "O'yinchi o'yin vaqtida jarohat oldi."
+    ]
+   ]
+  },
+  {
+   "k": "賞",
+   "st": 15,
+   "mean": "mukofot",
+   "on": "ショウ",
+   "kun": "—",
+   "s": "彼女は絵のコンクールで賞を取った。",
+   "t": "U rasm tanlovida mukofot oldi.",
+   "w": [
+    [
+     "ノーベル賞",
+     "ノーベルしょう",
+     "Nobel mukofoti",
+     "日本人がノーベル賞を受賞した。",
+     "Yaponiyalik Nobel mukofotini oldi."
+    ],
+    [
+     "賞金",
+     "しょうきん",
+     "pul mukofoti",
+     "優勝すると賞金がもらえる。",
+     "Chempion bo'lsa, pul mukofoti beriladi."
+    ],
+    [
+     "参加賞",
+     "さんかしょう",
+     "ishtirok sovg'asi",
+     "負けた人にも参加賞が贈られる。",
+     "Yutqazganlarga ham ishtirok sovg'asi beriladi."
+    ],
+    [
+     "受賞",
+     "じゅしょう",
+     "mukofot olmoq",
+     "監督が映画祭で受賞した。",
+     "Rejissyor kinofestivalda mukofot oldi."
+    ]
+   ]
+  },
+  {
+   "k": "争",
+   "st": 6,
+   "mean": "talashmoq, kurashmoq",
+   "on": "ソウ",
+   "kun": "あらそ(う)",
+   "s": "二人は一位を争っている。",
+   "t": "Ikkovi birinchi o'rin uchun kurashyapti.",
+   "w": [
+    [
+     "論争",
+     "ろんそう",
+     "bahs, munozara",
+     "その雑誌の記事で大きい論争が起こった。",
+     "Shu jurnaldagi maqola tufayli katta munozara boshlandi."
+    ],
+    [
+     "争う",
+     "あらそう",
+     "talashmoq, bellashmoq",
+     "兄と席を争う。",
+     "Akam bilan joy talashamiz."
+    ],
+    [
+     "争い",
+     "あらそい",
+     "nizo, kurash",
+     "国と国の争いをなくしたい。",
+     "Davlatlar orasidagi nizolar yo'qolishini istayman."
+    ],
+    [
+     "紛争",
+     "ふんそう",
+     "mojaro",
+     "国境で紛争が起きた。",
+     "Chegarada mojaro yuz berdi."
+    ]
+   ]
+  },
+  {
+   "k": "団",
+   "st": 6,
+   "mean": "guruh, to'da",
+   "on": "ダン · トン",
+   "kun": "—",
+   "s": "団体で旅行すると安くなる。",
+   "t": "Guruh bo'lib sayohat qilsa arzonroq bo'ladi.",
+   "w": [
+    [
+     "団体",
+     "だんたい",
+     "guruh, tashkilot",
+     "団体客は割引になる。",
+     "Guruh mijozlarga chegirma beriladi."
+    ],
+    [
+     "集団",
+     "しゅうだん",
+     "jamoa, guruh",
+     "集団で行動する。",
+     "Guruh bo'lib harakat qiladi."
+    ],
+    [
+     "布団",
+     "ふとん",
+     "ko'rpa-to'shak (futon)",
+     "晴れた日に布団を干す。",
+     "Ochiq kunda ko'rpa-to'shakni quritadi."
+    ],
+    [
+     "団地",
+     "だんち",
+     "uy-joy massivi",
+     "団地に住んでいる。",
+     "Uy-joy massivida yashaydi."
+    ]
+   ]
+  },
+  {
+   "k": "失",
+   "st": 5,
+   "mean": "yo'qotmoq",
+   "on": "シツ",
+   "kun": "うしな(う)",
+   "s": "大切な物を失ってしまった。",
+   "t": "Muhim narsani yo'qotib qo'ydi.",
+   "w": [
+    [
+     "失礼な",
+     "しつれいな",
+     "qo'pol, odobsiz",
+     "失礼な言い方をしてすみません。",
+     "Qo'pol gapirib qo'ydim, kechirasiz."
+    ],
+    [
+     "失業する",
+     "しつぎょうする",
+     "ishsiz qolmoq",
+     "会社が倒産して失業する。",
+     "Kompaniya bankrot bo'lib, ishsiz qoladi."
+    ],
+    [
+     "過失",
+     "かしつ",
+     "ehtiyotsizlik, xato",
+     "過失による事故が増えている。",
+     "Ehtiyotsizlik tufayli yuz bergan hodisalar ko'paymoqda."
+    ],
+    [
+     "失う",
+     "うしなう",
+     "yo'qotmoq",
+     "信用を失う。",
+     "Ishonchni yo'qotadi."
+    ]
+   ]
+  },
+  {
+   "k": "敗",
+   "st": 11,
+   "mean": "mag'lub bo'lmoq",
+   "on": "ハイ",
+   "kun": "—",
+   "s": "決勝戦で敗れた。",
+   "t": "Finalda mag'lub bo'ldi.",
+   "w": [
+    [
+     "失敗",
+     "しっぱい",
+     "muvaffaqiyatsizlik, xato",
+     "失敗を恐れないで、何でも試してみる。",
+     "Muvaffaqiyatsizlikdan qo'rqmay, hamma narsani sinab ko'raman."
+    ],
+    [
+     "勝敗",
+     "しょうはい",
+     "g'alaba yoki mag'lubiyat",
+     "勝敗は運で決まる。",
+     "G'alaba yoki mag'lubiyat omadga bog'liq."
+    ],
+    [
+     "敗北",
+     "はいぼく",
+     "mag'lubiyat",
+     "相手に敗北を認めた。",
+     "Raqibga mag'lubiyatini tan oldi."
+    ],
+    [
+     "敗者",
+     "はいしゃ",
+     "mag'lub tomon",
+     "敗者にも拍手を送る。",
+     "Mag'lub bo'lganlarga ham qarsak chalamiz."
+    ]
+   ]
+  },
+  {
+   "k": "委",
+   "st": 8,
+   "mean": "topshirmoq, qo'mita",
+   "on": "イ",
+   "kun": "—",
+   "s": "来週、新しい委員を選ぶ。",
+   "t": "Kelasi hafta yangi qo'mita a'zolarini saylaymiz.",
+   "w": [
+    [
+     "委員",
+     "いいん",
+     "qo'mita a'zosi",
+     "学級委員に選ばれた。",
+     "Sinf qo'mitasi a'zosi etib saylandi."
+    ],
+    [
+     "委員会",
+     "いいんかい",
+     "qo'mita, komissiya",
+     "委員会は都道府県に協力を依頼した。",
+     "Qo'mita prefekturalardan hamkorlik so'radi."
+    ],
+    [
+     "委員長",
+     "いいんちょう",
+     "qo'mita raisi",
+     "委員長が関係者の家を訪ねた。",
+     "Qo'mita raisi tegishli shaxsning uyiga bordi."
+    ],
+    [
+     "委託",
+     "いたく",
+     "topshirmoq (vakolat bilan)",
+     "仕事を専門の会社に委託する。",
+     "Ishni mutaxassis kompaniyaga topshiradi."
+    ]
+   ]
+  },
+  {
+   "k": "訪",
+   "st": 11,
+   "mean": "tashrif buyurmoq",
+   "on": "ホウ",
+   "kun": "たず(ねる)",
+   "s": "友達の家を訪ねた。",
+   "t": "Do'stning uyiga bordi.",
+   "w": [
+    [
+     "訪問する",
+     "ほうもんする",
+     "tashrif buyurmoq",
+     "来月、大統領が日本を訪問する。",
+     "Kelasi oy prezident Yaponiyaga tashrif buyuradi."
+    ],
+    [
+     "訪ねる",
+     "たずねる",
+     "(uyiga) borib ko'rmoq",
+     "先生の家を訪ねる。",
+     "O'qituvchining uyiga boradi."
+    ],
+    [
+     "来訪",
+     "らいほう",
+     "kelish, tashrif",
+     "来訪者の名前を書く。",
+     "Mehmonning ismini yozadi."
+    ],
+    [
+     "訪日",
+     "ほうにち",
+     "Yaponiyaga tashrif",
+     "首相の訪日が決まった。",
+     "Bosh vazirning Yaponiyaga tashrifi belgilandi."
+    ]
+   ]
+  },
+  {
+   "k": "競",
+   "st": 20,
+   "mean": "bellashmoq, raqobat",
+   "on": "キョウ · ケイ",
+   "kun": "—",
+   "s": "友達と一位を競う。",
+   "t": "Do'stim bilan birinchi o'rin uchun bellashadi.",
+   "w": [
+    [
+     "競争する",
+     "きょうそうする",
+     "raqobatlashmoq",
+     "会社同士が競争する。",
+     "Kompaniyalar o'zaro raqobatlashadi."
+    ],
+    [
+     "競技",
+     "きょうぎ",
+     "musobaqa, sport turi",
+     "団体競技では仲間の信頼関係が大切だ。",
+     "Jamoaviy sportda hamrohlarga ishonch muhim."
+    ],
+    [
+     "競馬",
+     "けいば",
+     "ot poygasi",
+     "週末に競馬場へ行く。",
+     "Dam olish kuni ot poygasi maydoniga boradi."
+    ],
+    [
+     "競う",
+     "きそう",
+     "bellashmoq",
+     "選手たちが速さを競う。",
+     "O'yinchilar tezlik bo'yicha bellashadi."
+    ]
+   ]
+  },
+  {
+   "k": "依",
+   "st": 8,
+   "mean": "tayanmoq, so'ramoq",
+   "on": "イ",
+   "kun": "—",
+   "s": "彼は友達に依存しすぎている。",
+   "t": "U do'stlariga haddan ortiq tayanadi.",
+   "w": [
+    [
+     "依頼",
+     "いらい",
+     "iltimos, topshiriq",
+     "委員会は都道府県に協力を依頼した。",
+     "Qo'mita prefekturalardan hamkorlik so'radi."
+    ],
+    [
+     "依存",
+     "いぞん",
+     "bog'liqlik, tayanish",
+     "石油に依存している。",
+     "Neftga bog'liq."
+    ],
+    [
+     "依然として",
+     "いぜんとして",
+     "hamon, avvalgidek",
+     "状況は依然として厳しい。",
+     "Vaziyat hamon og'ir."
+    ]
+   ]
+  }
+ ]
+}
